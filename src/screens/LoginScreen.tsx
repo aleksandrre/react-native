@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useLogin } from '../hooks';
 import { CustomButton, InputField, Header } from '../components';
+import { colors } from '../theme';
 
 interface LoginScreenProps {
   onNavigateToRegister: () => void;
@@ -56,15 +57,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    padding: 10,
+    backgroundColor: colors.white,
   },
   linkContainer: {
     marginTop: 20,
     alignItems: 'center',
   },
   linkText: {
-    color: '#4A90E2',
+    color: colors.primary,
     fontSize: 16,
   },
 });

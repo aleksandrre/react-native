@@ -6,6 +6,7 @@ import { useAuthStore } from './src/store/authStore';
 import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
+import { colors } from './src/theme';
 
 const queryClient = new QueryClient();
 
@@ -22,7 +23,7 @@ function AppContent() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#4A90E2" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -56,6 +57,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.white,
   },
 });

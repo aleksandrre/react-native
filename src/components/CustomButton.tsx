@@ -6,11 +6,12 @@ import {
   ActivityIndicator,
   TouchableOpacityProps,
 } from 'react-native';
+import { colors } from '../theme';
 
 interface CustomButtonProps extends TouchableOpacityProps {
   title: string;
   isLoading?: boolean;
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: 'primary' | 'secondary';
 }
 
 export const CustomButton: React.FC<CustomButtonProps> = ({
@@ -28,6 +29,11 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     style,
   ];
 
+  const textStyle = [
+    styles.buttonText,
+    { color: variant === 'primary' ? colors.white : colors.primary }
+  ];
+
   return (
     <TouchableOpacity
       style={buttonStyle}
@@ -37,7 +43,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
       {isLoading ? (
         <ActivityIndicator color="#fff" />
       ) : (
-        <Text style={styles.buttonText}>{title}</Text>
+        <Text style={textStyle}>{title}</Text>
       )}
     </TouchableOpacity>
   );
@@ -45,27 +51,27 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    padding: 15,
-    borderRadius: 8,
+    padding: 10,
+    borderRadius: 23,
     alignItems: 'center',
+    borderWidth: 1.5,
     marginTop: 10,
   },
   primary: {
-    backgroundColor: '#4A90E2',
+    borderColor: colors.white,
+    backgroundColor: colors.primary,
   },
   secondary: {
-    backgroundColor: '#95A5A6',
+    borderColor: colors.primary,
+    backgroundColor: colors.white,
   },
-  danger: {
-    backgroundColor: '#E74C3C',
-  },
+
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+
+    fontSize: 16,
   },
 });
 
