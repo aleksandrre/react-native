@@ -3,7 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useLogin } from '../hooks';
 import { CustomButton, InputField, Header } from '../components';
 import { colors } from '../theme';
-
+import { ScreenWrapper, } from '../components/ScreenWrapper';
+import { PageLayout } from '../components/PageLayout';
 interface LoginScreenProps {
   onNavigateToRegister: () => void;
 }
@@ -22,44 +23,44 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigateToRegister }
   };
 
   return (
-    <View style={styles.container}>
-      <Header title="შესვლა" />
+    <PageLayout style={styles.mainContainer}>
+      <Header title="Skip for now " variant="right" />
+      <ScreenWrapper>
+        <InputField
+          placeholder="ელ. ფოსტა"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
 
-      <InputField
-        placeholder="ელ. ფოსტა"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
+        <InputField
+          placeholder="პაროლი"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
 
-      <InputField
-        placeholder="პაროლი"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+        <CustomButton
+          title="შესვლა"
+          onPress={handleLogin}
+          isLoading={loginMutation.isPending}
+        />
 
-      <CustomButton
-        title="შესვლა"
-        onPress={handleLogin}
-        isLoading={loginMutation.isPending}
-      />
+        <TouchableOpacity onPress={onNavigateToRegister} style={styles.linkContainer}>
+          <Text style={styles.linkText}>არ გაქვს ანგარიში? რეგისტრაცია</Text>
+        </TouchableOpacity>
+      </ScreenWrapper>
+    </PageLayout>
 
-      <TouchableOpacity onPress={onNavigateToRegister} style={styles.linkContainer}>
-        <Text style={styles.linkText}>არ გაქვს ანგარიში? რეგისტრაცია</Text>
-      </TouchableOpacity>
-    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 10,
-    backgroundColor: colors.white,
   },
+
   linkContainer: {
     marginTop: 20,
     alignItems: 'center',

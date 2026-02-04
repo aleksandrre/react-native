@@ -16,7 +16,6 @@ export const HomeScreen: React.FC = () => {
       <CustomButton
         title="გასვლა"
         onPress={logout}
-        variant="danger"
       />
     </View>
   );
