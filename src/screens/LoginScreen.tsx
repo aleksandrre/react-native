@@ -5,6 +5,8 @@ import { CustomButton, InputField, Header } from '../components';
 import { colors } from '../theme';
 import { ScreenWrapper, } from '../components/ScreenWrapper';
 import { PageLayout } from '../components/PageLayout';
+import { ImageHeader } from '../components/ImageHeader';
+import Cover from '../../assets/cover.png';
 interface LoginScreenProps {
   onNavigateToRegister: () => void;
 }
@@ -24,7 +26,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigateToRegister }
 
   return (
     <PageLayout style={styles.mainContainer}>
-      <Header title="Skip for now " variant="right" />
+      <ImageHeader
+        title="მოგესალმებით"
+        imageSource={Cover}
+      />
       <ScreenWrapper>
         <InputField
           placeholder="ელ. ფოსტა"
