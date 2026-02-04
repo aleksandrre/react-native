@@ -2,31 +2,25 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useAuthStore } from '../store/authStore';
 import { CustomButton, Header } from '../components';
-
+import { PageLayout } from '../components/PageLayout';
+import { ScreenWrapper } from '../components/ScreenWrapper';
+import { ImageHeader } from '../components/ImageHeader';
+import cover from '../../assets/cover.png';
 export const HomeScreen: React.FC = () => {
   const logout = useAuthStore((state) => state.logout);
 
   return (
-    <View style={styles.container}>
-      <Header 
-        title="მოგესალმებით! 👋" 
-        subtitle="თქვენ წარმატებით შეხვედით"
-      />
-
-      <CustomButton
-        title="გასვლა"
-        onPress={logout}
-      />
-    </View>
+    <PageLayout>
+      <ImageHeader
+          title="Bookings!"
+          imageSource={cover}
+        />
+      
+    </PageLayout>
+    
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    padding: 20,
-  },
+  
 });

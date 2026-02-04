@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, SafeAreaView, View, ViewProps } from 'react-native';
+import { StyleSheet, View, ViewProps } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface PageLayoutProps extends ViewProps {
   children: React.ReactNode;

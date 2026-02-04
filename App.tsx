@@ -7,6 +7,7 @@ import { LoginScreen } from './src/screens/LoginScreen';
 import { RegisterScreen } from './src/screens/RegisterScreen';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { colors } from './src/theme';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const queryClient = new QueryClient();
 
@@ -46,8 +47,10 @@ function AppContent() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
-      <StatusBar style="auto" />
+      <SafeAreaProvider>
+        <AppContent />
+        <StatusBar style="auto" />
+      </SafeAreaProvider>
     </QueryClientProvider>
   );
 }

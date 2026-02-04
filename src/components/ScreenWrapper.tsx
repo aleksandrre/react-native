@@ -17,7 +17,6 @@ export const ScreenWrapper: React.FC<ScreenWrapperProps> = ({ children, style, .
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     padding: 10,
     backgroundColor: colors.dark,
   },
