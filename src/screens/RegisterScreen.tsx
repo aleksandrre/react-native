@@ -19,8 +19,20 @@ export const RegisterScreen: React.FC = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const registerMutation = useRegister();
 
+  const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  const validateEmail = (emailValue: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailValue.length === 0) {
+      setEmailError('');
+    } else if (!emailRegex.test(emailValue)) {
+      setEmailError('Please enter a valid email');
+    } else {
+      setEmailError('');
+    }
+  };
 
   const validatePassword = (pwd: string) => {
     if (pwd.length > 0 && pwd.length < 6) {
@@ -54,6 +66,12 @@ export const RegisterScreen: React.FC = () => {
   const handleRegister = () => {
     if (!name || !email || !phone || !password || !confirmPassword) {
       Alert.alert('შეცდომა', 'გთხოვთ შეავსოთ ყველა ველი');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError('Please enter a valid email');
       return;
     }
 
@@ -94,9 +112,13 @@ export const RegisterScreen: React.FC = () => {
             label="Email*"
             placeholder="Email"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(text) => {
+              setEmail(text);
+              validateEmail(text);
+            }}
             keyboardType="email-address"
             autoCapitalize="none"
+            error={emailError}
           />
 
           <LabeledInputField
@@ -174,7 +196,7 @@ const styles = StyleSheet.create({
     lineHeight: 23
   },
   termsContainer: {
-    paddingLeft: 10,
+    paddingLeft: 9,
     marginBottom: 10,
     height: 34,
     display: 'flex',
@@ -188,7 +210,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   linkText: {
-    color: colors.primary,
+    color: colors.lightPurple,
   },
   
   linkContainer: {
@@ -199,7 +221,7 @@ const styles = StyleSheet.create({
     lineHeight:18,
   },
   footerLink: {
-    color: colors.primary,
+    color: colors.lightPurple,
   },
 });
 

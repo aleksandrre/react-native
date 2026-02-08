@@ -44,17 +44,19 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 6,
+    alignItems: 'flex-end',
+    marginTop: 4,
+    paddingLeft:9
   },
   errorIcon: {
     color: '#FFD700',
     fontSize: 14,
-    marginRight: 6,
+    marginRight: 4,
   },
   errorText: {
-    color: colors.primary,
+    color: colors.lightPurple,
     fontSize: 12,
+    lineHeight: 15,
   },
 });
 
