@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useRegister } from '../hooks';
 import { CustomButton, InputField, Header } from '../components';
 import { colors } from '../theme';
+import { AuthStackParamList } from '../navigation/AuthNavigator';
 
-interface RegisterScreenProps {
-  onNavigateToLogin: () => void;
-}
+type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>;
 
-export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onNavigateToLogin }) => {
+export const RegisterScreen: React.FC = () => {
+  const navigation = useNavigation<RegisterScreenNavigationProp>();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,7 +55,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onNavigateToLogi
         isLoading={registerMutation.isPending}
       />
 
-      <TouchableOpacity onPress={onNavigateToLogin} style={styles.linkContainer}>
+      <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.linkContainer}>
         <Text style={styles.linkText}>უკვე გაქვს ანგარიში? შესვლა</Text>
       </TouchableOpacity>
     </View>

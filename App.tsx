@@ -1,21 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuthStore } from './src/store/authStore';
-import { LoginScreen } from './src/screens/LoginScreen';
-import { RegisterScreen } from './src/screens/RegisterScreen';
-import { MainNavigator } from './src/navigation';
+import { MainNavigator, AuthNavigator } from './src/navigation';
 import { colors } from './src/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const queryClient = new QueryClient();
 
-type Screen = 'login' | 'register';
-
 function AppContent() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('login');
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
 
   useEffect(() => {
@@ -32,12 +27,10 @@ function AppContent() {
 
   return (
     <NavigationContainer>
-      {!isAuthenticated ? (
+      {isAuthenticated ? (
         <MainNavigator />
-      ) : currentScreen === 'login' ? (
-        <LoginScreen onNavigateToRegister={() => setCurrentScreen('register')} />
       ) : (
-        <RegisterScreen onNavigateToLogin={() => setCurrentScreen('login')} />
+        <AuthNavigator />
       )}
     </NavigationContainer>
   );

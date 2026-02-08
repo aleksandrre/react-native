@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useLogin } from '../hooks';
 import { CustomButton, InputField, Header, ScreenWrapper, PageLayout } from '../components';
 import { colors } from '../theme';
+import { AuthStackParamList } from '../navigation/AuthNavigator';
 
-interface LoginScreenProps {
-  onNavigateToRegister: () => void;
-}
+type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigateToRegister }) => {
+export const LoginScreen: React.FC = () => {
+  const navigation = useNavigation<LoginScreenNavigationProp>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const loginMutation = useLogin();
@@ -46,7 +48,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigateToRegister }
           isLoading={loginMutation.isPending}
         />
 
-        <TouchableOpacity onPress={onNavigateToRegister} style={styles.linkContainer}>
+        <TouchableOpacity onPress={() => navigation.navigate('Register')} style={styles.linkContainer}>
           <Text style={styles.linkText}>არ გაქვს ანგარიში? რეგისტრაცია</Text>
         </TouchableOpacity>
       </ScreenWrapper>
