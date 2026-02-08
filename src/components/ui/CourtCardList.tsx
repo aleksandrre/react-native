@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { CourtCard } from './CourtCard';
 import { Booking } from '../../types';
-import { colors } from '../../theme';
+import { colors, typography } from '../../theme';
 
 interface CourtCardListProps {
   title: string;
@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.dark,
     marginBottom: 12,
+    fontFamily: typography.fontFamilyBold,
   },
   cardsContainer: {
     width: '100%',

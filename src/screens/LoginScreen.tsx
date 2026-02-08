@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useLogin } from '../hooks';
 import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout } from '../components';
-import { colors } from '../theme';
+import { colors, typography } from '../theme';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
     color: colors.white,
     marginBottom: 18,
     lineHeight: 23,
+    fontFamily: typography.fontFamilyBold,
   },
   buttonsContainer: {
     marginTop: 'auto',

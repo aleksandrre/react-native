@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useRegister } from '../hooks';
 import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout, Checkbox } from '../components';
-import { colors } from '../theme';
+import { colors, typography } from '../theme';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>;
@@ -193,7 +193,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.white,
     marginBottom: 18,
-    lineHeight: 23
+    lineHeight: 23,
+    fontFamily: typography.fontFamilyBold,
   },
   termsContainer: {
     paddingLeft: 9,
@@ -208,9 +209,11 @@ const styles = StyleSheet.create({
     lineHeight:15,
     flex: 1,
     flexWrap: 'wrap',
+    fontFamily: typography.fontFamily,
   },
   linkText: {
     color: colors.lightPurple,
+    fontFamily: typography.fontFamily,
   },
   
   linkContainer: {
@@ -219,9 +222,11 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 14,
     lineHeight:18,
+    fontFamily: typography.fontFamily,
   },
   footerLink: {
     color: colors.lightPurple,
+    fontFamily: typography.fontFamily,
   },
 });
 

@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
-import { colors } from '../theme';
+import { colors, typography } from '../theme';
 
 type OnboardingScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Onboarding'>;
 
@@ -65,6 +65,7 @@ const styles = StyleSheet.create({
     fontSize: 27,
     color: colors.white,
     textAlign: 'left',
+    fontFamily: typography.fontFamily,
   },
   image: {
     width: '100%',
@@ -86,6 +87,7 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: colors.white,
     fontSize: 16,
+    fontFamily: typography.fontFamily,
   },
   
 });

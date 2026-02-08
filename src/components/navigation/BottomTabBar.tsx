@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors } from '../../theme';
+import { colors, typography } from '../../theme';
 
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 10,
         color: colors.textGray,
+        fontFamily: typography.fontFamily,
     },
     labelFocused: {
         color: colors.white,

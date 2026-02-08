@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   TouchableOpacityProps,
 } from 'react-native';
-import { colors } from '../../theme';
+import { colors, typography } from '../../theme';
 
 interface CustomButtonProps extends TouchableOpacityProps {
   title: string;
@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-
     fontSize: 16,
+    fontFamily: typography.fontFamily,
   },
 });
 

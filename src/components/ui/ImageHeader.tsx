@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, ImageBackground, View } from 'react-native';
-import { colors } from '../../theme';
+import { colors, typography } from '../../theme';
 
 interface ImageHeaderProps {
   title: string;
@@ -33,9 +33,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 40,
     lineHeight:70,
-
     color: colors.white,
     textAlign: 'center',
+    fontFamily: typography.fontFamily,
   },
 });
 

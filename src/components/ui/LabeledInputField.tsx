@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInputProps } from 'react-native';
 import { InputField } from './InputField';
-import { colors } from '../../theme';
+import { colors, typography } from '../../theme';
 
 interface LabeledInputFieldProps extends TextInputProps {
   label: string;
@@ -37,7 +37,8 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 14,
     marginBottom: 12,
-    lineHeight:18
+    lineHeight:18,
+    fontFamily: typography.fontFamily,
   },
   input: {
     marginBottom: 0,
@@ -57,6 +58,7 @@ const styles = StyleSheet.create({
     color: colors.lightPurple,
     fontSize: 12,
     lineHeight: 15,
+    fontFamily: typography.fontFamily,
   },
 });
 

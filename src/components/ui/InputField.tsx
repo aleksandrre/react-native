@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextInput, StyleSheet, TextInputProps } from 'react-native';
-import { colors } from '../../theme';
+import { colors, typography } from '../../theme';
 
 interface InputFieldProps extends TextInputProps {}
 
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.lightGray,
     color: colors.white,
+    fontFamily: typography.fontFamily,
   },
 });
 

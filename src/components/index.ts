@@ -3,6 +3,7 @@ export * from './layout/PageLayout';
 export * from './layout/ScreenWrapper';
 
 // UI components
+export * from './ui/Text';
 export * from './ui/CustomButton';
 export * from './ui/InputField';
 export * from './ui/LabeledInputField';

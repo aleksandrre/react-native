@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { PageLayout, ScreenWrapper } from '../components';
-import { colors } from '../theme';
+import { colors, typography } from '../theme';
 
 export const BookScreen: React.FC = () => {
   return (
@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: colors.dark,
+    fontFamily: typography.fontFamilyBold,
   },
 });
 
