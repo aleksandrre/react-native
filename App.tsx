@@ -35,7 +35,7 @@ function AppContent() {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? (
+      {!isAuthenticated ? (
         <MainNavigator />
       ) : (
         <AuthNavigator />
