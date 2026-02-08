@@ -30,22 +30,16 @@ function AppContent() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <NavigationContainer>
-        <MainNavigator />
-      </NavigationContainer>
-    );
-  }
-
   return (
-    <>
-      {currentScreen === 'login' ? (
+    <NavigationContainer>
+      {!isAuthenticated ? (
+        <MainNavigator />
+      ) : currentScreen === 'login' ? (
         <LoginScreen onNavigateToRegister={() => setCurrentScreen('register')} />
       ) : (
         <RegisterScreen onNavigateToLogin={() => setCurrentScreen('login')} />
       )}
-    </>
+    </NavigationContainer>
   );
 }
 

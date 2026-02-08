@@ -17,8 +17,10 @@ export const MainNavigator: React.FC = () => {
   return (
     <Tab.Navigator
       tabBar={(props) => <BottomTabBar {...props} />}
+      detachInactiveScreens={false}
       screenOptions={{
         headerShown: false,
+        freezeOnBlur: false,
       }}
     >
       <Tab.Screen name="Book" component={BookScreen} />
