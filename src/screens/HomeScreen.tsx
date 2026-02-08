@@ -1,10 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { useAuthStore } from '../store/authStore';
-import { CourtCardList } from '../components';
-import { PageLayout } from '../components/PageLayout';
-import { ScreenWrapper } from '../components/ScreenWrapper';
-import { ImageHeader } from '../components/ImageHeader';
+import { CourtCardList, PageLayout, ScreenWrapper, ImageHeader } from '../components';
 import { Booking } from '../types';
 import cover from '../../assets/cover.png';
 export const HomeScreen: React.FC = () => {
