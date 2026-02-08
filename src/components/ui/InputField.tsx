@@ -16,13 +16,15 @@ export const InputField: React.FC<InputFieldProps> = ({ style, ...props }) => {
 
 const styles = StyleSheet.create({
   input: {
-    backgroundColor: colors.white,
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 15,
-    fontSize: 16,
+    backgroundColor: colors.dark,
+    padding:8,
+    borderRadius: 5,
+    marginBottom: 12,
+    height:34,
+    fontSize: 14,
     borderWidth: 1,
     borderColor: colors.lightGray,
+    color: colors.white,
   },
 });
 
