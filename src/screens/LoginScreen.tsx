@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useLogin } from '../hooks';
-import { CustomButton, InputField, Header } from '../components';
+import { CustomButton, InputField, Header, ScreenWrapper, PageLayout } from '../components';
 import { colors } from '../theme';
-import { ScreenWrapper, } from '../components/ScreenWrapper';
-import { PageLayout } from '../components/PageLayout';
 
 interface LoginScreenProps {
   onNavigateToRegister: () => void;

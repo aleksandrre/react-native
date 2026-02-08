@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { colors } from '../theme';
+import { colors } from '../../theme';
 
 interface HeaderProps {
   title: string;
@@ -45,4 +45,5 @@ const getStyles = (variant: 'left' | 'right') => StyleSheet.create({
   
   
 });
+
 

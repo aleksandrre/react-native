@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextInput, StyleSheet, TextInputProps } from 'react-native';
-import { colors } from '../theme';
+import { colors } from '../../theme';
 
 interface InputFieldProps extends TextInputProps {}
 
@@ -25,4 +25,5 @@ const styles = StyleSheet.create({
     borderColor: colors.lightGray,
   },
 });
+
 
