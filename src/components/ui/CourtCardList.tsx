@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { CourtCard } from './CourtCard';
-import { Booking } from '../types';
-import { colors } from '../theme';
+import { Booking } from '../../types';
+import { colors } from '../../theme';
 
 interface CourtCardListProps {
   title: string;
@@ -43,4 +43,5 @@ const styles = StyleSheet.create({
     gap: 12,
   },
 });
+
 

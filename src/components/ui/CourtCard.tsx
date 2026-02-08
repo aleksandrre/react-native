@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground } from 'react-native';
-import { colors } from '../theme';
-import courtLogo from '../../assets/court_logo.png';
+import { colors } from '../../theme';
+import courtLogo from '../../../assets/court_logo.png';
 
 interface CourtCardProps {
   courtNumber: string;
@@ -74,4 +74,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, ImageBackground, View } from 'react-native';
-import { colors } from '../theme';
+import { colors } from '../../theme';
 
 interface ImageHeaderProps {
   title: string;
@@ -38,3 +38,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+
