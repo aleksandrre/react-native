@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../../theme';
 
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
+    const insets = useSafeAreaInsets();
     const getIconName = (routeName: string, isFocused: boolean): keyof typeof Ionicons.glyphMap => {
         switch (routeName) {
             case 'Book':
@@ -20,7 +22,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { paddingBottom: Math.max(insets.bottom, 9) }]}>
             {state.routes.map((route, index) => {
                 const { options } = descriptors[route.key];
                 const label = options.tabBarLabel !== undefined
@@ -71,9 +73,9 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         backgroundColor: colors.primary,
-        height: 56,
+        minHeight: 56,
         paddingHorizontal: 24,
-        paddingVertical: 9,
+        paddingTop: 9,
         borderTopWidth: 1,
         borderTopColor: 'rgba(96, 35, 90, 0.5)',
         alignItems: 'center',
