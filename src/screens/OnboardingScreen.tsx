@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import { colors, typography } from '../theme';
+import onboardImage from '../../assets/onboard.png';
 
 type OnboardingScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Onboarding'>;
 
@@ -22,7 +23,7 @@ export const OnboardingScreen: React.FC = () => {
         </Text>
         
         <Image 
-          source={require('../../assets/onboard.png')} 
+          source={onboardImage} 
           style={styles.image}
           resizeMode="cover"
         />

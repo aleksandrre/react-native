@@ -3,6 +3,7 @@ import { View, Image, StyleSheet, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
+import splashImage from '../../assets/SplashScreen.png';
 
 type SplashScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Splash'>;
 
@@ -22,7 +23,7 @@ export const SplashScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Image 
-        source={require('../../assets/SplashScreen.png')} 
+        source={splashImage} 
         style={styles.backgroundImage}
         resizeMode="cover"
       />
