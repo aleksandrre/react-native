@@ -1,14 +1,24 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { PageLayout, ScreenWrapper } from '../components';
-import { colors, typography } from '../theme';
+import React, { useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { PageLayout, ScreenWrapper, DateSelector } from '../components';
+import { colors } from '../theme';
 
 export const BookScreen: React.FC = () => {
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+
+  const handleDateSelect = (date: Date) => {
+    setSelectedDate(date);
+    console.log('Selected date:', date);
+  };
+
   return (
     <PageLayout>
       <ScreenWrapper>
         <View style={styles.container}>
-          <Text style={styles.title}>Book</Text>
+          <DateSelector
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+          />
         </View>
       </ScreenWrapper>
     </PageLayout>
@@ -18,14 +28,7 @@ export const BookScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: colors.white,
-    fontFamily: typography.fontFamilyBold,
+    backgroundColor: colors.dark,
   },
 });
 
