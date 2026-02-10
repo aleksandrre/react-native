@@ -14,21 +14,14 @@ export const BookScreen: React.FC = () => {
   return (
     <PageLayout>
       <ScreenWrapper>
-        <View style={styles.container}>
           <DateSelector
             selectedDate={selectedDate}
             onDateSelect={handleDateSelect}
           />
-        </View>
       </ScreenWrapper>
     </PageLayout>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.dark,
-  },
-});
+
 

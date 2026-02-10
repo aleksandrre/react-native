@@ -238,14 +238,14 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.dark,
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
   title: {
     fontSize: 18,
+    lineHeight:23,
     fontFamily: typography.fontFamilySemiBold,
     color: colors.white,
-    marginBottom: 24,
-    marginLeft: 20,
+    marginBottom: 10,
   },
   datePickerContainer: {
     position: 'relative',
@@ -259,13 +259,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   monthLabelCell: {
+    
     height: MONTH_LABEL_HEIGHT,
     width: DAY_WIDTH,
     justifyContent: 'center',
     alignItems: 'center',
   },
   monthText: {
-    fontSize: 14,
+    fontSize: 8,
+    lineHeight:10,
     fontFamily: typography.fontFamilyMedium,
     color: colors.white,
   },
@@ -354,7 +356,6 @@ const styles = StyleSheet.create({
   },
   arrowLeft: {
     position: 'absolute',
-    left: 6,
     top: MONTH_LABEL_HEIGHT + 8 + 20 + 4,
     zIndex: 3,
     width: 32,
@@ -364,7 +365,7 @@ const styles = StyleSheet.create({
   },
   arrowRight: {
     position: 'absolute',
-    right: 6,
+    right: 0,
     top: MONTH_LABEL_HEIGHT + 8 + 20 + 4,
     zIndex: 3,
     width: 32,
