@@ -24,7 +24,6 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DAY_WIDTH = 52;
 const DAYS_TO_SHOW = 60;
 const EDGE_BLOCK_WIDTH = 44;
-const SCROLL_SIDE_PADDING = EDGE_BLOCK_WIDTH;
 const MONTH_LABEL_HEIGHT = 20;
 
 interface DateSelectorProps {
@@ -61,9 +60,16 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
     });
   }, [dates]);
 
-  const maxScrollX = useMemo(() => {
-    const contentWidth = dates.length * DAY_WIDTH + SCROLL_SIDE_PADDING * 2;
-    return Math.max(0, contentWidth - viewportWidth);
+  // Compute right padding so max scroll is a clean multiple of DAY_WIDTH
+  const { maxScrollX, rightPadding } = useMemo(() => {
+    const rawContentWidth =
+      dates.length * DAY_WIDTH + EDGE_BLOCK_WIDTH * 2;
+    const rawMax = Math.max(0, rawContentWidth - viewportWidth);
+    const snappedMax = Math.ceil(rawMax / DAY_WIDTH) * DAY_WIDTH;
+    return {
+      maxScrollX: snappedMax,
+      rightPadding: EDGE_BLOCK_WIDTH + (snappedMax - rawMax),
+    };
   }, [dates.length, viewportWidth]);
 
   useEffect(() => {
@@ -74,7 +80,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
       setTimeout(() => {
         // Center selected date in the visible area between edge blocks
         const idealX =
-          SCROLL_SIDE_PADDING +
+          EDGE_BLOCK_WIDTH +
           selectedIndex * DAY_WIDTH +
           DAY_WIDTH / 2 -
           viewportWidth / 2;
@@ -126,7 +132,10 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
           ref={scrollViewRef}
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingRight: rightPadding },
+          ]}
           onScroll={handleScroll}
           scrollEventThrottle={16}
           onLayout={(e) => setViewportWidth(e.nativeEvent.layout.width)}
@@ -243,7 +252,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   scrollContent: {
-    paddingHorizontal: SCROLL_SIDE_PADDING,
+    paddingLeft: EDGE_BLOCK_WIDTH,
   },
   dateColumn: {
     width: DAY_WIDTH,
