@@ -29,10 +29,11 @@ export const BookScreen: React.FC = () => {
           selectedDate={selectedDate}
           onDateSelect={handleDateSelect}
         />
-          <TimeSlotSelector
-            onSlotsSelect={handleSlotsSelect}
-            maxSelections={3}
-          />
+        <TimeSlotSelector
+          onSlotsSelect={handleSlotsSelect}
+          maxSelections={3}
+        />
+       
       </ScreenWrapper>
     </PageLayout>
   );
