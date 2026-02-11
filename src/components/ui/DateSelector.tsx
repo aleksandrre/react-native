@@ -21,9 +21,9 @@ import {
 import { colors, typography } from '../../theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const DAY_WIDTH = 52;
+const DAY_WIDTH = 45;
 const DAYS_TO_SHOW = 60;
-const EDGE_BLOCK_WIDTH = 44;
+const EDGE_BLOCK_WIDTH = 25;
 const MONTH_LABEL_HEIGHT = 20;
 
 interface DateSelectorProps {
@@ -216,7 +216,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
           activeOpacity={0.7}
           disabled={scrollX <= 0}
         >
-          <Ionicons name="chevron-back" size={24} color={colors.white} />
+          <Ionicons name="chevron-back" size={14} color={colors.white} />
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -228,7 +228,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
           activeOpacity={0.7}
           disabled={scrollX >= maxScrollX}
         >
-          <Ionicons name="chevron-forward" size={24} color={colors.white} />
+          <Ionicons name="chevron-forward" size={14} color={colors.white} />
         </TouchableOpacity>
       </View>
     </View>
@@ -287,13 +287,14 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   dayOfWeek: {
-    fontSize: 12,
+    fontSize: 8,
+    lineHeight:10,
     color: colors.lightGray,
     marginBottom: 8,
   },
   dateCircle: {
-    width: 40,
-    height: 40,
+    width: 34,
+    height: 34,
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
@@ -308,7 +309,8 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   dateNumber: {
-    fontSize: 16,
+    fontSize: 14,
+    lineHeight:18,
     fontFamily: typography.fontFamilyMedium,
     color: colors.lightGray,
   },
@@ -335,11 +337,12 @@ const styles = StyleSheet.create({
   },
   edgeBlockLeft: {
     position: 'absolute',
+    backgroundColor: colors.dark,
     left: 0,
     top: 0,
     bottom: 0,
     width: EDGE_BLOCK_WIDTH,
-    backgroundColor: colors.dark,
+    // backgroundColor: colors.dark,
     zIndex: 2,
   },
   edgeBlockRight: {
@@ -356,20 +359,21 @@ const styles = StyleSheet.create({
   },
   arrowLeft: {
     position: 'absolute',
-    top: MONTH_LABEL_HEIGHT + 8 + 20 + 4,
+    bottom: 0,
     zIndex: 3,
-    width: 32,
-    height: 32,
+    width: 14,
+    height: 34,
     alignItems: 'center',
     justifyContent: 'center',
   },
   arrowRight: {
     position: 'absolute',
     right: 0,
-    top: MONTH_LABEL_HEIGHT + 8 + 20 + 4,
+    bottom: 0,
+
     zIndex: 3,
-    width: 32,
-    height: 32,
+    width: 14,
+    height: 34,
     alignItems: 'center',
     justifyContent: 'center',
   },
