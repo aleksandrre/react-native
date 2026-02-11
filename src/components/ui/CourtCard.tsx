@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground } from 'react-native';
-import { colors } from '../../theme';
+import { colors, typography } from '../../theme';
 import courtLogo from '../../../assets/court_logo.png';
 
 interface CourtCardProps {
@@ -50,13 +50,15 @@ const styles = StyleSheet.create({
   courtLabel: {
     color: colors.white,
     fontSize: 13,
-    lineHeight:13
+    lineHeight:13,
+    fontFamily: typography.fontFamily,
   },
   courtNumber: {
     color: colors.white,
     fontSize: 40,
     lineHeight:37,
     fontWeight: 'bold',
+    fontFamily: typography.fontFamilyBold,
   },
   dateTimeSection: {
     flex: 1,
@@ -67,11 +69,13 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 14,
     marginBottom: 10,
+    fontFamily: typography.fontFamily,
   },
   timeText: {
     color: colors.white,
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: typography.fontFamilyBold,
   },
 });
 

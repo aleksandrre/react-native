@@ -8,8 +8,7 @@ interface PageLayoutProps extends ViewProps {
 
 export const PageLayout: React.FC<PageLayoutProps> = ({ children, style, ...props }) => {
   return (
-    // SafeAreaView უზრუნველყოფს, რომ კონტენტი Notch-ის ქვეშ არ მოექცეს
-    <SafeAreaView style={[styles.mainContainer, style]}>
+    <SafeAreaView style={[styles.mainContainer, style]} edges={['top', 'left', 'right',]}>
       {children}
     </SafeAreaView>
   );

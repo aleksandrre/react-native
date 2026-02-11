@@ -1,23 +1,47 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useLogin } from '../hooks';
-import { CustomButton, InputField, Header, ScreenWrapper, PageLayout } from '../components';
-import { colors } from '../theme';
+import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout } from '../components';
+import { colors, typography } from '../theme';
+import { AuthStackParamList } from '../navigation/AuthNavigator';
 
-interface LoginScreenProps {
-  onNavigateToRegister: () => void;
-}
+type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
-export const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigateToRegister }) => {
+export const LoginScreen: React.FC = () => {
+  const navigation = useNavigation<LoginScreenNavigationProp>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
   const loginMutation = useLogin();
+
+  const validateEmail = (emailValue: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailValue.length > 0 && !emailRegex.test(emailValue)) {
+      setEmailError('Please enter a valid email');
+    } else {
+      setEmailError('');
+    }
+  };
+
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    validateEmail(text);
+  };
 
   const handleLogin = () => {
     if (!email || !password) {
       Alert.alert('შეცდომა', 'გთხოვთ შეავსოთ ყველა ველი');
       return;
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError('Please enter a valid email');
+      return;
+    }
+
     loginMutation.mutate({ email, password });
   };
 
@@ -25,33 +49,50 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onNavigateToRegister }
     <PageLayout style={styles.mainContainer}>
       <Header title="Skip for now" variant="right" />
       <ScreenWrapper>
-        <InputField
-          placeholder="ელ. ფოსტა"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+        <ScrollView 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          <View style={styles.formContainer}>
+            <Text style={styles.title}>Welcome back! Log in:</Text>
 
-        <InputField
-          placeholder="პაროლი"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+            <LabeledInputField
+              label="Email"
+              placeholder="Email"
+              value={email}
+              onChangeText={handleEmailChange}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              error={emailError}
+            />
 
-        <CustomButton
-          title="შესვლა"
-          onPress={handleLogin}
-          isLoading={loginMutation.isPending}
-        />
+            <LabeledInputField
+              label="Password"
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+          </View>
 
-        <TouchableOpacity onPress={onNavigateToRegister} style={styles.linkContainer}>
-          <Text style={styles.linkText}>არ გაქვს ანგარიში? რეგისტრაცია</Text>
-        </TouchableOpacity>
+          <View style={styles.buttonsContainer}>
+            <CustomButton
+              title="Log in"
+              onPress={handleLogin}
+              isLoading={loginMutation.isPending}
+              style={styles.loginButton}
+            />
+
+            <CustomButton
+              title="Sign up"
+              onPress={() => navigation.navigate('Register')}
+              variant="secondary"
+              style={styles.signUpButton}
+            />
+          </View>
+        </ScrollView>
       </ScreenWrapper>
     </PageLayout>
-
   );
 };
 
@@ -59,13 +100,29 @@ const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
   },
-
-  linkContainer: {
-    marginTop: 20,
-    alignItems: 'center',
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
   },
-  linkText: {
-    color: colors.primary,
-    fontSize: 16,
+  formContainer: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: colors.white,
+    marginBottom: 18,
+    lineHeight: 23,
+    fontFamily: typography.fontFamilyBold,
+  },
+  buttonsContainer: {
+    marginTop: 'auto',
+    paddingTop: 20,
+  },
+  loginButton: {
+    marginBottom: 0,
+  },
+  signUpButton: {
+    marginBottom: 10,
   },
 });

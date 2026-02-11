@@ -1,12 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { useAuthStore } from '../store/authStore';
 import { CourtCardList, PageLayout, ScreenWrapper, ImageHeader } from '../components';
 import { Booking } from '../types';
 import cover from '../../assets/cover.png';
-export const HomeScreen: React.FC = () => {
-  const logout = useAuthStore((state) => state.logout);
 
+export const BookingsScreen: React.FC = () => {
   const bookings: Booking[] = [
     {
       courtNumber: '3',
@@ -18,13 +16,12 @@ export const HomeScreen: React.FC = () => {
       date: 'Sat, 18 Dec 2025',
       time: '14:30',
     },
-    
   ];
 
   return (
     <PageLayout>
       <ImageHeader
-        title="Bookings!"
+        title="Bookings"
         imageSource={cover}
       />
       <ScreenWrapper>
@@ -35,3 +32,4 @@ export const HomeScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({});
+
