@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { PageLayout, ScreenWrapper, DateSelector } from '../components';
+import { PageLayout, ScreenWrapper, DateSelector, ImageHeader } from '../components';
 import { colors } from '../theme';
+import book from '../../assets/book.png';
 
 export const BookScreen: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -13,11 +14,15 @@ export const BookScreen: React.FC = () => {
 
   return (
     <PageLayout>
+      <ImageHeader
+        title="KUS TBA PADEL"
+        imageSource={book}
+      />
       <ScreenWrapper>
-          <DateSelector
-            selectedDate={selectedDate}
-            onDateSelect={handleDateSelect}
-          />
+        <DateSelector
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+        />
       </ScreenWrapper>
     </PageLayout>
   );
