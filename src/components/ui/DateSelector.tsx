@@ -238,6 +238,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.dark,
+    marginBottom: 10,
   },
   title: {
     fontSize: 18,
