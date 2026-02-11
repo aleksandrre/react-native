@@ -21,7 +21,7 @@ import {
 import { colors, typography } from '../../theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const DAY_WIDTH = 45;
+const DAY_WIDTH = Math.floor((SCREEN_WIDTH - 60) / 7);
 const DAYS_TO_SHOW = 60;
 const EDGE_BLOCK_WIDTH = 25;
 const MONTH_LABEL_HEIGHT = 20;
