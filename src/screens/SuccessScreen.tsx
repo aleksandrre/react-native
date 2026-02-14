@@ -22,7 +22,9 @@ export const SuccessScreen: React.FC = () => {
         // Navigate back to the beginning of booking flow
         const parentNav = navigation.getParent();
         if (parentNav) {
-            parentNav.navigate('Book' as never);
+            (parentNav as any).navigate('Book', {
+                screen: 'BookHome',
+            });
         }
     };
 
