@@ -31,7 +31,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({
             animationType="fade"
             onRequestClose={onSecondaryPress || onPrimaryPress}
         >
-            <BlurView intensity={10} tint="" style={styles.overlay}>
+            <BlurView intensity={10} style={styles.overlay}>
                 <View style={styles.modalContainer}>
                     <Text style={styles.title}>{title}</Text>
                     {message && <Text style={styles.message}>{message}</Text>}

@@ -13,7 +13,7 @@ type RouteParams = {
 type RescheduleRouteProp = RouteProp<RouteParams, 'Reschedule'>;
 
 export const RescheduleScreen: React.FC = () => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const route = useRoute<RescheduleRouteProp>();
     // bookingId might be needed for the actual reschedule API call later
     const { bookingId } = route.params || {};
@@ -32,15 +32,11 @@ export const RescheduleScreen: React.FC = () => {
 
     const handleContinue = () => {
         if (selectedSlots.length === 1) {
-            // TODO: Navigate to court selection or confirm reschedule
-            console.log('Continue with reschedule:', { date: selectedDate, slot: selectedSlots[0], bookingId });
-
-            // For now, since "Court Selection" is mentioned as "future", 
-            // maybe we just log it or navigate somewhere.
-            // The user said: "and in the future court also", implies maybe just selecting time is enough for now 
-            // or the next screen handles court. 
-            // Given the prompt "If navigating from RescheduleScreen...", it implies there is a next step.
-            // But for this task, I just need to create the screen.
+            navigation.navigate('RescheduleCourt', {
+                selectedDate: selectedDate.toISOString(),
+                selectedSlots,
+                bookingId
+            });
         }
     };
 
