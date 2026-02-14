@@ -65,7 +65,6 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <AppContent />
-        <StatusBar style="auto" />
       </SafeAreaProvider>
     </QueryClientProvider>
   );
