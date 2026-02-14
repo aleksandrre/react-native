@@ -8,23 +8,24 @@ interface CourtCardProps {
   date: string;
   time: string;
   onPress?: () => void;
+  cancelled?: boolean;
 }
 
-export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, onPress }) => {
+export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, onPress, cancelled }) => {
   const CardContent = (
-    <View style={styles.container}>
+    <View style={[styles.container, cancelled && styles.containerCancelled]}>
       <ImageBackground
         source={courtLogo}
-        style={styles.courtSection}
-        imageStyle={styles.courtImage}
+        style={[styles.courtSection, cancelled && styles.courtSectionCancelled]}
+        imageStyle={[styles.courtImage, cancelled && styles.courtImageCancelled]}
       >
-        <Text style={styles.courtLabel}>court</Text>
-        <Text style={styles.courtNumber}>{courtNumber}</Text>
+        <Text style={[styles.courtLabel, cancelled && styles.textCancelled]}>court</Text>
+        <Text style={[styles.courtNumber, cancelled && styles.textCancelled]}>{courtNumber}</Text>
       </ImageBackground>
 
       <View style={styles.dateTimeSection}>
-        <Text style={styles.dateText}>{date}</Text>
-        <Text style={styles.timeText}>{time}</Text>
+        <Text style={[styles.dateText, cancelled && styles.textStrikethrough]}>{date}</Text>
+        <Text style={[styles.timeText, cancelled && styles.textStrikethrough]}>{time}</Text>
       </View>
     </View>
   );
@@ -87,6 +88,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     fontFamily: typography.fontFamilyBold,
+  },
+  containerCancelled: {
+    opacity: 0.6,
+  },
+  courtSectionCancelled: {
+    opacity: 0.8,
+  },
+  courtImageCancelled: {
+    opacity: 0.5,
+  },
+  textCancelled: {
+    color: colors.gray,
+  },
+  textStrikethrough: {
+    textDecorationLine: 'line-through',
+    color: colors.gray,
   },
 });
 

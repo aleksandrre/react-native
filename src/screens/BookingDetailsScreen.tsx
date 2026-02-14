@@ -18,7 +18,7 @@ type RouteParams = {
 type BookingDetailsRouteProp = RouteProp<RouteParams, 'BookingDetails'>;
 
 export const BookingDetailsScreen: React.FC = () => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const route = useRoute<BookingDetailsRouteProp>();
 
     const { courtNumber, date, time, status, bookingId, isPast } = route.params;
@@ -37,8 +37,7 @@ export const BookingDetailsScreen: React.FC = () => {
     };
 
     const handleRescheduleBooking = () => {
-        console.log('Reschedule booking');
-        // TODO: Reschedule functionality
+        navigation.navigate('Reschedule', { bookingId });
     };
 
     const handleCancelBooking = () => {

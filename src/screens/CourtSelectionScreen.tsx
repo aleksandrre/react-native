@@ -4,7 +4,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
-import { PageLayout, ScreenWrapper, CustomButton, Header } from '../components';
+import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
 
@@ -20,8 +20,6 @@ type CourtSelectionRouteProp = RouteProp<RouteParams, 'CourtSelection'>;
 interface CourtSelection {
   [timeSlot: string]: string | null; // courtId or null
 }
-
-const COURTS = ['Court 1', 'Court 2', 'Court 3', 'Court 4', 'Court 5', 'Court 6', 'Court 7', 'Court 8'];
 
 const getOrdinalSuffix = (day: number): string => {
   if (day > 3 && day < 21) return 'th';
@@ -105,52 +103,11 @@ export const CourtSelectionScreen: React.FC = () => {
         </Text>
 
         {/* Courts Grid */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-        >
-          {selectedSlots.map((timeSlot) => (
-            <View key={timeSlot} style={styles.timeColumn}>
-              {/* Time Header */}
-              <View style={styles.timeHeader}>
-                <Text style={styles.timeText}>{timeSlot}</Text>
-                <View style={styles.timeDivider} />
-              </View>
-
-              {/* Courts */}
-              {COURTS.map((court) => {
-                const courtId = `${timeSlot}-${court}`;
-                const isSelected = selectedCourts[timeSlot] === courtId;
-                const isDisabled = Math.random() > 0.6; // Mock availability
-
-                return (
-                  <TouchableOpacity
-                    key={court}
-                    style={[
-                      styles.courtButton,
-                      isSelected && styles.courtButtonSelected,
-                      isDisabled && styles.courtButtonDisabled,
-                    ]}
-                    onPress={() => handleCourtPress(timeSlot, courtId)}
-                    disabled={isDisabled}
-                    activeOpacity={0.7}
-                  >
-                    <Text
-                      style={[
-                        styles.courtText,
-                        isSelected && styles.courtTextSelected,
-                        isDisabled && styles.courtTextDisabled,
-                      ]}
-                    >
-                      {court}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          ))}
-        </ScrollView>
+        <CourtSelector
+          selectedSlots={selectedSlots}
+          selectedCourts={selectedCourts}
+          onCourtSelect={handleCourtPress}
+        />
 
         {/* Continue Button */}
         <View style={styles.buttonContainer}>

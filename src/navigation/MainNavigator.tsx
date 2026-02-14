@@ -7,6 +7,9 @@ import { SummaryScreen } from '../screens/SummaryScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
 import { BookingsScreen } from '../screens/BookingsScreen';
 import { BookingDetailsScreen } from '../screens/BookingDetailsScreen';
+import { RescheduleScreen } from '../screens/RescheduleScreen';
+import { RescheduleCourtScreen } from '../screens/RescheduleCourtScreen';
+import { RescheduleSummaryScreen } from '../screens/RescheduleSummaryScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { BottomTabBar } from '../components/navigation';
 import { Booking } from '../types';
@@ -47,6 +50,32 @@ export type BookingsStackParamList = {
     bookingId: string;
     isPast: boolean;
   };
+  Reschedule: {
+    bookingId: string;
+  };
+  RescheduleCourt: {
+    selectedDate: Date;
+    selectedSlots: string[];
+    bookingId: string;
+  };
+  RescheduleSummary: {
+    bookingId: string;
+    oldBooking: {
+      courtNumber: string;
+      date: string;
+      time: string;
+    };
+    newBooking: {
+      courtNumber: string;
+      date: string;
+      time: string;
+    };
+  };
+  Success: {
+    bookings: Booking[];
+    bookingId: string;
+    isSingleBooking?: boolean;
+  };
 };
 
 export type MainTabParamList = {
@@ -84,6 +113,10 @@ const BookingsStackNavigator: React.FC = () => {
     >
       <BookingsStack.Screen name="BookingsHome" component={BookingsScreen} />
       <BookingsStack.Screen name="BookingDetails" component={BookingDetailsScreen} />
+      <BookingsStack.Screen name="Reschedule" component={RescheduleScreen} />
+      <BookingsStack.Screen name="RescheduleCourt" component={RescheduleCourtScreen} />
+      <BookingsStack.Screen name="RescheduleSummary" component={RescheduleSummaryScreen} />
+      <BookingsStack.Screen name="Success" component={SuccessScreen} />
     </BookingsStack.Navigator>
   );
 };
