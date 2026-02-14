@@ -6,6 +6,7 @@ import { CourtSelectionScreen } from '../screens/CourtSelectionScreen';
 import { SummaryScreen } from '../screens/SummaryScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
 import { BookingsScreen } from '../screens/BookingsScreen';
+import { BookingDetailsScreen } from '../screens/BookingDetailsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { BottomTabBar } from '../components/navigation';
 import { Booking } from '../types';
@@ -26,6 +27,26 @@ export type BookStackParamList = {
     bookingId: string;
     isSingleBooking?: boolean;
   };
+  BookingDetails: {
+    courtNumber: string;
+    date: string;
+    time: string;
+    status: 'Confirmed' | 'Failed' | 'Completed';
+    bookingId: string;
+    isPast: boolean;
+  };
+};
+
+export type BookingsStackParamList = {
+  BookingsHome: undefined;
+  BookingDetails: {
+    courtNumber: string;
+    date: string;
+    time: string;
+    status: 'Confirmed' | 'Failed' | 'Completed';
+    bookingId: string;
+    isPast: boolean;
+  };
 };
 
 export type MainTabParamList = {
@@ -35,6 +56,7 @@ export type MainTabParamList = {
 };
 
 const BookStack = createNativeStackNavigator<BookStackParamList>();
+const BookingsStack = createNativeStackNavigator<BookingsStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const BookStackNavigator: React.FC = () => {
@@ -48,7 +70,21 @@ const BookStackNavigator: React.FC = () => {
       <BookStack.Screen name="CourtSelection" component={CourtSelectionScreen} />
       <BookStack.Screen name="Summary" component={SummaryScreen} />
       <BookStack.Screen name="Success" component={SuccessScreen} />
+      <BookStack.Screen name="BookingDetails" component={BookingDetailsScreen} />
     </BookStack.Navigator>
+  );
+};
+
+const BookingsStackNavigator: React.FC = () => {
+  return (
+    <BookingsStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <BookingsStack.Screen name="BookingsHome" component={BookingsScreen} />
+      <BookingsStack.Screen name="BookingDetails" component={BookingDetailsScreen} />
+    </BookingsStack.Navigator>
   );
 };
 
@@ -63,7 +99,7 @@ export const MainNavigator: React.FC = () => {
       }}
     >
       <Tab.Screen name="Book" component={BookStackNavigator} />
-      <Tab.Screen name="Bookings" component={BookingsScreen} />
+      <Tab.Screen name="Bookings" component={BookingsStackNavigator} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
