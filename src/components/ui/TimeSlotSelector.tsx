@@ -43,21 +43,21 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
 }) => {
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
 
-  const handleSlotPress = (slotId: string, available: boolean) => {
+  const handleSlotPress = (slotId: string, slotTime: string, available: boolean) => {
     if (!available) return;
 
     setSelectedSlots((prev) => {
       let newSelection: string[];
       
-      if (prev.includes(slotId)) {
+      if (prev.includes(slotTime)) {
         // Deselect
-        newSelection = prev.filter((id) => id !== slotId);
+        newSelection = prev.filter((time) => time !== slotTime);
       } else {
         // Select (if under max limit)
         if (prev.length >= maxSelections) {
           return prev; // Already at max
         }
-        newSelection = [...prev, slotId];
+        newSelection = [...prev, slotTime];
       }
       
       onSlotsSelect?.(newSelection);
@@ -74,7 +74,7 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
       >
         <View style={styles.slotsGrid}>
           {TIME_SLOTS.map((slot) => {
-            const isSelected = selectedSlots.includes(slot.id);
+            const isSelected = selectedSlots.includes(slot.time);
             const isDisabled = !slot.available;
 
             return (
@@ -85,7 +85,7 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
                     isSelected && styles.slotButtonInnerSelected,
                     isDisabled && styles.slotButtonInnerDisabled,
                   ]}
-                  onPress={() => handleSlotPress(slot.id, slot.available)}
+                  onPress={() => handleSlotPress(slot.id, slot.time, slot.available)}
                   activeOpacity={isDisabled ? 1 : 0.7}
                   disabled={isDisabled}
                 >
@@ -133,13 +133,13 @@ const styles = StyleSheet.create({
   },
   slotButtonInner: {
     paddingVertical: 8,
-    backgroundColor: colors.gray,
     alignItems: 'center',
     justifyContent: 'center',
   },
   slotButtonInnerSelected: {
     backgroundColor: colors.primary,
     borderColor: colors.lightPurple,
+    borderRadius: 23,
   },
   slotButtonInnerDisabled: {
     backgroundColor: colors.dark,

@@ -1,9 +1,19 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BookScreen } from '../screens/BookScreen';
+import { CourtSelectionScreen } from '../screens/CourtSelectionScreen';
 import { BookingsScreen } from '../screens/BookingsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { BottomTabBar } from '../components/navigation';
+
+export type BookStackParamList = {
+  BookHome: undefined;
+  CourtSelection: {
+    selectedDate: Date;
+    selectedSlots: string[];
+  };
+};
 
 export type MainTabParamList = {
   Book: undefined;
@@ -11,7 +21,21 @@ export type MainTabParamList = {
   Profile: undefined;
 };
 
+const BookStack = createNativeStackNavigator<BookStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
+
+const BookStackNavigator: React.FC = () => {
+  return (
+    <BookStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <BookStack.Screen name="BookHome" component={BookScreen} />
+      <BookStack.Screen name="CourtSelection" component={CourtSelectionScreen} />
+    </BookStack.Navigator>
+  );
+};
 
 export const MainNavigator: React.FC = () => {
   return (
@@ -23,7 +47,7 @@ export const MainNavigator: React.FC = () => {
         freezeOnBlur: false,
       }}
     >
-      <Tab.Screen name="Book" component={BookScreen} />
+      <Tab.Screen name="Book" component={BookStackNavigator} />
       <Tab.Screen name="Bookings" component={BookingsScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
