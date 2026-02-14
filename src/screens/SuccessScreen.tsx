@@ -20,7 +20,12 @@ export const SuccessScreen: React.FC = () => {
 
     const handleBookAgain = () => {
         // Navigate back to the beginning of booking flow
-        navigation.navigate('BookHome');
+        const parentNav = navigation.getParent();
+        if (parentNav) {
+            (parentNav as any).navigate('Book', {
+                screen: 'BookHome',
+            });
+        }
     };
 
     const handleBookingPress = (booking: Booking, index: number) => {
@@ -38,8 +43,13 @@ export const SuccessScreen: React.FC = () => {
     };
 
     const handleViewMyBookings = () => {
-        console.log('View my bookings');
-        // TODO: Navigate to bookings screen
+        // Navigate to Bookings tab
+        const parentNav = navigation.getParent();
+        if (parentNav) {
+            (parentNav as any).navigate('Bookings', {
+                screen: 'BookingsHome',
+            });
+        }
     };
 
     return (
