@@ -33,7 +33,7 @@ const formatSelectedDate = (date: Date): string => {
 };
 
 export const RescheduleCourtScreen: React.FC = () => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const route = useRoute<RescheduleCourtRouteProp>();
 
     // Safe fallbacks
@@ -60,8 +60,33 @@ export const RescheduleCourtScreen: React.FC = () => {
         const allSelected = selectedSlots.every((slot) => selectedCourts[slot]);
         if (!allSelected) return;
 
-        console.log('Finalizing reschedule:', { bookingId, selectedDate, selectedSlots, selectedCourts });
-        // TODO: Navigate to confirmation or success
+        // We need to fetch/know the old booking details here.
+        // For now, I'll mock them to match the screenshot or logical flow.
+        // In a real app, 'bookingId' could be used to fetch the old details, or they should be passed as params from previous screens.
+        // Assuming we passed them through OR we just mock them for this UI task.
+
+        // Constructing date strings for display
+        const formattedDate = formatSelectedDate(selectedDate); // "17th Dec 2025" style
+        // The screenshot shows "Fri, 17 Dec 2025" style. Let's try to match that formatting if possible using date-fns or similar
+        const dateStr = format(selectedDate, 'EEE, d MMM yyyy');
+
+        const newCourtId = selectedCourts[selectedSlots[0] || ''] || '';
+        // courtId is "10:00-Court 3", need to parse "Court 3" or just "3"
+        const newCourtNumber = newCourtId.split('-').pop()?.replace('Court ', '') || 'X';
+
+        navigation.navigate('RescheduleSummary', {
+            bookingId,
+            oldBooking: {
+                courtNumber: '3', // Mocked as we don't have it in params
+                date: dateStr,    // Mocked same date for demo
+                time: '10:00',    // Mocked
+            },
+            newBooking: {
+                courtNumber: newCourtNumber,
+                date: dateStr,
+                time: selectedSlots[0] || '',
+            }
+        });
     };
 
     const allSelected = selectedSlots.length > 0 && selectedSlots.every((slot) => selectedCourts[slot]);
