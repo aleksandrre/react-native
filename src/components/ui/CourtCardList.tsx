@@ -30,12 +30,11 @@ export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings })
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginTop: 20,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.dark,
+    color: colors.white,
     marginBottom: 12,
     fontFamily: typography.fontFamilyBold,
   },

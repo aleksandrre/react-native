@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BookScreen } from '../screens/BookScreen';
 import { CourtSelectionScreen } from '../screens/CourtSelectionScreen';
+import { SummaryScreen } from '../screens/SummaryScreen';
 import { BookingsScreen } from '../screens/BookingsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { BottomTabBar } from '../components/navigation';
@@ -12,6 +13,11 @@ export type BookStackParamList = {
   CourtSelection: {
     selectedDate: Date;
     selectedSlots: string[];
+  };
+  Summary: {
+    selectedDate: Date;
+    selectedSlots: string[];
+    selectedCourts: { [timeSlot: string]: string | null };
   };
 };
 
@@ -33,6 +39,7 @@ const BookStackNavigator: React.FC = () => {
     >
       <BookStack.Screen name="BookHome" component={BookScreen} />
       <BookStack.Screen name="CourtSelection" component={CourtSelectionScreen} />
+      <BookStack.Screen name="Summary" component={SummaryScreen} />
     </BookStack.Navigator>
   );
 };
