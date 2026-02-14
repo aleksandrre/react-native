@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import { PageLayout, ScreenWrapper, CustomButton, Header } from '../components';
+import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
 
 type RouteParams = {
@@ -37,8 +39,10 @@ const formatSelectedDate = (date: Date): string => {
   return `${day}${getOrdinalSuffix(day)} ${monthYear}`;
 };
 
+type CourtSelectionNavigationProp = NativeStackNavigationProp<BookStackParamList, 'CourtSelection'>;
+
 export const CourtSelectionScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<CourtSelectionNavigationProp>();
   const route = useRoute<CourtSelectionRouteProp>();
 
   // Safe fallbacks to prevent TypeError
@@ -64,8 +68,11 @@ export const CourtSelectionScreen: React.FC = () => {
     const allSelected = selectedSlots.every((slot) => selectedCourts[slot]);
     if (!allSelected) return;
 
-    console.log('Continue to summary:', { selectedDate, selectedSlots, selectedCourts });
-    // TODO: Navigate to summary screen
+    navigation.navigate('Summary', {
+      selectedDate,
+      selectedSlots,
+      selectedCourts,
+    });
   };
 
   const allSelected = selectedSlots.every((slot) => selectedCourts[slot]);

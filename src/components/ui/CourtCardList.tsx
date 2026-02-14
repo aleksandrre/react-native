@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { CourtCard } from './CourtCard';
 import { Booking } from '../../types';
 import { colors, typography } from '../../theme';
@@ -7,11 +7,13 @@ import { colors, typography } from '../../theme';
 interface CourtCardListProps {
   title: string;
   bookings: Booking[];
+  style?: ViewStyle;
+  onBookingPress?: (booking: Booking, index: number) => void;
 }
 
-export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings }) => {
+export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings, style, onBookingPress }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.cardsContainer}>
         {bookings.map((booking, index) => (
@@ -20,6 +22,7 @@ export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings })
             courtNumber={booking.courtNumber}
             date={booking.date}
             time={booking.time}
+            onPress={onBookingPress ? () => onBookingPress(booking, index) : undefined}
           />
         ))}
       </View>
@@ -30,12 +33,11 @@ export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings })
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginTop: 20,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: colors.dark,
+    color: colors.white,
     marginBottom: 12,
     fontFamily: typography.fontFamilyBold,
   },
