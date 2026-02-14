@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { PageLayout, ScreenWrapper, CustomButton, CourtCardList } from '../components';
 import { ImageHeader } from '../components/ui/ImageHeader';
 import { colors, typography } from '../theme';
@@ -10,7 +11,7 @@ import { BookStackParamList } from '../navigation/MainNavigator';
 type SuccessRouteProp = RouteProp<BookStackParamList, 'Success'>;
 
 export const SuccessScreen: React.FC = () => {
-    const navigation = useNavigation<NavigationProp<BookStackParamList>>();
+    const navigation = useNavigation<NativeStackNavigationProp<BookStackParamList>>();
     const route = useRoute<SuccessRouteProp>();
 
     const bookings = route.params?.bookings || [];
@@ -61,11 +62,11 @@ export const SuccessScreen: React.FC = () => {
                             <>
                                 <Text style={styles.subtitle}>Your booking is confirmed:</Text>
                                 <View style={styles.singleBookingInfo}>
-                                    <Text style={styles.singleBookingText}>Court {bookings[0].courtNumber}</Text>
+                                    <Text style={styles.singleBookingText}>{`Court ${bookings[0].courtNumber}`}</Text>
                                     <Text style={styles.singleBookingOn}>at</Text>
-                                    <Text style={styles.singleBookingText}>{bookings[0].time}</Text>
+                                    <Text style={styles.singleBookingText}>{`${bookings[0].time}`}</Text>
                                     <Text style={styles.singleBookingOn}>on</Text>
-                                    <Text style={styles.singleBookingText}>{bookings[0].date}</Text>
+                                    <Text style={styles.singleBookingText}>{`${bookings[0].date}`}</Text>
                                 </View>
                             </>
                         ) : (

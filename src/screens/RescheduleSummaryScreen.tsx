@@ -39,10 +39,14 @@ export const RescheduleSummaryScreen: React.FC = () => {
         console.log('Rescheduling booking ID:', bookingId);
         // Navigate to success or bookings
         navigation.navigate('Success', {
-            bookings: [], // Mock
+            bookings: [{
+                courtNumber: newBooking.courtNumber,
+                date: newBooking.date,
+                time: newBooking.time
+            }],
             bookingId: bookingId,
             isSingleBooking: true
-        }); // Assuming Success screen exists and can handle this or just go back for now
+        });
     };
 
     return (

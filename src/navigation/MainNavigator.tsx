@@ -71,6 +71,11 @@ export type BookingsStackParamList = {
       time: string;
     };
   };
+  Success: {
+    bookings: Booking[];
+    bookingId: string;
+    isSingleBooking?: boolean;
+  };
 };
 
 export type MainTabParamList = {
@@ -111,6 +116,7 @@ const BookingsStackNavigator: React.FC = () => {
       <BookingsStack.Screen name="Reschedule" component={RescheduleScreen} />
       <BookingsStack.Screen name="RescheduleCourt" component={RescheduleCourtScreen} />
       <BookingsStack.Screen name="RescheduleSummary" component={RescheduleSummaryScreen} />
+      <BookingsStack.Screen name="Success" component={SuccessScreen} />
     </BookingsStack.Navigator>
   );
 };
