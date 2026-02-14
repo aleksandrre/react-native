@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Image } from 'react-native';
 import { ImageHeader, PageLayout, ScreenWrapper, CustomButton } from '../components';
-import { colors,  } from '../theme';
+import { colors } from '../theme';
 import profile from '../../assets/profile.png';
-import pencil from '../../assets/pencil.svg'
+import pencil from '../../assets/pencil.svg';
 export const ProfileScreen: React.FC = () => {
   // დროებითი state სიმულაციისთვის. რეალურ აპში ეს გლობალური უნდა იყოს.
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -13,8 +13,8 @@ export const ProfileScreen: React.FC = () => {
     <View style={styles.infoRow}>
       <Text style={styles.infoText}>{label}: <Text style={styles.infoValue}>{value}</Text></Text>
       {editable && (
-        <TouchableOpacity style={{height:34, display:'flex',justifyContent:'center'}}>
-          <img src={pencil} alt="" />
+        <TouchableOpacity style={styles.editButton}>
+          <Image source={pencil} style={styles.pencilIcon} />
         </TouchableOpacity>
       )}
     </View>
@@ -34,7 +34,7 @@ export const ProfileScreen: React.FC = () => {
                 <Text style={styles.infoText}>Language:</Text>
                 <View style={styles.langPicker}><Text style={styles.whiteText}>EN ▼</Text></View>
               </View>
-              <Text style={[styles.infoText, { marginTop: 10 }]}>Credits: <Text style={styles.infoValue}>{'{x}'}</Text></Text>
+              <Text style={[styles.infoText]}>Credits: <Text style={styles.infoValue}>{'{x}'}</Text></Text>
               
               <CustomButton 
                 title="Log out" 
@@ -120,6 +120,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   whiteText: { color: colors.white,fontSize:16,lineHeight:20 },
+  editButton: {
+    height: 34,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pencilIcon: {
+    width: 24,
+    height: 24,
+    tintColor: colors.primary,
+  },
   langPicker: {
     borderWidth: 1,
     borderColor: colors.lightGray,
@@ -146,5 +156,5 @@ const styles = StyleSheet.create({
   link: { textDecorationLine: 'underline',fontSize:16,lineHeight:20 },
   footer: { marginTop: 7, alignItems: 'center' },
   footerText: { color: colors.white, fontSize: 14,lineHeight:18 },
-  footerLink: { color: '#a366ff', textDecorationLine: 'underline', fontSize: 14,lineHeight:18 },
+  footerLink: { color: colors.lightPurple, textDecorationLine: 'underline', fontSize: 14,lineHeight:18 },
 });
