@@ -9,9 +9,9 @@ interface PageLayoutProps extends ViewProps {
 
 export const PageLayout: React.FC<PageLayoutProps> = ({ children, style, ...props }) => {
   return (
-    <SafeAreaView style={[styles.mainContainer, style]} edges={['top', 'left', 'right',]}>
+    <View style={[styles.mainContainer, style]} {...props}>
       {children}
-    </SafeAreaView>
+    </View>
   );
 };
 
