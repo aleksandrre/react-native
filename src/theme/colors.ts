@@ -5,5 +5,6 @@ export const colors = {
   white: '#FFFFFF',        // თეთრი
   gray: '#414141',         // ნაცრისფერი
   lightGray: '#A4A4A4',    // ღია ნაცრისფერი
+  textGray: '#BDBDBD',
 } as const;
 

@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useFonts } from 'expo-font';
+import {
+  SpaceGrotesk_300Light,
+  SpaceGrotesk_400Regular,
+  SpaceGrotesk_500Medium,
+  SpaceGrotesk_600SemiBold,
+  SpaceGrotesk_700Bold,
+} from '@expo-google-fonts/space-grotesk';
 import { useAuthStore } from './src/store/authStore';
-import { LoginScreen } from './src/screens/LoginScreen';
-import { RegisterScreen } from './src/screens/RegisterScreen';
-import { HomeScreen } from './src/screens/HomeScreen';
+import { MainNavigator, AuthNavigator } from './src/navigation';
 import { colors } from './src/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 const queryClient = new QueryClient();
 
-type Screen = 'login' | 'register';
-
 function AppContent() {
-  const [currentScreen, setCurrentScreen] = useState<Screen>('login');
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
 
   useEffect(() => {
@@ -29,27 +33,38 @@ function AppContent() {
     );
   }
 
-  if (isAuthenticated) {
-    return <HomeScreen />;
-  }
-
   return (
-    <>
-      {currentScreen === 'login' ? (
-        <LoginScreen onNavigateToRegister={() => setCurrentScreen('register')} />
+    <NavigationContainer>
+      {!isAuthenticated ? (
+        <MainNavigator />
       ) : (
-        <RegisterScreen onNavigateToLogin={() => setCurrentScreen('login')} />
+        <AuthNavigator />
       )}
-    </>
+    </NavigationContainer>
   );
 }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({
+    SpaceGrotesk_300Light,
+    SpaceGrotesk_400Regular,
+    SpaceGrotesk_500Medium,
+    SpaceGrotesk_600SemiBold,
+    SpaceGrotesk_700Bold,
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
         <AppContent />
-        <StatusBar style="auto" />
       </SafeAreaProvider>
     </QueryClientProvider>
   );

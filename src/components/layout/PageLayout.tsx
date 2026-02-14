@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, ViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { colors } from '../../theme';
 
 interface PageLayoutProps extends ViewProps {
   children: React.ReactNode;
@@ -8,15 +9,16 @@ interface PageLayoutProps extends ViewProps {
 
 export const PageLayout: React.FC<PageLayoutProps> = ({ children, style, ...props }) => {
   return (
-    // SafeAreaView უზრუნველყოფს, რომ კონტენტი Notch-ის ქვეშ არ მოექცეს
-    <SafeAreaView style={[styles.mainContainer, style]}>
+    <View style={[styles.mainContainer, style]} {...props}>
       {children}
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+    backgroundColor:colors.primary
   },
 });
+

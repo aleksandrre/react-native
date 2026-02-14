@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ViewProps } from 'react-native';
-import { colors } from '../theme';
+import { colors } from '../../theme';
 
 interface ScreenWrapperProps extends ViewProps {
   children: React.ReactNode;
@@ -21,3 +21,4 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dark,
   },
 });
+
