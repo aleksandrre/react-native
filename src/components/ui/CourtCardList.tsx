@@ -8,9 +8,10 @@ interface CourtCardListProps {
   title: string;
   bookings: Booking[];
   style?: ViewStyle;
+  onBookingPress?: (booking: Booking, index: number) => void;
 }
 
-export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings, style }) => {
+export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings, style, onBookingPress }) => {
   return (
     <View style={[styles.container, style]}>
       <Text style={styles.title}>{title}</Text>
@@ -21,6 +22,7 @@ export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings, s
             courtNumber={booking.courtNumber}
             date={booking.date}
             time={booking.time}
+            onPress={onBookingPress ? () => onBookingPress(booking, index) : undefined}
           />
         ))}
       </View>

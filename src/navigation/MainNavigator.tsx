@@ -24,6 +24,7 @@ export type BookStackParamList = {
   Success: {
     bookings: Booking[];
     bookingId: string;
+    isSingleBooking?: boolean;
   };
 };
 

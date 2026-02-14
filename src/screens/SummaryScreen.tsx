@@ -50,6 +50,7 @@ export const SummaryScreen: React.FC = () => {
     const [expiryDate, setExpiryDate] = useState('');
     const [cvcNumber, setCvcNumber] = useState('');
     const [cvcError, setCvcError] = useState(false);
+    const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
 
     const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
     const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
@@ -87,7 +88,49 @@ export const SummaryScreen: React.FC = () => {
         }
     };
 
+    const handleExpiryDateChange = (text: string) => {
+        // Remove all non-digit characters
+        const cleaned = text.replace(/\D/g, '');
+
+        // Format as MM/YY
+        if (cleaned.length >= 2) {
+            setExpiryDate(cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4));
+        } else {
+            setExpiryDate(cleaned);
+        }
+    };
+
+    const validateForm = (): boolean => {
+        const errors: { [key: string]: string } = {};
+
+        if (!cardholderName.trim()) {
+            errors.cardholderName = 'Cardholder name is required';
+        }
+
+        if (!cardNumber.trim()) {
+            errors.cardNumber = 'Card number is required';
+        }
+
+        if (!expiryDate.trim()) {
+            errors.expiryDate = 'Expiry date is required';
+        } else if (expiryDate.length < 5) {
+            errors.expiryDate = 'Invalid expiry date format (MM/YY)';
+        }
+
+        if (!cvcNumber.trim()) {
+            errors.cvcNumber = 'CVC number is required';
+        } else if (cvcNumber.length !== 3) {
+            errors.cvcNumber = 'CVC must be 3 digits';
+        }
+
+        setValidationErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
     const handleBookWithCredits = () => {
+        if (!validateForm()) {
+            return;
+        }
         console.log('Booking with credits:', { bookings, requiredCredits });
         // Generate random booking ID
         const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
@@ -95,6 +138,9 @@ export const SummaryScreen: React.FC = () => {
     };
 
     const handlePayAndBook = () => {
+        if (!validateForm()) {
+            return;
+        }
         console.log('Pay and book:', { bookings, totalPrice });
         // Generate random booking ID
         const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
@@ -112,8 +158,8 @@ export const SummaryScreen: React.FC = () => {
 
     return (
         <PageLayout>
+            <Header title="Go Back" />
             <ScreenWrapper>
-                <Header title="Go Back" />
                 {/* Reservation Timer */}
                 <View style={styles.reservationBanner}>
                     <Text style={styles.reservationText}>⏱️ Your sessions are reserved for 4:59</Text>
@@ -155,6 +201,9 @@ export const SummaryScreen: React.FC = () => {
                             onChangeText={setCardholderName}
                             style={styles.paymentInput}
                         />
+                        {validationErrors.cardholderName && (
+                            <Text style={styles.errorText}>{validationErrors.cardholderName}</Text>
+                        )}
 
                         <Text style={styles.fieldLabel}>Card Number</Text>
                         <InputField
@@ -165,14 +214,22 @@ export const SummaryScreen: React.FC = () => {
                             maxLength={19}
                             style={styles.paymentInput}
                         />
+                        {validationErrors.cardNumber && (
+                            <Text style={styles.errorText}>{validationErrors.cardNumber}</Text>
+                        )}
 
                         <Text style={styles.fieldLabel}>Expiry Date</Text>
                         <InputField
-                            placeholder="Phone number"
+                            placeholder="MM/YY"
                             value={expiryDate}
-                            onChangeText={setExpiryDate}
+                            onChangeText={handleExpiryDateChange}
+                            keyboardType="numeric"
+                            maxLength={5}
                             style={styles.paymentInput}
                         />
+                        {validationErrors.expiryDate && (
+                            <Text style={styles.errorText}>{validationErrors.expiryDate}</Text>
+                        )}
 
                         <Text style={styles.fieldLabel}>CVC Number</Text>
                         <InputField
@@ -184,7 +241,10 @@ export const SummaryScreen: React.FC = () => {
                             secureTextEntry
                             style={styles.paymentInput}
                         />
-                        {cvcError && (
+                        {validationErrors.cvcNumber && (
+                            <Text style={styles.errorText}>{validationErrors.cvcNumber}</Text>
+                        )}
+                        {cvcError && !validationErrors.cvcNumber && (
                             <View style={styles.warningContainer}>
                                 <Text style={styles.warningText}>⚠️ Please enter 3 digits</Text>
                             </View>
@@ -345,6 +405,14 @@ const styles = StyleSheet.create({
         lineHeight: 16,
         fontFamily: typography.fontFamily,
         color: '#FFA500',
+    },
+    errorText: {
+        fontSize: 12,
+        lineHeight: 16,
+        fontFamily: typography.fontFamily,
+        color: '#FF4444',
+        marginTop: -4,
+        marginBottom: 8,
     },
     priceSection: {
         marginTop: 24,

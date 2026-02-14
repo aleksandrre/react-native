@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { PageLayout, ScreenWrapper, CustomButton, CourtCardList } from '../components';
+import { ImageHeader } from '../components/ui/ImageHeader';
 import { colors, typography } from '../theme';
 import { Booking } from '../types';
 import { BookStackParamList } from '../navigation/MainNavigator';
@@ -14,10 +15,30 @@ export const SuccessScreen: React.FC = () => {
 
     const bookings = route.params?.bookings || [];
     const bookingId = route.params?.bookingId || '002938';
+    const isSingleBooking = route.params?.isSingleBooking || false;
 
     const handleBookAgain = () => {
         // Navigate back to the beginning of booking flow
         navigation.navigate('BookHome');
+    };
+
+    const handleBookingPress = (booking: Booking, index: number) => {
+        // Navigate to single booking view
+        navigation.push('Success', {
+            bookings: [booking],
+            bookingId: bookingId,
+            isSingleBooking: true,
+        });
+    };
+
+    const handleAddToCalendar = () => {
+        console.log('Add to calendar');
+        // TODO: Add to calendar functionality
+    };
+
+    const handleViewMyBookings = () => {
+        console.log('View my bookings');
+        // TODO: Navigate to bookings screen
     };
 
     return (
@@ -26,22 +47,39 @@ export const SuccessScreen: React.FC = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
             >
-                {/* Success Image */}
-                <View style={styles.imageContainer}>
-                    <Image
-                        source={require('../../assets/success.png')}
-                        style={styles.image}
-                        resizeMode="cover"
-                    />
-                </View>
+                {/* Success Header */}
+                <ImageHeader
+                    title="Success!"
+                    imageSource={require('../../assets/success.png')}
+                />
 
                 <View style={styles.contentPadding}>
                     {/* Success Message */}
                     <View style={styles.contentContainer}>
-                        <Text style={styles.subtitle}>Your bookings are confirmed:</Text>
-
-                        {/* Bookings List */}
-                        <CourtCardList title="" bookings={bookings} style={{ marginBottom: 10 }} />
+                        {isSingleBooking && bookings.length === 1 ? (
+                            // Single booking view
+                            <>
+                                <Text style={styles.subtitle}>Your booking is confirmed:</Text>
+                                <View style={styles.singleBookingInfo}>
+                                    <Text style={styles.singleBookingText}>Court {bookings[0].courtNumber}</Text>
+                                    <Text style={styles.singleBookingOn}>at</Text>
+                                    <Text style={styles.singleBookingText}>{bookings[0].time}</Text>
+                                    <Text style={styles.singleBookingOn}>on</Text>
+                                    <Text style={styles.singleBookingText}>{bookings[0].date}</Text>
+                                </View>
+                            </>
+                        ) : (
+                            // Multiple bookings view
+                            <>
+                                <Text style={styles.subtitle}>Your bookings are confirmed:</Text>
+                                <CourtCardList
+                                    title=""
+                                    bookings={bookings}
+                                    style={{ marginBottom: 10 }}
+                                    onBookingPress={handleBookingPress}
+                                />
+                            </>
+                        )}
 
                         {/* Booking ID */}
                         <Text style={styles.bookingId}>Booking ID: {`{${bookingId}}`}</Text>
@@ -51,10 +89,31 @@ export const SuccessScreen: React.FC = () => {
 
             {/* Fixed Book Again Button */}
             <View style={styles.buttonContainer}>
-                <CustomButton
-                    title="Book again"
-                    onPress={handleBookAgain}
-                />
+                {isSingleBooking ? (
+                    // Single booking buttons
+                    <>
+                        <CustomButton
+                            title="Add to calendar"
+                            onPress={handleAddToCalendar}
+                            variant="secondary"
+                        />
+                        <CustomButton
+                            title="View my bookings"
+                            onPress={handleViewMyBookings}
+                            variant="secondary"
+                        />
+                        <CustomButton
+                            title="Book again"
+                            onPress={handleBookAgain}
+                        />
+                    </>
+                ) : (
+                    // Multiple bookings button
+                    <CustomButton
+                        title="Book again"
+                        onPress={handleBookAgain}
+                    />
+                )}
             </View>
         </PageLayout>
     );
@@ -65,14 +124,6 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         paddingBottom: 80,
         minHeight: '100%',
-    },
-    imageContainer: {
-        width: '100%',
-        height: 200,
-    },
-    image: {
-        width: '100%',
-        height: '100%',
     },
     contentPadding: {
         padding: 10,
@@ -113,5 +164,25 @@ const styles = StyleSheet.create({
         color: colors.white,
         textAlign: 'left',
         marginBottom: 24,
+    },
+    singleBookingInfo: {
+        alignItems: 'center',
+        marginBottom: 20,
+        marginTop: 10,
+    },
+    singleBookingText: {
+        fontSize: 18,
+        lineHeight: 24,
+        fontFamily: typography.fontFamilySemiBold,
+        color: colors.white,
+        textAlign: 'center',
+    },
+    singleBookingOn: {
+        fontSize: 14,
+        lineHeight: 20,
+        fontFamily: typography.fontFamily,
+        color: colors.lightGray,
+        textAlign: 'center',
+        marginVertical: 4,
     },
 });
