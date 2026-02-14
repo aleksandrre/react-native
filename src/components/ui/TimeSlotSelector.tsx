@@ -48,18 +48,22 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
 
     setSelectedSlots((prev) => {
       let newSelection: string[];
-      
+
       if (prev.includes(slotTime)) {
         // Deselect
         newSelection = prev.filter((time) => time !== slotTime);
       } else {
-        // Select (if under max limit)
-        if (prev.length >= maxSelections) {
-          return prev; // Already at max
+        // Select
+        if (maxSelections === 1) {
+          newSelection = [slotTime];
+        } else {
+          if (prev.length >= maxSelections) {
+            return prev; // Already at max
+          }
+          newSelection = [...prev, slotTime];
         }
-        newSelection = [...prev, slotTime];
       }
-      
+
       onSlotsSelect?.(newSelection);
       return newSelection;
     });
@@ -67,7 +71,7 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Select time</Text>
+      <Text style={styles.title}>{maxSelections > 1 ? 'Select times' : 'Select time'}</Text>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}

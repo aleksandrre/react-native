@@ -7,6 +7,7 @@ import { SummaryScreen } from '../screens/SummaryScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
 import { BookingsScreen } from '../screens/BookingsScreen';
 import { BookingDetailsScreen } from '../screens/BookingDetailsScreen';
+import { RescheduleScreen } from '../screens/RescheduleScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { BottomTabBar } from '../components/navigation';
 import { Booking } from '../types';
@@ -47,6 +48,9 @@ export type BookingsStackParamList = {
     bookingId: string;
     isPast: boolean;
   };
+  Reschedule: {
+    bookingId: string;
+  };
 };
 
 export type MainTabParamList = {
@@ -84,6 +88,7 @@ const BookingsStackNavigator: React.FC = () => {
     >
       <BookingsStack.Screen name="BookingsHome" component={BookingsScreen} />
       <BookingsStack.Screen name="BookingDetails" component={BookingDetailsScreen} />
+      <BookingsStack.Screen name="Reschedule" component={RescheduleScreen} />
     </BookingsStack.Navigator>
   );
 };

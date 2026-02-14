@@ -37,8 +37,7 @@ export const BookingDetailsScreen: React.FC = () => {
     };
 
     const handleRescheduleBooking = () => {
-        console.log('Reschedule booking');
-        // TODO: Reschedule functionality
+        navigation.navigate('Reschedule' as any, { bookingId } as any);
     };
 
     const handleCancelBooking = () => {
