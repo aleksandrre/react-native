@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { CourtCard } from './CourtCard';
 import { Booking } from '../../types';
 import { colors, typography } from '../../theme';
@@ -7,11 +7,12 @@ import { colors, typography } from '../../theme';
 interface CourtCardListProps {
   title: string;
   bookings: Booking[];
+  style?: ViewStyle;
 }
 
-export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings }) => {
+export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings, style }) => {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, style]}>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.cardsContainer}>
         {bookings.map((booking, index) => (

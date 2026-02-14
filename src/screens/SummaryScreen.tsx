@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList } from '../components';
 import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
 import { Booking } from '../types';
+import { BookStackParamList } from '../navigation/MainNavigator';
 
 type RouteParams = {
     Summary: {
@@ -41,7 +42,7 @@ const extractCourtNumber = (courtId: string): string => {
 };
 
 export const SummaryScreen: React.FC = () => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp<BookStackParamList>>();
     const route = useRoute<SummaryRouteProp>();
     const [promoCode, setPromoCode] = useState('');
     const [cardholderName, setCardholderName] = useState('');
@@ -88,12 +89,16 @@ export const SummaryScreen: React.FC = () => {
 
     const handleBookWithCredits = () => {
         console.log('Booking with credits:', { bookings, requiredCredits });
-        // TODO: Book with credits (and card if needed)
+        // Generate random booking ID
+        const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
+        navigation.navigate('Success', { bookings, bookingId });
     };
 
     const handlePayAndBook = () => {
         console.log('Pay and book:', { bookings, totalPrice });
-        // TODO: Pay with card and book
+        // Generate random booking ID
+        const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
+        navigation.navigate('Success', { bookings, bookingId });
     };
 
     const handleLoginToBook = () => {
@@ -107,8 +112,8 @@ export const SummaryScreen: React.FC = () => {
 
     return (
         <PageLayout>
-            <Header title="Go Back" />
             <ScreenWrapper>
+                <Header title="Go Back" />
                 {/* Reservation Timer */}
                 <View style={styles.reservationBanner}>
                     <Text style={styles.reservationText}>⏱️ Your sessions are reserved for 4:59</Text>

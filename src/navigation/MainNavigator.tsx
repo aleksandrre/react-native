@@ -4,9 +4,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BookScreen } from '../screens/BookScreen';
 import { CourtSelectionScreen } from '../screens/CourtSelectionScreen';
 import { SummaryScreen } from '../screens/SummaryScreen';
+import { SuccessScreen } from '../screens/SuccessScreen';
 import { BookingsScreen } from '../screens/BookingsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { BottomTabBar } from '../components/navigation';
+import { Booking } from '../types';
 
 export type BookStackParamList = {
   BookHome: undefined;
@@ -18,6 +20,10 @@ export type BookStackParamList = {
     selectedDate: Date;
     selectedSlots: string[];
     selectedCourts: { [timeSlot: string]: string | null };
+  };
+  Success: {
+    bookings: Booking[];
+    bookingId: string;
   };
 };
 
@@ -40,6 +46,7 @@ const BookStackNavigator: React.FC = () => {
       <BookStack.Screen name="BookHome" component={BookScreen} />
       <BookStack.Screen name="CourtSelection" component={CourtSelectionScreen} />
       <BookStack.Screen name="Summary" component={SummaryScreen} />
+      <BookStack.Screen name="Success" component={SuccessScreen} />
     </BookStack.Navigator>
   );
 };
