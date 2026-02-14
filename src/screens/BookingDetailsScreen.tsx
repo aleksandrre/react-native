@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { PageLayout, ScreenWrapper, Header, CustomButton } from '../components';
+import { PageLayout, ScreenWrapper, Header, CustomButton, InfoModal } from '../components';
 import { colors, typography } from '../theme';
 
 type RouteParams = {
@@ -23,6 +23,9 @@ export const BookingDetailsScreen: React.FC = () => {
 
     const { courtNumber, date, time, status, bookingId, isPast } = route.params;
 
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+
     const handleAddToCalendar = () => {
         console.log('Add to calendar');
         // TODO: Add to calendar functionality
@@ -39,8 +42,22 @@ export const BookingDetailsScreen: React.FC = () => {
     };
 
     const handleCancelBooking = () => {
-        console.log('Cancel booking');
-        // TODO: Cancel booking functionality
+        setShowCancelModal(true);
+    };
+
+    const handleConfirmCancel = () => {
+        setShowCancelModal(false);
+        // TODO: API call to cancel booking
+        setShowSuccessModal(true);
+    };
+
+    const handleCancelModalClose = () => {
+        setShowCancelModal(false);
+    };
+
+    const handleSuccessModalClose = () => {
+        setShowSuccessModal(false);
+        navigation.goBack();
     };
 
     return (
@@ -106,6 +123,25 @@ export const BookingDetailsScreen: React.FC = () => {
                     )}
                 </View>
             </ScreenWrapper>
+
+            {/* Cancel Confirmation Modal */}
+            <InfoModal
+                visible={showCancelModal}
+                title="Are you sure you want to cancel your booking?"
+                primaryButtonText="Yes, cancel booking"
+                secondaryButtonText="No, keep booking"
+                onPrimaryPress={handleConfirmCancel}
+                onSecondaryPress={handleCancelModalClose}
+            />
+
+            {/* Success Modal */}
+            <InfoModal
+                visible={showSuccessModal}
+                title={`Your booking on ${date} at ${time} on Court ${courtNumber} has been cancelled and you have gained 1 credit.`}
+                primaryButtonText="Ok"
+                onPrimaryPress={handleSuccessModalClose}
+                singleButton={true}
+            />
         </PageLayout>
     );
 };

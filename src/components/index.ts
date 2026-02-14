@@ -8,6 +8,7 @@ export * from './ui/CustomButton';
 export * from './ui/InputField';
 export * from './ui/LabeledInputField';
 export * from './ui/Checkbox';
+export * from './ui/InfoModal';
 export * from './ui/Header';
 export * from './ui/CourtCard';
 export * from './ui/CourtCardList';
