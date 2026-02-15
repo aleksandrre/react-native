@@ -15,6 +15,7 @@ import { useAuthStore } from './src/store/authStore';
 import { MainNavigator, AuthNavigator } from './src/navigation';
 import { colors } from './src/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const queryClient = new QueryClient();
 
@@ -32,14 +33,19 @@ function AppContent() {
       </View>
     );
   }
+  const Stack = createNativeStackNavigator();
 
   return (
     <NavigationContainer>
-      {!isAuthenticated ? (
-        <MainNavigator />
-      ) : (
-        <AuthNavigator />
-      )}
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {/* ავტორიზაციის გვერდები */}
+        {!isAuthenticated && (
+          <Stack.Screen name="Auth" component={AuthNavigator} />
+        )}
+
+        {/* მთავარი აპლიკაცია */}
+        <Stack.Screen name="Main" component={MainNavigator} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
