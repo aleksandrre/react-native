@@ -145,13 +145,15 @@ export const BookingsScreen: React.FC = () => {
                 </View>
               )}
 
-              {/* Make a new booking button */}
-              <View style={styles.buttonContainer}>
-                <CustomButton
-                  title="Make a new booking"
-                  onPress={handleMakeNewBooking}
-                />
-              </View>
+              {/* Make a new booking button - shown in scroll when there are past bookings */}
+              {pastBookings.length > 0 && (
+                <View style={styles.buttonContainer}>
+                  <CustomButton
+                    title="Make a new booking"
+                    onPress={handleMakeNewBooking}
+                  />
+                </View>
+              )}
 
               {/* Past Section */}
 
