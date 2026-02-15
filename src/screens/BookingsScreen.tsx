@@ -9,7 +9,7 @@ import { BookingsStackParamList } from '../navigation/MainNavigator';
 
 export const BookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<BookingsStackParamList>>();
-  const isLogedIn = true
+  const isLogedIn = false
 
   // Mock data - სანამ API არ გვაქვს
   const upcomingBookings: Booking[] = [
@@ -116,6 +116,7 @@ export const BookingsScreen: React.FC = () => {
 
               {/* ღილაკების კონტეინერი */}
               <CustomButton
+                style={{ marginBottom: 10 }}
                 title="Log In"
                 onPress={() => {
                   // გადავდივართ Auth სთექის Login გვერდზე
