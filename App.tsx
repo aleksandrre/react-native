@@ -39,7 +39,7 @@ function AppContent() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {/* ავტორიზაციის გვერდები */}
-        {!isAuthenticated && (
+        {isAuthenticated && (
           <Stack.Screen name="Auth" component={AuthNavigator} />
         )}
 

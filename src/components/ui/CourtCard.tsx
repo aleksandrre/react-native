@@ -44,7 +44,9 @@ export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, o
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#1E1E1E',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(96, 35, 90, 0.9)',
     borderRadius: 5,
     overflow: 'hidden',
     alignItems: 'center',
