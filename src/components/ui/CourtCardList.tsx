@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: colors.white,
-    marginBottom: 12,
+    marginBottom: 10,
     fontFamily: typography.fontFamilyBold,
   },
   cardsContainer: {

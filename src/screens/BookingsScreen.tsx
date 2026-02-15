@@ -80,10 +80,9 @@ export const BookingsScreen: React.FC = () => {
           contentContainerStyle={styles.scrollContent}
         >
           {/* Upcoming Section */}
-          <Text style={styles.sectionTitle}>Upcoming</Text>
 
           {upcomingBookings.length > 0 ? (
-            <CourtCardList title="" bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
+            <CourtCardList style={styles.container} title="Upcoming" bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
           ) : (
             <View style={styles.emptyContainer}>
               <Text style={styles.emptyText}>
@@ -93,18 +92,18 @@ export const BookingsScreen: React.FC = () => {
           )}
 
           {/* Make a new booking button */}
-          <View style={styles.buttonContainer}>
+          <View>
             <CustomButton
+              style={{ marginBottom: 10 }}
               title="Make a new booking"
               onPress={handleMakeNewBooking}
             />
           </View>
 
           {/* Past Section */}
-          <Text style={styles.sectionTitle}>Past</Text>
 
           {pastBookings.length > 0 && (
-            <CourtCardList title="" bookings={pastBookings} onBookingPress={handlePastBookingPress} />
+            <CourtCardList title="Past" bookings={pastBookings} onBookingPress={handlePastBookingPress} />
           )}
         </ScrollView>
       </ScreenWrapper>
@@ -113,6 +112,9 @@ export const BookingsScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 10,
+  },
   scrollContent: {
     paddingBottom: 20,
   },
@@ -121,8 +123,8 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     fontFamily: typography.fontFamilySemiBold,
     color: colors.white,
-    marginBottom: 16,
-    marginTop: 8,
+    marginBottom: 10,
+    marginTop: 10,
   },
   emptyContainer: {
     paddingVertical: 40,
@@ -134,10 +136,6 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily,
     color: colors.lightGray,
     textAlign: 'center',
-  },
-  buttonContainer: {
-    marginTop: 16,
-    marginBottom: 24,
   },
 });
 
