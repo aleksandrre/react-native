@@ -14,14 +14,18 @@ export const BookingsScreen: React.FC = () => {
   // Mock data - სანამ API არ გვაქვს
   const upcomingBookings: Booking[] = [
     {
-      courtNumber: '3',
-      date: 'Fri, 26 Dec 2025',
-      time: '12:00',
+      courtNumber: '5',
+      date: 'Wed, 15 Oct 2026',
+      time: '18:00',
+      cancelled: true,
+      rescheduled: false,
     },
     {
-      courtNumber: '1',
-      date: 'Tue, 4 Jan 2026',
-      time: '20:00',
+      courtNumber: '2',
+      date: 'Sat, 25 Oct 2026',
+      time: '14:00',
+      cancelled: false,
+      rescheduled: false,
     },
   ];
 
@@ -30,22 +34,35 @@ export const BookingsScreen: React.FC = () => {
       courtNumber: '8',
       date: 'Thu, 1 Oct 2025',
       time: '21:00',
+      cancelled: true,
+      rescheduled: false,
     },
     {
       courtNumber: '3',
       date: 'Fri, 17 Dec 2025',
       time: '10:00',
+      cancelled: false,
+      rescheduled: false,
     },
   ];
 
   const handleUpcomingBookingPress = (booking: Booking) => {
     // Generate mock booking ID
     const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
+
+    // Determine status based on booking state
+    let status: 'Confirmed' | 'Cancelled' | 'Rescheduled' = 'Confirmed';
+    if (booking.cancelled) {
+      status = 'Cancelled';
+    } else if (booking.rescheduled) {
+      status = 'Rescheduled';
+    }
+
     navigation.navigate('BookingDetails', {
       courtNumber: booking.courtNumber,
       date: booking.date,
       time: booking.time,
-      status: 'Confirmed',
+      status: status,
       bookingId: bookingId,
       isPast: false,
     });
@@ -109,10 +126,8 @@ export const BookingsScreen: React.FC = () => {
           ) : (
             <>
               {/* Upcoming Section */}
-              <Text style={styles.sectionTitle}>Upcoming</Text>
-
               {upcomingBookings.length > 0 ? (
-                <CourtCardList title="" bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
+                <CourtCardList title="Upcoming" bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
               ) : (
                 <View style={styles.emptyContainer}>
                   <Text style={styles.emptyText}>
@@ -145,12 +160,24 @@ export const BookingsScreen: React.FC = () => {
           }
 
         </ScrollView>
+
+        {pastBookings.length === 0 && (
+          <View style={styles.fixedButtonContainer}>
+            <CustomButton
+              title="Make a new booking"
+              onPress={handleMakeNewBooking}
+            />
+          </View>
+        )}
       </ScreenWrapper>
     </PageLayout>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 10,
+  },
   scrollContent: {
     paddingBottom: 20,
   },
@@ -162,8 +189,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   emptyContainer: {
-    paddingVertical: 40,
-    paddingHorizontal: 20,
   },
   emptyText: {
     fontSize: 18,
@@ -171,10 +196,13 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily,
     color: colors.white,
     textAlign: 'left',
+    marginBottom: 10,
   },
-  buttonContainer: {
-    marginTop: 16,
-    marginBottom: 24,
+  fixedButtonContainer: {
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
   },
 });
 

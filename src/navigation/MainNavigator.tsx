@@ -34,7 +34,7 @@ export type BookStackParamList = {
     courtNumber: string;
     date: string;
     time: string;
-    status: 'Confirmed' | 'Failed' | 'Completed';
+    status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
     bookingId: string;
     isPast: boolean;
   };
@@ -46,7 +46,7 @@ export type BookingsStackParamList = {
     courtNumber: string;
     date: string;
     time: string;
-    status: 'Confirmed' | 'Failed' | 'Completed';
+    status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
     bookingId: string;
     isPast: boolean;
   };

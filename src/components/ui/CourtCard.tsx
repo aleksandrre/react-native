@@ -13,14 +13,14 @@ interface CourtCardProps {
 
 export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, onPress, cancelled }) => {
   const CardContent = (
-    <View style={[styles.container, cancelled && styles.containerCancelled]}>
+    <View style={[styles.container]}>
       <ImageBackground
         source={courtLogo}
-        style={[styles.courtSection, cancelled && styles.courtSectionCancelled]}
-        imageStyle={[styles.courtImage, cancelled && styles.courtImageCancelled]}
+        style={[styles.courtSection]}
+        imageStyle={[styles.courtImage]}
       >
-        <Text style={[styles.courtLabel, cancelled && styles.textCancelled]}>court</Text>
-        <Text style={[styles.courtNumber, cancelled && styles.textCancelled]}>{courtNumber}</Text>
+        <Text style={[styles.courtLabel]}>court</Text>
+        <Text style={[styles.courtNumber]}>{courtNumber}</Text>
       </ImageBackground>
 
       <View style={styles.dateTimeSection}>
@@ -44,7 +44,9 @@ export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, o
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#1E1E1E',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(96, 35, 90, 0.9)',
     borderRadius: 5,
     overflow: 'hidden',
     alignItems: 'center',
@@ -89,21 +91,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: typography.fontFamilyBold,
   },
-  containerCancelled: {
-    opacity: 0.6,
-  },
-  courtSectionCancelled: {
-    opacity: 0.8,
-  },
-  courtImageCancelled: {
-    opacity: 0.5,
-  },
-  textCancelled: {
-    color: colors.gray,
-  },
+
   textStrikethrough: {
     textDecorationLine: 'line-through',
-    color: colors.gray,
+    color: '#A4A4A4',
   },
 });
 
