@@ -1,19 +1,68 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Image } from 'react-native';
-import { ImageHeader, PageLayout, ScreenWrapper, CustomButton } from '../components';
+import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal } from '../components';
 import { colors } from '../theme';
 import profile from '../../assets/profile.png';
 import pencil from '../../assets/pencil.svg';
 export const ProfileScreen: React.FC = () => {
   // დროებითი state სიმულაციისთვის. რეალურ აპში ეს გლობალური უნდა იყოს.
   const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [name, setName] = useState('Name Surname');
+  const [email, setEmail] = useState('name@mail.com');
+  const [phone, setPhone] = useState('+xx xxx xxx xxx');
+
+  // Modal states
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [otpModalVisible, setOtpModalVisible] = useState(false);
+  const [editType, setEditType] = useState<'name' | 'email' | 'phone'>('name');
+  const [tempValue, setTempValue] = useState('');
+  const [pendingEmail, setPendingEmail] = useState('');
+  const [pendingPhone, setPendingPhone] = useState('');
+
+  const handleEdit = (type: 'name' | 'email' | 'phone') => {
+    setEditType(type);
+    if (type === 'name') {
+      setTempValue(name);
+    } else if (type === 'email') {
+      setTempValue(email);
+    } else if (type === 'phone') {
+      setTempValue(phone);
+    }
+    setEditModalVisible(true);
+  };
+
+  const handleSaveEdit = (value: string) => {
+    if (editType === 'name') {
+      setName(value);
+      setEditModalVisible(false);
+    } else if (editType === 'email') {
+      setPendingEmail(value);
+      setEditModalVisible(false);
+      setOtpModalVisible(true);
+    } else if (editType === 'phone') {
+      setPendingPhone(value);
+      setEditModalVisible(false);
+      setOtpModalVisible(true);
+    }
+  };
+
+  const handleSaveOTP = (otp: string) => {
+    // აქ უნდა იყოს OTP ვერიფიკაცია
+    console.log('OTP:', otp);
+    if (editType === 'email') {
+      setEmail(pendingEmail);
+    } else if (editType === 'phone') {
+      setPhone(pendingPhone);
+    }
+    setOtpModalVisible(false);
+  };
 
   // დამხმარე კომპონენტი ინფორმაციის ხაზებისთვის (დალოგინებულზე)
-  const InfoRow = ({ label, value, editable = true }: { label: string, value: string, editable?: boolean }) => (
+  const InfoRow = ({ label, value, editable = true, onEdit }: { label: string, value: string, editable?: boolean, onEdit?: () => void }) => (
     <View style={styles.infoRow}>
       <Text style={styles.infoText}>{label}: <Text style={styles.infoValue}>{value}</Text></Text>
-      {editable && (
-        <TouchableOpacity style={styles.editButton}>
+      {editable && onEdit && (
+        <TouchableOpacity style={styles.editButton} onPress={onEdit}>
           <Image source={pencil} style={styles.pencilIcon} />
         </TouchableOpacity>
       )}
@@ -27,9 +76,9 @@ export const ProfileScreen: React.FC = () => {
         {isLoggedIn ? (
           /* --- დალოგინებული მომხმარებლის ხედი --- */
             <View style={styles.section}>
-              <InfoRow label="Name" value="{Name Surname}" />
-              <InfoRow label="Email" value="{name@mail.com}" />
-              <InfoRow label="Phone" value="{+xx xxx xxx xxx}" />
+              <InfoRow label="Name" value={name} onEdit={() => handleEdit('name')} />
+              <InfoRow label="Email" value={email} onEdit={() => handleEdit('email')} />
+              <InfoRow label="Phone" value={phone} onEdit={() => handleEdit('phone')} />
               <View style={styles.infoRow}>
                 <Text style={styles.infoText}>Language:</Text>
                 <View style={styles.langPicker}><Text style={styles.whiteText}>EN ▼</Text></View>
@@ -82,6 +131,27 @@ export const ProfileScreen: React.FC = () => {
           </View>
         </View>
       </ScreenWrapper>
+
+      {/* Edit Modal */}
+      <EditModal
+        visible={editModalVisible}
+        title={`Edit ${editType === 'name' ? 'Name' : editType === 'email' ? 'Email' : 'Phone'}`}
+        placeholder={editType === 'name' ? 'Name Surname' : editType === 'email' ? 'name@mail.com' : '+xx xxx xxx xxx'}
+        initialValue={tempValue}
+        onClose={() => setEditModalVisible(false)}
+        onSave={handleSaveEdit}
+      />
+
+      {/* OTP Modal */}
+      <EditModal
+        visible={otpModalVisible}
+        title={`Edit ${editType === 'email' ? 'Email' : 'Phone'}`}
+        placeholder="XXXX"
+        mode="otp"
+        message={`A verification OTP code has been sent to {${editType === 'email' ? pendingEmail : pendingPhone}}. Please enter your OTP code below to confirm and save.`}
+        onClose={() => setOtpModalVisible(false)}
+        onSave={handleSaveOTP}
+      />
     </PageLayout>
   );
 };
