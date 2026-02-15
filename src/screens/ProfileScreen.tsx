@@ -4,6 +4,7 @@ import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal } from 
 import { colors } from '../theme';
 import profile from '../../assets/profile.png';
 import pencil from '../../assets/pencil.svg';
+import { useNavigation } from '@react-navigation/native';
 export const ProfileScreen: React.FC = () => {
   // დროებითი state სიმულაციისთვის. რეალურ აპში ეს გლობალური უნდა იყოს.
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -18,6 +19,8 @@ export const ProfileScreen: React.FC = () => {
   const [tempValue, setTempValue] = useState('');
   const [pendingEmail, setPendingEmail] = useState('');
   const [pendingPhone, setPendingPhone] = useState('');
+
+  const navigation = useNavigation<any>();
 
   const handleEdit = (type: 'name' | 'email' | 'phone') => {
     setEditType(type);
@@ -100,12 +103,19 @@ export const ProfileScreen: React.FC = () => {
               title="Sign Up"
               variant="primary"
               style={styles.signUpBtn}
+              onPress={() => {
+                // გადავდივართ Auth სთექის შიგნით არსებულ Register გვერდზე
+                navigation.getParent()?.navigate('Auth', { screen: 'Register' });
+              }}
             />
 
             <CustomButton
               title="Log in"
               variant="secondary"
-              onPress={() => setIsLoggedIn(true)}
+              onPress={() => {
+                // გადავდივართ Auth სთექის შიგნით არსებულ Login გვერდზე
+                navigation.getParent()?.navigate('Auth', { screen: 'Login' });
+              }}
             />
 
             <View style={[styles.infoRow]}>
