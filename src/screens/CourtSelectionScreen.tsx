@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -48,6 +49,7 @@ export const CourtSelectionScreen: React.FC = () => {
   const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
 
   const [selectedCourts, setSelectedCourts] = useState<CourtSelection>({});
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
 
   const handleCourtPress = (timeSlot: string, courtId: string) => {
     setSelectedCourts((prev) => {
@@ -85,7 +87,9 @@ export const CourtSelectionScreen: React.FC = () => {
         {/* Title */}
         <View style={styles.titleContainer}>
           <Text style={styles.title}>Select courts </Text>
-          <Text style={styles.viewCourts}>(view courts)</Text>
+          <TouchableOpacity onPress={() => setIsImageModalVisible(true)}>
+            <Text style={styles.viewCourts}>(view courts)</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Warning */}
@@ -118,6 +122,30 @@ export const CourtSelectionScreen: React.FC = () => {
           />
         </View>
       </ScreenWrapper>
+
+      {/* Courts Image Modal */}
+      <Modal
+        visible={isImageModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsImageModalVisible(false)}
+      >
+        <BlurView intensity={10} style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setIsImageModalVisible(false)}
+            >
+              <Ionicons name="close" size={30} color={colors.dark} />
+            </TouchableOpacity>
+            <Image
+              source={require('../../assets/corts.png')}
+              style={styles.courtsImage}
+              resizeMode="contain"
+            />
+          </View>
+        </BlurView>
+      </Modal>
     </PageLayout>
   );
 };
@@ -242,6 +270,31 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginBottom: 0,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 22,
+  },
+  modalContent: {
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.88)',
+    borderRadius: 16,
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    position: 'relative',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 12,
+    right: 20,
+    zIndex: 10,
+  },
+  courtsImage: {
+    width: '100%',
+    height: 280,
   },
 });
 
