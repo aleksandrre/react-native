@@ -9,7 +9,7 @@ import { BookingsStackParamList } from '../navigation/MainNavigator';
 
 export const BookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<BookingsStackParamList>>();
-  const isLogedIn = true
+  const isLogedIn = false
 
   // Mock data - სანამ API არ გვაქვს
   const upcomingBookings: Booking[] = [
@@ -71,11 +71,20 @@ export const BookingsScreen: React.FC = () => {
   const handlePastBookingPress = (booking: Booking) => {
     // Generate mock booking ID
     const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
+
+    // Determine status based on booking state
+    let status: 'Completed' | 'Cancelled' | 'Rescheduled' = 'Completed';
+    if (booking.cancelled) {
+      status = 'Cancelled';
+    } else if (booking.rescheduled) {
+      status = 'Rescheduled';
+    }
+
     navigation.navigate('BookingDetails', {
       courtNumber: booking.courtNumber,
       date: booking.date,
       time: booking.time,
-      status: 'Completed',
+      status: status,
       bookingId: bookingId,
       isPast: true,
     });
@@ -107,6 +116,7 @@ export const BookingsScreen: React.FC = () => {
 
               {/* ღილაკების კონტეინერი */}
               <CustomButton
+                style={{ marginBottom: 10 }}
                 title="Log In"
                 onPress={() => {
                   // გადავდივართ Auth სთექის Login გვერდზე
@@ -136,13 +146,15 @@ export const BookingsScreen: React.FC = () => {
                 </View>
               )}
 
-              {/* Make a new booking button */}
-              <View style={styles.buttonContainer}>
-                <CustomButton
-                  title="Make a new booking"
-                  onPress={handleMakeNewBooking}
-                />
-              </View>
+              {/* Make a new booking button - shown in scroll when there are past bookings */}
+              {pastBookings.length > 0 && (
+                <View style={styles.buttonContainer}>
+                  <CustomButton
+                    title="Make a new booking"
+                    onPress={handleMakeNewBooking}
+                  />
+                </View>
+              )}
 
               {/* Past Section */}
 
