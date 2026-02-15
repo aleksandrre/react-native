@@ -26,6 +26,12 @@ export const BookingDetailsScreen: React.FC = () => {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+    // Determine subtitle text and if styles should be strikethrough
+    const isCancelledOrRescheduled = status === 'Cancelled' || status === 'Rescheduled';
+    const subtitleText = isPast || isCancelledOrRescheduled
+        ? 'Your booking was:'
+        : 'Your booking is confirmed:';
+
     const handleAddToCalendar = () => {
         console.log('Add to calendar');
         // TODO: Add to calendar functionality
@@ -69,15 +75,15 @@ export const BookingDetailsScreen: React.FC = () => {
                 >
                     {/* Booking Confirmation */}
                     <View style={styles.contentContainer}>
-                        <Text style={styles.subtitle}>Your booking is confirmed:</Text>
+                        <Text style={styles.subtitle}>{subtitleText}</Text>
 
                         {/* Booking Info */}
                         <View style={styles.bookingInfo}>
-                            <Text style={styles.bookingText}>Court {courtNumber}</Text>
-                            <Text style={styles.bookingOn}>at</Text>
-                            <Text style={styles.bookingText}>{time}</Text>
-                            <Text style={styles.bookingOn}>on</Text>
-                            <Text style={styles.bookingText}>{date}</Text>
+                            <Text style={[styles.bookingText, isCancelledOrRescheduled && styles.strikethrough]}>Court {courtNumber}</Text>
+                            <Text style={[styles.bookingOn, isCancelledOrRescheduled && styles.strikethrough]}>at</Text>
+                            <Text style={[styles.bookingText, isCancelledOrRescheduled && styles.strikethrough]}>{time}</Text>
+                            <Text style={[styles.bookingOn, isCancelledOrRescheduled && styles.strikethrough]}>on</Text>
+                            <Text style={[styles.bookingText, isCancelledOrRescheduled && styles.strikethrough]}>{date}</Text>
                         </View>
 
                         {/* Status */}
@@ -100,15 +106,18 @@ export const BookingDetailsScreen: React.FC = () => {
                         // Upcoming booking - all buttons
                         <>
                             <CustomButton
+                                style={{ marginBottom: 10 }}
                                 title="Add to calendar"
                                 onPress={handleAddToCalendar}
                                 variant="primary"
                             />
                             <CustomButton
+                                style={{ marginBottom: 10 }}
                                 title="Make a new booking"
                                 onPress={handleMakeNewBooking}
                             />
                             <CustomButton
+                                style={{ marginBottom: 10 }}
                                 title="Reschedule booking"
                                 onPress={handleRescheduleBooking}
                                 variant="secondary"
@@ -155,7 +164,7 @@ const styles = StyleSheet.create({
     subtitle: {
         fontSize: 14,
         lineHeight: 20,
-        fontFamily: typography.fontFamily,
+        fontFamily: typography.fontFamilyLight,
         color: colors.white,
         textAlign: 'center',
         marginBottom: 10,
@@ -174,7 +183,7 @@ const styles = StyleSheet.create({
     bookingOn: {
         fontSize: 14,
         lineHeight: 20,
-        fontFamily: typography.fontFamily,
+        fontFamily: typography.fontFamilyLight,
         color: colors.white,
         textAlign: 'center',
         marginVertical: 12,
@@ -197,5 +206,9 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         marginBottom: 0,
+    },
+    strikethrough: {
+        textDecorationLine: 'line-through',
+        color: '#A4A4A4',
     },
 });
