@@ -71,11 +71,20 @@ export const BookingsScreen: React.FC = () => {
   const handlePastBookingPress = (booking: Booking) => {
     // Generate mock booking ID
     const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
+    
+    // Determine status based on booking state
+    let status: 'Completed' | 'Cancelled' | 'Rescheduled' = 'Completed';
+    if (booking.cancelled) {
+      status = 'Cancelled';
+    } else if (booking.rescheduled) {
+      status = 'Rescheduled';
+    }
+    
     navigation.navigate('BookingDetails', {
       courtNumber: booking.courtNumber,
       date: booking.date,
       time: booking.time,
-      status: 'Completed',
+      status: status,
       bookingId: bookingId,
       isPast: true,
     });
