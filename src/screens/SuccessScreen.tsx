@@ -151,6 +151,8 @@ const styles = StyleSheet.create({
         right: 0,
         padding: 10,
         backgroundColor: colors.dark,
+        display: 'flex',
+        gap: 10,
     },
     title: {
         fontSize: 32,
@@ -166,27 +168,25 @@ const styles = StyleSheet.create({
         fontFamily: typography.fontFamily,
         color: colors.white,
         textAlign: 'center',
-        marginBottom: 20,
+        marginBottom: 12,
     },
     bookingId: {
-        fontSize: 14,
-        lineHeight: 18,
-        fontFamily: typography.fontFamilySemiBold,
+        fontSize: 18,
+        fontFamily: typography.fontFamilyBold,
         color: colors.white,
         textAlign: 'left',
-        marginBottom: 24,
     },
     singleBookingInfo: {
         alignItems: 'center',
-        marginBottom: 20,
-        marginTop: 10,
+        marginBottom: 10,
     },
     singleBookingText: {
-        fontSize: 18,
+        fontSize: 20,
         lineHeight: 24,
-        fontFamily: typography.fontFamilySemiBold,
+        fontFamily: typography.fontFamilyBold,
         color: colors.white,
         textAlign: 'center',
+        marginBottom: 12,
     },
     singleBookingOn: {
         fontSize: 14,
@@ -194,6 +194,7 @@ const styles = StyleSheet.create({
         fontFamily: typography.fontFamily,
         color: colors.lightGray,
         textAlign: 'center',
-        marginVertical: 4,
+        marginBottom: 12,
+
     },
 });
