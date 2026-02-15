@@ -22,6 +22,7 @@ export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings, s
             courtNumber={booking.courtNumber}
             date={booking.date}
             time={booking.time}
+            cancelled={booking.cancelled || booking.rescheduled}
             onPress={onBookingPress ? () => onBookingPress(booking, index) : undefined}
           />
         ))}

@@ -16,11 +16,15 @@ export const BookingsScreen: React.FC = () => {
       courtNumber: '5',
       date: 'Wed, 15 Oct 2026',
       time: '18:00',
+      cancelled: true,
+      rescheduled: false,
     },
     {
       courtNumber: '2',
       date: 'Sat, 25 Oct 2026',
       time: '14:00',
+      cancelled: false,
+      rescheduled: false,
     },
   ];
 
@@ -29,11 +33,15 @@ export const BookingsScreen: React.FC = () => {
       courtNumber: '8',
       date: 'Thu, 1 Oct 2025',
       time: '21:00',
+      cancelled: false,
+      rescheduled: false,
     },
     {
       courtNumber: '3',
       date: 'Fri, 17 Dec 2025',
       time: '10:00',
+      cancelled: false,
+      rescheduled: false,
     },
   ];
 
