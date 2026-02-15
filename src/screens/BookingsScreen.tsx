@@ -13,14 +13,14 @@ export const BookingsScreen: React.FC = () => {
   // Mock data - სანამ API არ გვაქვს
   const upcomingBookings: Booking[] = [
     {
-      courtNumber: '3',
-      date: 'Fri, 26 Dec 2025',
-      time: '12:00',
+      courtNumber: '5',
+      date: 'Wed, 15 Oct 2026',
+      time: '18:00',
     },
     {
-      courtNumber: '1',
-      date: 'Tue, 4 Jan 2026',
-      time: '20:00',
+      courtNumber: '2',
+      date: 'Sat, 25 Oct 2026',
+      time: '14:00',
     },
   ];
 
@@ -85,20 +85,22 @@ export const BookingsScreen: React.FC = () => {
             <CourtCardList style={styles.container} title="Upcoming" bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
           ) : (
             <View style={styles.emptyContainer}>
+              <Text style={styles.sectionTitle}>Upcoming</Text>
               <Text style={styles.emptyText}>
                 You have no upcoming bookings. Reserve a court now and enjoy some Padel!
               </Text>
             </View>
           )}
 
-          {/* Make a new booking button */}
-          <View>
-            <CustomButton
-              style={{ marginBottom: 10 }}
-              title="Make a new booking"
-              onPress={handleMakeNewBooking}
-            />
-          </View>
+          {pastBookings.length > 0 && (
+            <View>
+              <CustomButton
+                style={{ marginBottom: 10 }}
+                title="Make a new booking"
+                onPress={handleMakeNewBooking}
+              />
+            </View>
+          )}
 
           {/* Past Section */}
 
@@ -106,6 +108,15 @@ export const BookingsScreen: React.FC = () => {
             <CourtCardList title="Past" bookings={pastBookings} onBookingPress={handlePastBookingPress} />
           )}
         </ScrollView>
+
+        {pastBookings.length === 0 && (
+          <View style={styles.fixedButtonContainer}>
+            <CustomButton
+              title="Make a new booking"
+              onPress={handleMakeNewBooking}
+            />
+          </View>
+        )}
       </ScreenWrapper>
     </PageLayout>
   );
@@ -124,18 +135,21 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamilySemiBold,
     color: colors.white,
     marginBottom: 10,
-    marginTop: 10,
   },
   emptyContainer: {
-    paddingVertical: 40,
-    paddingHorizontal: 20,
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 18,
     lineHeight: 24,
     fontFamily: typography.fontFamily,
-    color: colors.lightGray,
-    textAlign: 'center',
+    color: colors.white,
+    marginBottom: 10,
+  },
+  fixedButtonContainer: {
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
   },
 });
 
