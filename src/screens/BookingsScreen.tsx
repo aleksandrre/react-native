@@ -33,7 +33,7 @@ export const BookingsScreen: React.FC = () => {
       courtNumber: '8',
       date: 'Thu, 1 Oct 2025',
       time: '21:00',
-      cancelled: false,
+      cancelled: true,
       rescheduled: false,
     },
     {
@@ -48,11 +48,20 @@ export const BookingsScreen: React.FC = () => {
   const handleUpcomingBookingPress = (booking: Booking) => {
     // Generate mock booking ID
     const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
+
+    // Determine status based on booking state
+    let status: 'Confirmed' | 'Cancelled' | 'Rescheduled' = 'Confirmed';
+    if (booking.cancelled) {
+      status = 'Cancelled';
+    } else if (booking.rescheduled) {
+      status = 'Rescheduled';
+    }
+
     navigation.navigate('BookingDetails', {
       courtNumber: booking.courtNumber,
       date: booking.date,
       time: booking.time,
-      status: 'Confirmed',
+      status: status,
       bookingId: bookingId,
       isPast: false,
     });

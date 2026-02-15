@@ -9,7 +9,7 @@ type RouteParams = {
         courtNumber: string;
         date: string;
         time: string;
-        status: 'Confirmed' | 'Failed' | 'Completed';
+        status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
         bookingId: string;
         isPast: boolean;
     };
@@ -90,8 +90,8 @@ export const BookingDetailsScreen: React.FC = () => {
 
                 {/* Buttons */}
                 <View style={styles.buttonContainer}>
-                    {isPast ? (
-                        // Past booking - only Make new booking
+                    {isPast || status === 'Cancelled' || status === 'Rescheduled' ? (
+                        // Past booking or cancelled/rescheduled - only Make new booking
                         <CustomButton
                             title="Make a new booking"
                             onPress={handleMakeNewBooking}
