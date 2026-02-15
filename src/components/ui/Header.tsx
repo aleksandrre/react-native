@@ -63,7 +63,7 @@ const getStyles = (variant: 'left' | 'right') => StyleSheet.create({
   title: {
     fontSize: 18,
     color: colors.white,
-    fontFamily: typography.fontFamily,
+    fontFamily: typography.fontFamilyBold,
   },
 
 

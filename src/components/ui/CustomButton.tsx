@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    fontFamily: typography.fontFamily,
+    fontFamily: typography.fontFamilyBold,
   },
 });
 

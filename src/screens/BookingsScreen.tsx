@@ -9,7 +9,7 @@ import { BookingsStackParamList } from '../navigation/MainNavigator';
 
 export const BookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<BookingsStackParamList>>();
-  const isLogedIn = false
+  const isLogedIn = true
 
   // Mock data - სანამ API არ გვაქვს
   const upcomingBookings: Booking[] = [
@@ -204,5 +204,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
+  buttonContainer: {
+    marginTop: 10,
+    marginBottom: 10,
+  }
 });
 

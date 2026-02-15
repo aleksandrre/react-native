@@ -100,15 +100,18 @@ export const BookingDetailsScreen: React.FC = () => {
                         // Upcoming booking - all buttons
                         <>
                             <CustomButton
+                                style={{ marginBottom: 10 }}
                                 title="Add to calendar"
                                 onPress={handleAddToCalendar}
                                 variant="primary"
                             />
                             <CustomButton
+                                style={{ marginBottom: 10 }}
                                 title="Make a new booking"
                                 onPress={handleMakeNewBooking}
                             />
                             <CustomButton
+                                style={{ marginBottom: 10 }}
                                 title="Reschedule booking"
                                 onPress={handleRescheduleBooking}
                                 variant="secondary"
@@ -155,7 +158,7 @@ const styles = StyleSheet.create({
     subtitle: {
         fontSize: 14,
         lineHeight: 20,
-        fontFamily: typography.fontFamily,
+        fontFamily: typography.fontFamilyLight,
         color: colors.white,
         textAlign: 'center',
         marginBottom: 10,
@@ -174,7 +177,7 @@ const styles = StyleSheet.create({
     bookingOn: {
         fontSize: 14,
         lineHeight: 20,
-        fontFamily: typography.fontFamily,
+        fontFamily: typography.fontFamilyLight,
         color: colors.white,
         textAlign: 'center',
         marginVertical: 12,
