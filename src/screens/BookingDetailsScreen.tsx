@@ -28,8 +28,8 @@ export const BookingDetailsScreen: React.FC = () => {
 
     // Determine subtitle text and if styles should be strikethrough
     const isCancelledOrRescheduled = status === 'Cancelled' || status === 'Rescheduled';
-    const subtitleText = isPast || isCancelledOrRescheduled 
-        ? 'Your booking was:' 
+    const subtitleText = isPast || isCancelledOrRescheduled
+        ? 'Your booking was:'
         : 'Your booking is confirmed:';
 
     const handleAddToCalendar = () => {
