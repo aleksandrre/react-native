@@ -18,7 +18,7 @@ export const LabeledInputField: React.FC<LabeledInputFieldProps> = ({
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
       <InputField style={[styles.input, style]} {...props} />
-      {error && (
+      {!!error && (
         <View style={styles.errorContainer}>
           <Text style={styles.errorIcon}>⚠</Text>
           <Text style={styles.errorText}>{error}</Text>
