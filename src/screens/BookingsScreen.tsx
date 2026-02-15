@@ -9,6 +9,7 @@ import { BookingsStackParamList } from '../navigation/MainNavigator';
 
 export const BookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<BookingsStackParamList>>();
+  const isLogedIn = false
 
   // Mock data - სანამ API არ გვაქვს
   const upcomingBookings: Booking[] = [
@@ -96,34 +97,68 @@ export const BookingsScreen: React.FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {/* Upcoming Section */}
 
-          {upcomingBookings.length > 0 ? (
-            <CourtCardList style={styles.container} title="Upcoming" bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
-          ) : (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.sectionTitle}>Upcoming</Text>
+          {!isLogedIn ? (
+            <>
+              <Text style={styles.sectionTitle}>Become a member</Text>
               <Text style={styles.emptyText}>
-                You have no upcoming bookings. Reserve a court now and enjoy some Padel!
+                Please log in to see your upcoming and past bookings!
               </Text>
-            </View>
-          )}
 
-          {pastBookings.length > 0 && (
-            <View>
+              {/* ღილაკების კონტეინერი */}
               <CustomButton
-                style={{ marginBottom: 10 }}
-                title="Make a new booking"
-                onPress={handleMakeNewBooking}
+                title="Log In"
+                onPress={() => {
+                  // გადავდივართ Auth სთექის Login გვერდზე
+                  navigation.getParent()?.navigate('Auth', { screen: 'Login' });
+                }}
               />
-            </View>
-          )}
 
-          {/* Past Section */}
+              <CustomButton
+                title="Register"
+                variant="secondary" // მეორე ღილაკი იყოს განსხვავებული სტილის
+                onPress={() => {
+                  // გადავდივართ Auth სთექის Register გვერდზე
+                  navigation.getParent()?.navigate('Auth', { screen: 'Register' });
+                }}
+              />
+            </>
+          ) : (
+            <>
+              {/* Upcoming Section */}
+              {upcomingBookings.length > 0 ? (
+                <CourtCardList title="Upcoming" bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
+              ) : (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>
+                    You have no upcoming bookings. Reserve a court now and enjoy some Padel!
+                  </Text>
+                </View>
+              )}
 
-          {pastBookings.length > 0 && (
-            <CourtCardList title="Past" bookings={pastBookings} onBookingPress={handlePastBookingPress} />
-          )}
+              {/* Make a new booking button */}
+              <View style={styles.buttonContainer}>
+                <CustomButton
+                  title="Make a new booking"
+                  onPress={handleMakeNewBooking}
+                />
+              </View>
+
+              {/* Past Section */}
+
+              {pastBookings.length > 0 && (
+                <>
+                  <Text style={styles.sectionTitle}>Past</Text>
+
+                  <CourtCardList title="" bookings={pastBookings} onBookingPress={handlePastBookingPress} />
+
+                </>
+              )}
+            </>
+          )
+
+          }
+
         </ScrollView>
 
         {pastBookings.length === 0 && (
@@ -148,7 +183,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    lineHeight: 22,
+    lineHeight: 23,
     fontFamily: typography.fontFamilySemiBold,
     color: colors.white,
     marginBottom: 10,
@@ -160,6 +195,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: typography.fontFamily,
     color: colors.white,
+    textAlign: 'left',
     marginBottom: 10,
   },
   fixedButtonContainer: {
