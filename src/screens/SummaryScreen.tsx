@@ -72,7 +72,7 @@ export const SummaryScreen: React.FC = () => {
     const totalPrice = bookings.length * pricePerSession;
     const userCredits: number = 3;
     const requiredCredits = bookings.length;
-    const isLoggedIn = true;
+    const isLoggedIn = false;
 
     const handleApplyCode = () => {
         console.log('Applying promo code:', promoCode);
@@ -149,7 +149,7 @@ export const SummaryScreen: React.FC = () => {
 
     const handleLoginToBook = () => {
         console.log('Navigate to login');
-        // TODO: Navigate to login screen
+        navigation.getParent()?.navigate('Auth', { screen: 'Login' });
     };
 
     const handleCancel = () => {
@@ -161,9 +161,11 @@ export const SummaryScreen: React.FC = () => {
             <Header title="Go Back" />
             <ScreenWrapper>
                 {/* Reservation Timer */}
-                <View style={styles.reservationBanner}>
-                    <Text style={styles.reservationText}>⏱️ Your sessions are reserved for 4:59</Text>
-                </View>
+                {isLoggedIn && (
+                    <View style={styles.reservationBanner}>
+                        <Text style={styles.reservationText}>⏱️ Your sessions are reserved for 4:59</Text>
+                    </View>
+                )}
 
                 <ScrollView
                     showsVerticalScrollIndicator={false}
@@ -173,83 +175,87 @@ export const SummaryScreen: React.FC = () => {
                     <CourtCardList title="Summary" bookings={bookings} />
 
                     {/* Apply Code Section */}
-                    <View style={styles.applyCodeSection}>
-                        <Text style={styles.applyCodeTitle}>Apply Code</Text>
-                        <View style={styles.applyCodeRow}>
-                            <InputField
-                                placeholder="Enter here"
-                                value={promoCode}
-                                onChangeText={setPromoCode}
-                                style={styles.promoInput}
-                            />
-                            <CustomButton
-                                title="Apply"
-                                onPress={handleApplyCode}
-                                style={styles.applyButton}
-                            />
+                    {isLoggedIn && (
+                        <View style={styles.applyCodeSection}>
+                            <Text style={styles.applyCodeTitle}>Apply Code</Text>
+                            <View style={styles.applyCodeRow}>
+                                <InputField
+                                    placeholder="Enter here"
+                                    value={promoCode}
+                                    onChangeText={setPromoCode}
+                                    style={styles.promoInput}
+                                />
+                                <CustomButton
+                                    title="Apply"
+                                    onPress={handleApplyCode}
+                                    style={styles.applyButton}
+                                />
+                            </View>
                         </View>
-                    </View>
+                    )}
 
                     {/* Payment Details Section */}
-                    <View style={styles.paymentSection}>
-                        <Text style={styles.paymentTitle}>Payment details</Text>
+                    {isLoggedIn && (
+                        <View style={styles.paymentSection}>
+                            <Text style={styles.paymentTitle}>Payment details</Text>
 
-                        <Text style={styles.fieldLabel}>Cardholder Name</Text>
-                        <InputField
-                            placeholder="Giorgi Padelia"
-                            value={cardholderName}
-                            onChangeText={setCardholderName}
-                            style={styles.paymentInput}
-                        />
-                        {validationErrors.cardholderName && (
-                            <Text style={styles.errorText}>{validationErrors.cardholderName}</Text>
-                        )}
+                            <Text style={styles.fieldLabel}>Cardholder Name</Text>
+                            <InputField
+                                placeholder="Giorgi Padelia"
+                                value={cardholderName}
+                                onChangeText={setCardholderName}
+                                style={styles.paymentInput}
+                            />
+                            {validationErrors.cardholderName && (
+                                <Text style={styles.errorText}>{validationErrors.cardholderName}</Text>
+                            )}
 
-                        <Text style={styles.fieldLabel}>Card Number</Text>
-                        <InputField
-                            placeholder="xxxx xxxx xxxx xxxx"
-                            value={cardNumber}
-                            onChangeText={setCardNumber}
-                            keyboardType="numeric"
-                            maxLength={19}
-                            style={styles.paymentInput}
-                        />
-                        {validationErrors.cardNumber && (
-                            <Text style={styles.errorText}>{validationErrors.cardNumber}</Text>
-                        )}
+                            <Text style={styles.fieldLabel}>Card Number</Text>
+                            <InputField
+                                placeholder="xxxx xxxx xxxx xxxx"
+                                value={cardNumber}
+                                onChangeText={setCardNumber}
+                                keyboardType="numeric"
+                                maxLength={19}
+                                style={styles.paymentInput}
+                            />
+                            {validationErrors.cardNumber && (
+                                <Text style={styles.errorText}>{validationErrors.cardNumber}</Text>
+                            )}
 
-                        <Text style={styles.fieldLabel}>Expiry Date</Text>
-                        <InputField
-                            placeholder="MM/YY"
-                            value={expiryDate}
-                            onChangeText={handleExpiryDateChange}
-                            keyboardType="numeric"
-                            maxLength={5}
-                            style={styles.paymentInput}
-                        />
-                        {validationErrors.expiryDate && (
-                            <Text style={styles.errorText}>{validationErrors.expiryDate}</Text>
-                        )}
+                            <Text style={styles.fieldLabel}>Expiry Date</Text>
+                            <InputField
+                                placeholder="MM/YY"
+                                value={expiryDate}
+                                onChangeText={handleExpiryDateChange}
+                                keyboardType="numeric"
+                                maxLength={5}
+                                style={styles.paymentInput}
+                            />
+                            {validationErrors.expiryDate && (
+                                <Text style={styles.errorText}>{validationErrors.expiryDate}</Text>
+                            )}
 
-                        <Text style={styles.fieldLabel}>CVC Number</Text>
-                        <InputField
-                            placeholder="***"
-                            value={cvcNumber}
-                            onChangeText={handleCvcChange}
-                            keyboardType="numeric"
-                            maxLength={3}
-                            secureTextEntry
-                            style={styles.paymentInput}
-                        />
-                        {validationErrors.cvcNumber && (
-                            <Text style={styles.errorText}>{validationErrors.cvcNumber}</Text>
-                        )}
-                        {cvcError && !validationErrors.cvcNumber && (
-                            <View style={styles.warningContainer}>
-                                <Text style={styles.warningText}>⚠️ Please enter 3 digits</Text>
-                            </View>
-                        )}
-                    </View>
+                            <Text style={styles.fieldLabel}>CVC Number</Text>
+                            <InputField
+                                placeholder="***"
+                                value={cvcNumber}
+                                onChangeText={handleCvcChange}
+                                keyboardType="numeric"
+                                maxLength={3}
+                                secureTextEntry
+                                style={styles.paymentInput}
+                            />
+                            {validationErrors.cvcNumber && (
+                                <Text style={styles.errorText}>{validationErrors.cvcNumber}</Text>
+                            )}
+                            {cvcError && !validationErrors.cvcNumber && (
+                                <View style={styles.warningContainer}>
+                                    <Text style={styles.warningText}>⚠️ Please enter 3 digits</Text>
+                                </View>
+                            )}
+                        </View>
+                    )}
 
 
                 </ScrollView>

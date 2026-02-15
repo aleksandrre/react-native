@@ -36,15 +36,29 @@ function AppContent() {
   const Stack = createNativeStackNavigator();
 
   return (
+    // <NavigationContainer>
+    //   <Stack.Navigator screenOptions={{ headerShown: false }}>
+    //     {/* ავტორიზაციის გვერდები */}
+    //     {!isAuthenticated && (
+    //       <Stack.Screen name="Auth" component={AuthNavigator} />
+    //     )}
+
+    //     {/* მთავარი აპლიკაცია */}
+    //     <Stack.Screen name="Main" component={MainNavigator} />
+    //   </Stack.Navigator>
+    // </NavigationContainer>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* ავტორიზაციის გვერდები */}
-        {!isAuthenticated && (
-          <Stack.Screen name="Auth" component={AuthNavigator} />
+        {isAuthenticated ? (
+          // თუ შესულია - მხოლოდ მთავარი აპლიკაცია
+          <Stack.Screen name="Main" component={MainNavigator} />
+        ) : (
+          // თუ არ არის შესული - ჯერ ავტორიზაცია, მერე მთავარი (სტუმრისთვის)
+          <>
+            <Stack.Screen name="Auth" component={AuthNavigator} />
+            <Stack.Screen name="Main" component={MainNavigator} />
+          </>
         )}
-
-        {/* მთავარი აპლიკაცია */}
-        <Stack.Screen name="Main" component={MainNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
   );
