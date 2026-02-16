@@ -19,10 +19,9 @@ export const LabeledInputField: React.FC<LabeledInputFieldProps> = ({
       <Text style={styles.label}>{label}</Text>
       <InputField style={[styles.input, style]} {...props} />
       {!!error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorIcon}>⚠</Text>
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
+        <Text style={styles.errorText}>
+          <Text style={styles.warningIcon}>⚠</Text> {error}
+        </Text>
       )}
     </View>
   );
@@ -43,22 +42,20 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 0,
   },
-  errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    marginTop: 4,
-    paddingLeft:9
-  },
-  errorIcon: {
-    color: '#FFD700',
-    fontSize: 14,
-    marginRight: 4,
-  },
+ 
+  
   errorText: {
     color: colors.lightPurple,
     fontSize: 12,
     lineHeight: 15,
+    marginTop: 4,
+    paddingLeft: 9,
     fontFamily: typography.fontFamily,
+  },
+  warningIcon: {
+    color: '#FFD700',
+    fontSize: 14,
+    marginRight: 4,
   },
 });
 

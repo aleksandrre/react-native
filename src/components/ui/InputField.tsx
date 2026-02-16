@@ -9,6 +9,7 @@ export const InputField: React.FC<InputFieldProps> = ({ style, ...props }) => {
     <TextInput
       style={[styles.input, style]}
       placeholderTextColor={colors.lightGray}
+      editable={true}
       {...props}
     />
   );
@@ -17,15 +18,17 @@ export const InputField: React.FC<InputFieldProps> = ({ style, ...props }) => {
 const styles = StyleSheet.create({
   input: {
     backgroundColor: colors.dark,
-    padding:8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderRadius: 5,
     marginBottom: 12,
-    height:34,
+    height: 34,
     fontSize: 14,
     borderWidth: 1,
     borderColor: colors.lightGray,
     color: colors.white,
     fontFamily: typography.fontFamily,
+    textAlignVertical: 'center',
   },
 });
 

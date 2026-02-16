@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { format } from 'date-fns';
-import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList } from '../components';
-import { InputField } from '../components/ui/InputField';
+import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList, LabeledInputField } from '../components';
 import { colors, typography } from '../theme';
 import { Booking } from '../types';
 import { BookStackParamList } from '../navigation/MainNavigator';
@@ -81,12 +80,53 @@ export const SummaryScreen: React.FC = () => {
         // TODO: Apply promo code logic
     };
 
-    const handleCvcChange = (text: string) => {
-        setCvcNumber(text);
-        if (text.length > 0 && text.length !== 3) {
-            setCvcError(true);
-        } else {
-            setCvcError(false);
+    // Luhn algorithm for card number validation
+    const validateCardNumberLuhn = (cardNum: string): boolean => {
+        const digits = cardNum.replace(/\s/g, '');
+        if (!/^\d+$/.test(digits)) return false;
+        
+        let sum = 0;
+        let isEven = false;
+        
+        for (let i = digits.length - 1; i >= 0; i--) {
+            let digit = parseInt(digits[i], 10);
+            
+            if (isEven) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+            
+            sum += digit;
+            isEven = !isEven;
+        }
+        
+        return sum % 10 === 0;
+    };
+
+    const handleCardholderNameChange = (text: string) => {
+        // Allow letters (including Georgian), spaces, hyphens, and apostrophes
+        const cleaned = text.replace(/[^\p{L}\s\-']/gu, '');
+        setCardholderName(cleaned);
+        
+        // Clear error when user starts typing
+        if (validationErrors.cardholderName) {
+            setValidationErrors(prev => ({ ...prev, cardholderName: '' }));
+        }
+    };
+
+    const handleCardNumberChange = (text: string) => {
+        // Remove all non-digit characters
+        const cleaned = text.replace(/\D/g, '');
+        
+        // Format as groups of 4 digits
+        const formatted = cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
+        setCardNumber(formatted);
+        
+        // Clear error when user starts typing
+        if (validationErrors.cardNumber) {
+            setValidationErrors(prev => ({ ...prev, cardNumber: '' }));
         }
     };
 
@@ -100,29 +140,90 @@ export const SummaryScreen: React.FC = () => {
         } else {
             setExpiryDate(cleaned);
         }
+        
+        // Clear error when user starts typing
+        if (validationErrors.expiryDate) {
+            setValidationErrors(prev => ({ ...prev, expiryDate: '' }));
+        }
+    };
+
+    const handleCvcChange = (text: string) => {
+        // Allow only digits
+        const cleaned = text.replace(/\D/g, '');
+        setCvcNumber(cleaned);
+        
+        // Real-time warning for incomplete CVC
+        if (cleaned.length > 0 && cleaned.length !== 3) {
+            setCvcError(true);
+        } else {
+            setCvcError(false);
+        }
+        
+        // Clear error when user starts typing
+        if (validationErrors.cvcNumber) {
+            setValidationErrors(prev => ({ ...prev, cvcNumber: '' }));
+        }
     };
 
     const validateForm = (): boolean => {
         const errors: { [key: string]: string } = {};
 
+        // Cardholder Name Validation
         if (!cardholderName.trim()) {
             errors.cardholderName = 'Cardholder name is required';
+        } else if (cardholderName.trim().length < 3) {
+            errors.cardholderName = 'Name must be at least 3 characters';
+        } else if (!/^[\p{L}\s\-']+$/u.test(cardholderName.trim())) {
+            errors.cardholderName = 'Name can only contain letters, spaces, hyphens, and apostrophes';
+        } else if (cardholderName.trim().split(/\s+/).length < 2) {
+            errors.cardholderName = 'Please enter both first and last name';
         }
 
+        // Card Number Validation
         if (!cardNumber.trim()) {
             errors.cardNumber = 'Card number is required';
+        } else {
+            const digitsOnly = cardNumber.replace(/\s/g, '');
+            if (digitsOnly.length < 13 || digitsOnly.length > 19) {
+                errors.cardNumber = 'Card number must be between 13-19 digits';
+            } else if (!/^\d+$/.test(digitsOnly)) {
+                errors.cardNumber = 'Card number must contain only digits';
+            } else if (!validateCardNumberLuhn(cardNumber)) {
+                errors.cardNumber = 'Invalid card number';
+            }
         }
 
+        // Expiry Date Validation
         if (!expiryDate.trim()) {
             errors.expiryDate = 'Expiry date is required';
         } else if (expiryDate.length < 5) {
             errors.expiryDate = 'Invalid expiry date format (MM/YY)';
+        } else {
+            const [month, year] = expiryDate.split('/');
+            const monthNum = parseInt(month, 10);
+            const yearNum = parseInt(year, 10);
+            
+            if (monthNum < 1 || monthNum > 12) {
+                errors.expiryDate = 'Month must be between 01 and 12';
+            } else {
+                // Check if card is expired
+                const currentDate = new Date();
+                const currentYear = currentDate.getFullYear() % 100; // Get last 2 digits
+                const currentMonth = currentDate.getMonth() + 1;
+                
+                if (yearNum < currentYear || (yearNum === currentYear && monthNum < currentMonth)) {
+                    errors.expiryDate = 'Card has expired';
+                }
+            }
         }
 
+        // CVC Number Validation
         if (!cvcNumber.trim()) {
             errors.cvcNumber = 'CVC number is required';
+        } else if (!/^\d+$/.test(cvcNumber)) {
+            errors.cvcNumber = 'CVC must contain only digits';
         } else if (cvcNumber.length !== 3) {
-            errors.cvcNumber = 'CVC must be 3 digits';
+            errors.cvcNumber = 'CVC must be exactly 3 digits';
         }
 
         setValidationErrors(errors);
@@ -179,14 +280,16 @@ export const SummaryScreen: React.FC = () => {
                     {/* Apply Code Section */}
                     {isAuthenticated && (
                         <View style={styles.applyCodeSection}>
-                            <Text style={styles.applyCodeTitle}>Apply Code</Text>
                             <View style={styles.applyCodeRow}>
-                                <InputField
-                                    placeholder="Enter here"
-                                    value={promoCode}
-                                    onChangeText={setPromoCode}
-                                    style={styles.promoInput}
-                                />
+                                <View style={styles.promoInputWrapper}>
+                                    <LabeledInputField
+                                        label="Apply Code"
+                                        placeholder="Enter here"
+                                        value={promoCode}
+                                        onChangeText={setPromoCode}
+                                        style={styles.promoInput}
+                                    />
+                                </View>
                                 <CustomButton
                                     title="Apply"
                                     onPress={handleApplyCode}
@@ -201,61 +304,45 @@ export const SummaryScreen: React.FC = () => {
                         <View style={styles.paymentSection}>
                             <Text style={styles.paymentTitle}>Payment details</Text>
 
-                            <Text style={styles.fieldLabel}>Cardholder Name</Text>
-                            <InputField
+                            <LabeledInputField
+                                label="Cardholder Name"
                                 placeholder="Giorgi Padelia"
                                 value={cardholderName}
-                                onChangeText={setCardholderName}
-                                style={styles.paymentInput}
+                                onChangeText={handleCardholderNameChange}
+                                autoCapitalize="words"
+                                error={validationErrors.cardholderName}
                             />
-                            {validationErrors.cardholderName && (
-                                <Text style={styles.errorText}>{validationErrors.cardholderName}</Text>
-                            )}
 
-                            <Text style={styles.fieldLabel}>Card Number</Text>
-                            <InputField
+                            <LabeledInputField
+                                label="Card Number"
                                 placeholder="xxxx xxxx xxxx xxxx"
                                 value={cardNumber}
-                                onChangeText={setCardNumber}
+                                onChangeText={handleCardNumberChange}
                                 keyboardType="numeric"
-                                maxLength={19}
-                                style={styles.paymentInput}
+                                maxLength={23}
+                                error={validationErrors.cardNumber}
                             />
-                            {validationErrors.cardNumber && (
-                                <Text style={styles.errorText}>{validationErrors.cardNumber}</Text>
-                            )}
 
-                            <Text style={styles.fieldLabel}>Expiry Date</Text>
-                            <InputField
+                            <LabeledInputField
+                                label="Expiry Date"
                                 placeholder="MM/YY"
                                 value={expiryDate}
                                 onChangeText={handleExpiryDateChange}
                                 keyboardType="numeric"
                                 maxLength={5}
-                                style={styles.paymentInput}
+                                error={validationErrors.expiryDate}
                             />
-                            {validationErrors.expiryDate && (
-                                <Text style={styles.errorText}>{validationErrors.expiryDate}</Text>
-                            )}
 
-                            <Text style={styles.fieldLabel}>CVC Number</Text>
-                            <InputField
+                            <LabeledInputField
+                                label="CVC Number"
                                 placeholder="***"
                                 value={cvcNumber}
                                 onChangeText={handleCvcChange}
                                 keyboardType="numeric"
                                 maxLength={3}
                                 secureTextEntry
-                                style={styles.paymentInput}
+                                error={validationErrors.cvcNumber || (cvcError && !validationErrors.cvcNumber ? 'Please enter 3 digits' : '')}
                             />
-                            {validationErrors.cvcNumber && (
-                                <Text style={styles.errorText}>{validationErrors.cvcNumber}</Text>
-                            )}
-                            {cvcError && !validationErrors.cvcNumber && (
-                                <View style={styles.warningContainer}>
-                                    <Text style={styles.warningText}>⚠️ Please enter 3 digits</Text>
-                                </View>
-                            )}
                         </View>
                     )}
 
@@ -368,19 +455,15 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10,
     },
-    applyCodeTitle: {
-        fontSize: 14,
-        fontFamily: typography.fontFamily,
-        color: colors.white,
-        marginBottom: 12,
-    },
     applyCodeRow: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         gap: 2,
     },
-    promoInput: {
+    promoInputWrapper: {
         flex: 1,
+    },
+    promoInput: {
         marginBottom: 0,
     },
     applyButton: {
@@ -390,7 +473,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: colors.lightGray,
         padding: 0,
-        margin: 0
+        margin: 0,
+        marginTop: 30,
     },
     paymentSection: {
     },
@@ -399,36 +483,7 @@ const styles = StyleSheet.create({
         lineHeight: 20,
         fontFamily: typography.fontFamilyBold,
         color: colors.white,
-        marginBottom: 16,
-    },
-    fieldLabel: {
-        fontSize: 14,
-        lineHeight: 18,
-        fontFamily: typography.fontFamily,
-        color: colors.white,
-        marginBottom: 8,
-        marginTop: 4,
-    },
-    paymentInput: {
-        marginBottom: 8,
-    },
-    warningContainer: {
-        marginTop: 4,
-        marginBottom: 8,
-    },
-    warningText: {
-        fontSize: 12,
-        lineHeight: 16,
-        fontFamily: typography.fontFamily,
-        color: '#FFA500',
-    },
-    errorText: {
-        fontSize: 12,
-        lineHeight: 16,
-        fontFamily: typography.fontFamily,
-        color: '#FF4444',
-        marginTop: -4,
-        marginBottom: 8,
+        marginBottom: 12,
     },
     priceSection: {
         marginTop: 24,

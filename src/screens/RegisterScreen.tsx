@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useRegister } from '../hooks';
@@ -19,9 +19,24 @@ export const RegisterScreen: React.FC = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const registerMutation = useRegister();
 
+  const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
+  const [termsError, setTermsError] = useState('');
+
+  const validateName = (nameValue: string) => {
+    if (nameValue.length === 0) {
+      setNameError('');
+    } else if (nameValue.length < 2) {
+      setNameError('Name must be at least 2 characters');
+    } else if (nameValue.length > 50) {
+      setNameError('Name must be less than 50 characters');
+    } else {
+      setNameError('');
+    }
+  };
 
   const validateEmail = (emailValue: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,20 +49,52 @@ export const RegisterScreen: React.FC = () => {
     }
   };
 
+  const validatePhone = (phoneValue: string) => {
+    const phoneRegex = /^[\d\s\+\-\(\)]+$/;
+    if (phoneValue.length === 0) {
+      setPhoneError('');
+    } else if (!phoneRegex.test(phoneValue)) {
+      setPhoneError('Please enter a valid phone number');
+    } else if (phoneValue.replace(/[\s\+\-\(\)]/g, '').length < 9) {
+      setPhoneError('Phone number must be at least 9 digits');
+    } else {
+      setPhoneError('');
+    }
+  };
+
   const validatePassword = (pwd: string) => {
-    if (pwd.length > 0 && pwd.length < 6) {
-      setPasswordError('Please enter at least 6 characters');
+    if (pwd.length === 0) {
+      setPasswordError('');
+    } else if (pwd.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
     } else {
       setPasswordError('');
     }
   };
 
   const validateConfirmPassword = (confirmPwd: string) => {
-    if (confirmPwd.length > 0 && confirmPwd !== password) {
-      setConfirmPasswordError('Please enter matching password');
+    if (confirmPwd.length === 0) {
+      setConfirmPasswordError('');
+    } else if (confirmPwd !== password) {
+      setConfirmPasswordError('Passwords do not match');
     } else {
       setConfirmPasswordError('');
     }
+  };
+
+  const handleNameChange = (text: string) => {
+    setName(text);
+    validateName(text);
+  };
+
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    validateEmail(text);
+  };
+
+  const handlePhoneChange = (text: string) => {
+    setPhone(text);
+    validatePhone(text);
   };
 
   const handlePasswordChange = (text: string) => {
@@ -64,29 +111,69 @@ export const RegisterScreen: React.FC = () => {
   };
 
   const handleRegister = () => {
-    if (!name || !email || !phone || !password || !confirmPassword) {
-      Alert.alert('შეცდომა', 'გთხოვთ შეავსოთ ყველა ველი');
-      return;
+    let hasError = false;
+
+    // Check if all required fields are filled
+    if (!name.trim()) {
+      setNameError('This field is required');
+      hasError = true;
+    } else if (name.length < 2) {
+      setNameError('Name must be at least 2 characters');
+      hasError = true;
+    } else if (name.length > 50) {
+      setNameError('Name must be less than 50 characters');
+      hasError = true;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email');
-      return;
+    if (!email.trim()) {
+      setEmailError('This field is required');
+      hasError = true;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setEmailError('Please enter a valid email');
+        hasError = true;
+      }
     }
 
-    if (password.length < 6) {
-      setPasswordError('Please enter at least 6 characters');
-      return;
+    if (!phone.trim()) {
+      setPhoneError('This field is required');
+      hasError = true;
+    } else {
+      const phoneRegex = /^[\d\s\+\-\(\)]+$/;
+      if (!phoneRegex.test(phone)) {
+        setPhoneError('Please enter a valid phone number');
+        hasError = true;
+      } else if (phone.replace(/[\s\+\-\(\)]/g, '').length < 9) {
+        setPhoneError('Phone number must be at least 9 digits');
+        hasError = true;
+      }
     }
 
-    if (password !== confirmPassword) {
-      setConfirmPasswordError('Please enter matching password');
-      return;
+    if (!password) {
+      setPasswordError('This field is required');
+      hasError = true;
+    } else if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
+      hasError = true;
+    }
+
+    if (!confirmPassword) {
+      setConfirmPasswordError('This field is required');
+      hasError = true;
+    } else if (confirmPassword !== password) {
+      setConfirmPasswordError('Passwords do not match');
+      hasError = true;
     }
 
     if (!agreedToTerms) {
-      Alert.alert('შეცდომა', 'გთხოვთ დაეთანხმოთ წესებსა და კონფიდენციალურობის პოლიტიკას');
+      setTermsError('You must agree to the terms & privacy policy');
+      hasError = true;
+    } else {
+      setTermsError('');
+    }
+
+    if (hasError) {
       return;
     }
 
@@ -104,18 +191,16 @@ export const RegisterScreen: React.FC = () => {
             label="Name*"
             placeholder="Name"
             value={name}
-            onChangeText={setName}
+            onChangeText={handleNameChange}
             autoCapitalize="words"
+            error={nameError}
           />
 
           <LabeledInputField
             label="Email*"
             placeholder="Email"
             value={email}
-            onChangeText={(text) => {
-              setEmail(text);
-              validateEmail(text);
-            }}
+            onChangeText={handleEmailChange}
             keyboardType="email-address"
             autoCapitalize="none"
             error={emailError}
@@ -125,8 +210,9 @@ export const RegisterScreen: React.FC = () => {
             label="Phone*"
             placeholder="Phone number"
             value={phone}
-            onChangeText={setPhone}
+            onChangeText={handlePhoneChange}
             keyboardType="phone-pad"
+            error={phoneError}
           />
 
           <LabeledInputField
@@ -150,7 +236,10 @@ export const RegisterScreen: React.FC = () => {
           <View style={styles.termsContainer}>
             <Checkbox
               checked={agreedToTerms}
-              onToggle={() => setAgreedToTerms(!agreedToTerms)}
+              onToggle={() => {
+                setAgreedToTerms(!agreedToTerms);
+                if (termsError) setTermsError('');
+              }}
               label={
                 <Text style={styles.termsText}>
                   I agree to the{' '}
@@ -164,6 +253,11 @@ export const RegisterScreen: React.FC = () => {
                 </Text>
               }
             />
+            {termsError && (
+              <Text style={styles.termsErrorText}>
+                <Text style={styles.warningIcon}>⚠</Text> {termsError}
+              </Text>
+            )}
           </View>
 
           <CustomButton
@@ -228,6 +322,18 @@ const styles = StyleSheet.create({
   footerLink: {
     color: colors.lightPurple,
     fontFamily: typography.fontFamily,
+  },
+  termsErrorText: {
+    color: colors.lightPurple,
+    fontSize: 12,
+    lineHeight: 15,
+    marginTop: 8,
+    fontFamily: typography.fontFamily,
+  },
+  warningIcon: {
+    color: '#FFD700',
+    fontSize: 14,
+    marginRight: 4,
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useLogin } from '../hooks';
@@ -14,31 +14,39 @@ export const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
   const loginMutation = useLogin();
-
-  const validateEmail = (emailValue: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (emailValue.length > 0 && !emailRegex.test(emailValue)) {
-      setEmailError('Please enter a valid email');
-    } else {
-      setEmailError('');
-    }
-  };
 
   const handleEmailChange = (text: string) => {
     setEmail(text);
-    validateEmail(text);
+    if (emailError) setEmailError('');
   };
 
   const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert('შეცდომა', 'გთხოვთ შეავსოთ ყველა ველი');
-      return;
+    let hasError = false;
+
+    // Validate email
+    if (!email.trim()) {
+      setEmailError('This field is required');
+      hasError = true;
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setEmailError('Please enter a valid email');
+        hasError = true;
+      }
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email');
+    // Validate password
+    if (!password) {
+      setPasswordError('This field is required');
+      hasError = true;
+    } else if (password.length < 6) {
+      setPasswordError('Please enter a valid password');
+      hasError = true;
+    }
+
+    if (hasError) {
       return;
     }
 
@@ -70,8 +78,12 @@ export const LoginScreen: React.FC = () => {
               label="Password"
               placeholder="Password"
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(text) => {
+                setPassword(text);
+                if (passwordError) setPasswordError('');
+              }}
               secureTextEntry
+              error={passwordError}
             />
           </View>
 
