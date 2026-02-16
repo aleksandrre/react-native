@@ -47,15 +47,13 @@ const styles = StyleSheet.create({
   errorText: {
     color: colors.lightPurple,
     fontSize: 12,
-    lineHeight: 15,
     marginTop: 4,
     paddingLeft: 9,
     fontFamily: typography.fontFamily,
   },
   warningIcon: {
     color: '#FFD700',
-    fontSize: 14,
-    marginRight: 4,
+    fontSize: 12,
   },
 });
 
