@@ -72,7 +72,7 @@ export const SummaryScreen: React.FC = () => {
     const totalPrice = bookings.length * pricePerSession;
     const userCredits: number = 3;
     const requiredCredits = bookings.length;
-    const isLoggedIn = false;
+    const isLoggedIn = true;
 
     const handleApplyCode = () => {
         console.log('Applying promo code:', promoCode);

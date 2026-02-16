@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     lineHeight:23,
-    fontFamily: typography.fontFamilySemiBold,
+    fontFamily: typography.fontFamilyBold,
     color: colors.white,
     marginBottom: 10,
   },
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   monthText: {
     fontSize: 8,
     lineHeight:10,
-    fontFamily: typography.fontFamilyMedium,
+    fontFamily: typography.fontFamily,
     color: colors.white,
   },
   monthBoundaryLine: {
@@ -289,7 +289,8 @@ const styles = StyleSheet.create({
   dayOfWeek: {
     fontSize: 8,
     lineHeight:10,
-    color: colors.lightGray,
+    color: colors.white,
+    fontFamily:typography.fontFamily,
     marginBottom: 8,
   },
   dateCircle: {
@@ -311,12 +312,12 @@ const styles = StyleSheet.create({
   dateNumber: {
     fontSize: 14,
     lineHeight:18,
-    fontFamily: typography.fontFamilyMedium,
-    color: colors.lightGray,
+    fontFamily: typography.fontFamily,
+    color: colors.white,
   },
   dateNumberSelected: {
     color: colors.white,
-    fontFamily: typography.fontFamilySemiBold,
+    fontFamily: typography.fontFamilyBold,
   },
   pastText: {
     opacity: 0.35,
