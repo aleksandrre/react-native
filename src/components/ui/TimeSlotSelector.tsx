@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     lineHeight: 23,
-    fontFamily: typography.fontFamilySemiBold,
+    fontFamily: typography.fontFamilyBold,
     color: colors.white,
     marginBottom: 10,
   },
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   slotText: {
     fontSize: 14,
     lineHeight: 18,
-    fontFamily: typography.fontFamilyMedium,
+    fontFamily: typography.fontFamily,
     color: colors.white,
   },
   slotTextSelected: {

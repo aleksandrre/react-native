@@ -168,15 +168,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 22,
-    lineHeight: 28,
-    fontFamily: typography.fontFamilySemiBold,
+    fontSize: 18,
+    lineHeight: 23,
+    fontFamily: typography.fontFamilyBold,
     color: colors.white,
   },
   viewCourts: {
-    fontSize: 22,
-    lineHeight: 28,
-    fontFamily: typography.fontFamilyMedium,
+    fontSize: 18,
+    lineHeight: 23,
+    fontFamily: typography.fontFamily,
     color: colors.lightPurple,
     textDecorationLine: 'underline',
   },
@@ -203,18 +203,18 @@ const styles = StyleSheet.create({
   warningBold: {
     fontSize: 12,
     lineHeight: 15,
-    fontFamily: typography.fontFamilySemiBold,
+    fontFamily: typography.fontFamilyBold,
   },
   selectedDate: {
     fontSize: 14,
     lineHeight: 18,
-    fontFamily: typography.fontFamily,
-    color: colors.lightGray,
+    fontFamily: typography.fontFamilyBold,
+    color: colors.white,
     marginBottom: 10,
   },
   selectedDateValue: {
-    fontFamily: typography.fontFamilySemiBold,
-    color: colors.white,
+    fontFamily: typography.fontFamily,
+    color: colors.lightGray,
 
   },
   scrollContent: {

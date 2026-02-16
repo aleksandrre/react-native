@@ -39,7 +39,8 @@ const styles = StyleSheet.create({
     lineHeight: 70,
     color: colors.white,
     textAlign: 'center',
-    fontFamily: typography.fontFamily,
+    fontFamily: typography.fontFamilyBold,
+    
   },
 });
 

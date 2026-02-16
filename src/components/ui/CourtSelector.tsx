@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     timeText: {
         fontSize: 14,
         lineHeight: 18,
-        fontFamily: typography.fontFamilySemiBold,
+        fontFamily: typography.fontFamilyBold,
         color: colors.white,
         textAlign: 'center',
         marginBottom: 8,
@@ -115,13 +115,13 @@ const styles = StyleSheet.create({
     courtText: {
         fontSize: 14,
         lineHeight: 18,
-        fontFamily: typography.fontFamilyMedium,
+        fontFamily: typography.fontFamily,
         color: colors.white,
     },
     courtTextSelected: {
-        fontFamily: typography.fontFamilySemiBold,
+        fontFamily: typography.fontFamilyBold,
     },
     courtTextDisabled: {
-        color: colors.lightGray,
+        color: colors.gray,
     },
 });
