@@ -7,6 +7,7 @@ import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
 import { Booking } from '../types';
 import { BookStackParamList } from '../navigation/MainNavigator';
+import { useAuthStore } from '../store/authStore';
 
 type RouteParams = {
     Summary: {
@@ -72,7 +73,8 @@ export const SummaryScreen: React.FC = () => {
     const totalPrice = bookings.length * pricePerSession;
     const userCredits: number = 3;
     const requiredCredits = bookings.length;
-    const isLoggedIn = true;
+    
+    const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
 
     const handleApplyCode = () => {
         console.log('Applying promo code:', promoCode);
@@ -161,7 +163,7 @@ export const SummaryScreen: React.FC = () => {
             <Header title="Go Back" />
             <ScreenWrapper>
                 {/* Reservation Timer */}
-                {isLoggedIn && (
+                {isAuthenticated && (
                     <View style={styles.reservationBanner}>
                         <Text style={styles.reservationText}>⏱️ Your sessions are reserved for 4:59</Text>
                     </View>
@@ -175,7 +177,7 @@ export const SummaryScreen: React.FC = () => {
                     <CourtCardList title="Summary" bookings={bookings} />
 
                     {/* Apply Code Section */}
-                    {isLoggedIn && (
+                    {isAuthenticated && (
                         <View style={styles.applyCodeSection}>
                             <Text style={styles.applyCodeTitle}>Apply Code</Text>
                             <View style={styles.applyCodeRow}>
@@ -195,7 +197,7 @@ export const SummaryScreen: React.FC = () => {
                     )}
 
                     {/* Payment Details Section */}
-                    {isLoggedIn && (
+                    {isAuthenticated && (
                         <View style={styles.paymentSection}>
                             <Text style={styles.paymentTitle}>Payment details</Text>
 
@@ -262,7 +264,7 @@ export const SummaryScreen: React.FC = () => {
 
                 {/* Buttons */}
                 <View style={styles.buttonContainer}>
-                    {!isLoggedIn ? (
+                    {!isAuthenticated ? (
                         // Not logged in: Show simple price and login button
                         <>
                             <Text style={styles.priceText}>Price: {`₾${totalPrice}`}</Text>
@@ -292,8 +294,9 @@ export const SummaryScreen: React.FC = () => {
                             {userCredits === 0 ? (
                                 // No credits: Show only Pay button
                                 <CustomButton
-                                    title="Pay and book court"
+                                    title="Pay and book courts"
                                     onPress={handlePayAndBook}
+                                    style={styles.PayAndBookCourtsBTN}
                                 />
                             ) : userCredits >= requiredCredits ? (
                                 // Enough credits: Show both buttons
@@ -306,6 +309,8 @@ export const SummaryScreen: React.FC = () => {
                                     <CustomButton
                                         title="Pay and book courts"
                                         onPress={handlePayAndBook}
+                                        style={styles.PayAndBookCourtsBTN}
+
                                     />
                                 </>
                             ) : (
@@ -319,6 +324,8 @@ export const SummaryScreen: React.FC = () => {
                                     <CustomButton
                                         title="Pay and book courts"
                                         onPress={handlePayAndBook}
+                                        style={styles.PayAndBookCourtsBTN}
+
                                     />
                                 </>
                             )}
@@ -332,7 +339,7 @@ export const SummaryScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
     reservationBanner: {
-        backgroundColor: '#60235acb',
+        backgroundColor: colors.primary,
         borderRadius: 15,
         paddingVertical: 5,
         paddingHorizontal: 8,
@@ -343,7 +350,7 @@ const styles = StyleSheet.create({
     reservationText: {
         fontSize: 14,
         lineHeight: 18,
-        fontFamily: typography.fontFamilySemiBold,
+        fontFamily: typography.fontFamily,
         color: colors.white,
     },
     scrollContent: {
@@ -363,7 +370,7 @@ const styles = StyleSheet.create({
     },
     applyCodeTitle: {
         fontSize: 14,
-        fontFamily: typography.fontFamilySemiBold,
+        fontFamily: typography.fontFamily,
         color: colors.white,
         marginBottom: 12,
     },
@@ -379,15 +386,18 @@ const styles = StyleSheet.create({
     applyButton: {
         width: 57,
         height: 34,
-        paddingVertical: 8,
         borderRadius: 5,
+        borderWidth: 1,
+        borderColor: colors.lightGray,
+        padding: 0,
+        margin: 0
     },
     paymentSection: {
     },
     paymentTitle: {
-        fontSize: 16,
+        fontSize: 18,
         lineHeight: 20,
-        fontFamily: typography.fontFamilySemiBold,
+        fontFamily: typography.fontFamilyBold,
         color: colors.white,
         marginBottom: 16,
     },
@@ -470,20 +480,24 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         padding: 10,
+        paddingBottom: 0,
         marginBottom: 0,
     },
     priceText: {
-        fontSize: 16,
-        lineHeight: 20,
-        fontFamily: typography.fontFamilySemiBold,
+        fontSize: 18,
+        lineHeight: 23,
+        fontFamily: typography.fontFamilyBold,
         color: colors.white,
-        marginBottom: 8,
+        marginBottom: 10,
     },
     creditsText: {
-        fontSize: 14,
-        lineHeight: 18,
-        fontFamily: typography.fontFamily,
+        fontSize: 18,
+        lineHeight: 23,
+        fontFamily: typography.fontFamilyBold,
         color: colors.white,
-        marginBottom: 16,
+        marginBottom: 10,
     },
+    PayAndBookCourtsBTN: {
+        marginTop: 10
+    }
 });

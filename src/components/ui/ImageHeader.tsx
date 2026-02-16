@@ -20,6 +20,8 @@ export const ImageHeader: React.FC<ImageHeaderProps> = ({ title, imageSource }) 
       ]}
       resizeMode="cover" // სურათი სრულად შეავსებს 141px-ს
     >
+      <View style={styles.overlay} />
+
       <View >
         <Text style={styles.title}>{title}</Text>
       </View>
@@ -33,7 +35,11 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
-
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)', // 0.4 შეგიძლია შეცვალო 0.3–0.6 შორის
+  },
+  
   title: {
     fontSize: 40,
     lineHeight: 70,

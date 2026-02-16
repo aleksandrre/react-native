@@ -56,21 +56,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.dark,
   },
   content: {
-    paddingTop: 98,
-    paddingBottom: 60,
     paddingHorizontal: 20,
     flex: 1,
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   descriptionText: {
     fontSize: 27,
     color: colors.white,
     textAlign: 'left',
-    fontFamily: typography.fontFamily,
+    fontFamily: typography.fontFamilyBold,
   },
   image: {
     width: '100%',
     height: 180,
+    marginTop:30,
+    marginBottom:24
   },
   buttonsContainer: {
     flexDirection: 'row',
@@ -88,7 +88,8 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: colors.white,
     fontSize: 16,
-    fontFamily: typography.fontFamily,
+    lineHeight:20,
+    fontFamily: typography.fontFamilyBold,
   },
   
 });

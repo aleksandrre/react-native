@@ -47,20 +47,22 @@ function AppContent() {
     //     <Stack.Screen name="Main" component={MainNavigator} />
     //   </Stack.Navigator>
     // </NavigationContainer>
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isAuthenticated ? (
-          // თუ შესულია - მხოლოდ მთავარი აპლიკაცია
-          <Stack.Screen name="Main" component={MainNavigator} />
-        ) : (
-          // თუ არ არის შესული - ჯერ ავტორიზაცია, მერე მთავარი (სტუმრისთვის)
-          <>
-            <Stack.Screen name="Auth" component={AuthNavigator} />
+    
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {isAuthenticated ? (
+            // თუ შესულია - მხოლოდ მთავარი აპლიკაცია
             <Stack.Screen name="Main" component={MainNavigator} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
+          ) : (
+            // თუ არ არის შესული - ჯერ ავტორიზაცია, მერე მთავარი (სტუმრისთვის)
+            <>
+              <Stack.Screen name="Auth" component={AuthNavigator} />
+              <Stack.Screen name="Main" component={MainNavigator} />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+
   );
 }
 

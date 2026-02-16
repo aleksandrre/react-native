@@ -70,8 +70,7 @@ const styles = StyleSheet.create({
   courtNumber: {
     color: colors.white,
     fontSize: 40,
-    lineHeight: 37,
-    fontWeight: 'bold',
+    lineHeight:40,
     fontFamily: typography.fontFamilyBold,
   },
   dateTimeSection: {
@@ -81,15 +80,17 @@ const styles = StyleSheet.create({
   },
   dateText: {
     color: colors.white,
-    fontSize: 14,
+    fontSize: 19,
+    lineHeight:24,
     marginBottom: 10,
-    fontFamily: typography.fontFamily,
+    fontFamily: typography.fontFamilyBold,
   },
   timeText: {
     color: colors.white,
-    fontSize: 16,
+    fontSize: 18,
+    lineHeight:24,
     fontWeight: 'bold',
-    fontFamily: typography.fontFamilyBold,
+    fontFamily: typography.fontFamily,
   },
 
   textStrikethrough: {

@@ -28,11 +28,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const token = await SecureStore.getItemAsync('auth_token');
       set({
-        isAuthenticated: !!token,
+        isAuthenticated: false,
         token,
         isLoading: false,
       });
+      console.log("Shemovida try ში")
+
     } catch (error) {
+      console.log("Shemovida catch ში")
       set({ isAuthenticated: false, token: null, isLoading: false });
     }
   },

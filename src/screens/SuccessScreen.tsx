@@ -54,17 +54,17 @@ export const SuccessScreen: React.FC = () => {
 
     return (
         <PageLayout>
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.scrollContent}
-            >
-                {/* Success Header */}
-                <ImageHeader
-                    title="Success!"
-                    imageSource={require('../../assets/success.png')}
-                />
+            <ImageHeader
+                title="Success!"
+                imageSource={require('../../assets/success.png')}
+            />
 
-                <View style={styles.contentPadding}>
+            <ScreenWrapper>
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContent}
+                >
+                    {/* Success Header */}
                     {/* Success Message */}
                     <View style={styles.contentContainer}>
                         {isSingleBooking && bookings.length === 1 ? (
@@ -95,37 +95,38 @@ export const SuccessScreen: React.FC = () => {
                         {/* Booking ID */}
                         <Text style={styles.bookingId}>Booking ID: {`{${bookingId}}`}</Text>
                     </View>
-                </View>
-            </ScrollView>
+                </ScrollView>
 
-            {/* Fixed Book Again Button */}
-            <View style={styles.buttonContainer}>
-                {isSingleBooking ? (
-                    // Single booking buttons
-                    <>
-                        <CustomButton
-                            title="Add to calendar"
-                            onPress={handleAddToCalendar}
-                            variant="secondary"
-                        />
-                        <CustomButton
-                            title="View my bookings"
-                            onPress={handleViewMyBookings}
-                            variant="secondary"
-                        />
+                {/* Fixed Book Again Button */}
+                <View style={styles.buttonContainer}>
+                    {isSingleBooking ? (
+                        // Single booking buttons
+                        <>
+                            <CustomButton
+                                title="Add to calendar"
+                                onPress={handleAddToCalendar}
+                                variant="secondary"
+                            />
+                            <CustomButton
+                                title="View my bookings"
+                                onPress={handleViewMyBookings}
+                                variant="secondary"
+                            />
+                            <CustomButton
+                                title="Book again"
+                                onPress={handleBookAgain}
+                            />
+                        </>
+                    ) : (
+                        // Multiple bookings button
                         <CustomButton
                             title="Book again"
                             onPress={handleBookAgain}
                         />
-                    </>
-                ) : (
-                    // Multiple bookings button
-                    <CustomButton
-                        title="Book again"
-                        onPress={handleBookAgain}
-                    />
-                )}
-            </View>
+                    )}
+                </View>
+            </ScreenWrapper>
+
         </PageLayout>
     );
 };
@@ -136,11 +137,7 @@ const styles = StyleSheet.create({
         paddingBottom: 80,
         minHeight: '100%',
     },
-    contentPadding: {
-        padding: 10,
-        backgroundColor: colors.dark,
-        flex: 1,
-    },
+
     contentContainer: {
         paddingBottom: 20,
     },

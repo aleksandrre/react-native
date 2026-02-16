@@ -6,10 +6,12 @@ import { colors, typography } from '../theme';
 import cover from '../../assets/cover.png';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { BookingsStackParamList } from '../navigation/MainNavigator';
+import { useAuthStore } from '../store/authStore';
 
 export const BookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<BookingsStackParamList>>();
-  const isLogedIn = false
+  
+  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
 
   // Mock data - სანამ API არ გვაქვს
   const upcomingBookings: Booking[] = [
@@ -107,7 +109,7 @@ export const BookingsScreen: React.FC = () => {
           contentContainerStyle={styles.scrollContent}
         >
 
-          {!isLogedIn ? (
+          {!isAuthenticated ? (
             <>
               <Text style={styles.sectionTitle}>Become a member</Text>
               <Text style={styles.emptyText}>
