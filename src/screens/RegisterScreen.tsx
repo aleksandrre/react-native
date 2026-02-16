@@ -198,8 +198,8 @@ const styles = StyleSheet.create({
   },
   termsContainer: {
     paddingLeft: 9,
-    marginBottom: 10,
-    height: 34,
+    marginTop:20,
+    marginBottom:30,
     display: 'flex',
     justifyContent: 'center',
   },
@@ -222,6 +222,7 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 14,
     lineHeight:18,
+    marginTop:15,
     fontFamily: typography.fontFamily,
   },
   footerLink: {

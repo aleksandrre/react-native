@@ -120,9 +120,8 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   loginButton: {
-    marginBottom: 0,
+    marginBottom: 10,
   },
   signUpButton: {
-    marginBottom: 10,
   },
 });
