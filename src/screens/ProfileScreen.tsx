@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Image } from 'react-native';
 import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal } from '../components';
-import { colors } from '../theme';
+import { colors, typography } from '../theme';
 import profile from '../../assets/profile.png';
 import pencil from '../../assets/pencil.svg';
 import { useNavigation } from '@react-navigation/native';
+import { useAuthStore } from '../store/authStore';
 export const ProfileScreen: React.FC = () => {
-  // დროებითი state სიმულაციისთვის. რეალურ აპში ეს გლობალური უნდა იყოს.
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+
   const [name, setName] = useState('Name Surname');
   const [email, setEmail] = useState('name@mail.com');
   const [phone, setPhone] = useState('+xx xxx xxx xxx');
+  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+
 
   // Modal states
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -76,7 +78,7 @@ export const ProfileScreen: React.FC = () => {
     <PageLayout>
       <ImageHeader imageSource={profile} title="Profile" />
       <ScreenWrapper>
-        {isLoggedIn ? (
+        {isAuthenticated ? (
           /* --- დალოგინებული მომხმარებლის ხედი --- */
           <View style={styles.section}>
             <InfoRow label="Name" value={name} onEdit={() => handleEdit('name')} />
@@ -90,7 +92,6 @@ export const ProfileScreen: React.FC = () => {
 
             <CustomButton
               title="Log out"
-              onPress={() => setIsLoggedIn(false)}
             />
           </View>
         ) : (
@@ -112,6 +113,7 @@ export const ProfileScreen: React.FC = () => {
             <CustomButton
               title="Log in"
               variant="secondary"
+              style={styles.signInBtn}
               onPress={() => {
                 // გადავდივართ Auth სთექის შიგნით არსებულ Login გვერდზე
                 navigation.getParent()?.navigate('Auth', { screen: 'Login' });
@@ -168,36 +170,38 @@ export const ProfileScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   section: {
-    gap: 18,
+    gap: 6,
   },
 
   sectionTitle: {
     fontSize: 18,
     lineHeight: 18,
-    fontWeight: 'bold',
     color: colors.white,
-    alignSelf: 'flex-start',
+    fontFamily:typography.fontFamilyBold,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 18,
     lineHeight: 23,
     color: colors.white,
-    alignSelf: 'flex-start',
+    fontFamily:typography.fontFamily,
+    
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    
 
   },
   infoText: {
     fontSize: 16,
-    lineHeight: 20,
+    lineHeight: 34,
     color: colors.white,
+    fontFamily:typography.fontFamily
   },
   infoValue: {
-    fontWeight: '600',
+    fontFamily:typography.fontFamilyBold
   },
   whiteText: { color: colors.white, fontSize: 16, lineHeight: 20 },
   editButton: {
@@ -216,25 +220,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 3,
     paddingVertical: 6,
     borderRadius: 6,
+    width:47,
+    height:34
 
   },
   signUpBtn: {
     marginTop: 12,
-    marginBottom: 0
+    
+    marginBottom: 8,
 
+  },
+
+  signInBtn:{
+    marginBottom:12
   },
 
 
   contactSection: {
-    alignItems: 'center',
     gap: 20,
     marginTop: 12
 
   },
-  contactTitle: { color: colors.white, fontSize: 16, lineHeight: 20, fontWeight: 'bold' },
-  contactText: { color: colors.white, fontSize: 16, lineHeight: 20 },
-  link: { textDecorationLine: 'underline', fontSize: 16, lineHeight: 20 },
+  contactTitle: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily:typography.fontFamilyBold ,textAlign:"center"},
+  contactText: { color: colors.white, fontSize: 16, lineHeight: 20,fontFamily:typography.fontFamily},
+  link: { textDecorationLine: 'underline', fontSize: 16, lineHeight: 20,fontFamily:typography.fontFamily },
   footer: { marginTop: 7, alignItems: 'center' },
-  footerText: { color: colors.white, fontSize: 14, lineHeight: 18 },
-  footerLink: { color: colors.lightPurple, textDecorationLine: 'underline', fontSize: 14, lineHeight: 18 },
+  footerText: { color: colors.white, fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
+  footerLink: { color: colors.lightPurple, textDecorationLine: 'underline', fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
 });

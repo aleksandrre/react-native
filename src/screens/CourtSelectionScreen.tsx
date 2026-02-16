@@ -281,15 +281,15 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: 'rgba(255, 255, 255, 0.88)',
     borderRadius: 16,
-    paddingTop: 60,
+    paddingTop: 40,
     paddingHorizontal: 20,
     paddingBottom: 20,
     position: 'relative',
   },
   closeButton: {
     position: 'absolute',
-    top: 12,
-    right: 20,
+    top: 10,
+    right: 14,
     zIndex: 10,
   },
   courtsImage: {
