@@ -5,6 +5,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
@@ -19,7 +20,7 @@ type RouteParams = {
 type CourtSelectionRouteProp = RouteProp<RouteParams, 'CourtSelection'>;
 
 interface CourtSelection {
-  [timeSlot: string]: string | null; // courtId or null
+  [timeSlot: string]: string | null;
 }
 
 const getOrdinalSuffix = (day: number): string => {
@@ -43,8 +44,8 @@ type CourtSelectionNavigationProp = NativeStackNavigationProp<BookStackParamList
 export const CourtSelectionScreen: React.FC = () => {
   const navigation = useNavigation<CourtSelectionNavigationProp>();
   const route = useRoute<CourtSelectionRouteProp>();
+  const { t } = useTranslation();
 
-  // Safe fallbacks to prevent TypeError
   const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
   const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
 
@@ -55,11 +56,9 @@ export const CourtSelectionScreen: React.FC = () => {
     setSelectedCourts((prev) => {
       const currentSelection = prev[timeSlot];
       if (currentSelection === courtId) {
-        // Deselect
         const { [timeSlot]: _, ...rest } = prev;
         return rest;
       }
-      // Select new court
       return { ...prev, [timeSlot]: courtId };
     });
   };
@@ -79,51 +78,42 @@ export const CourtSelectionScreen: React.FC = () => {
 
   return (
     <PageLayout>
-      <Header title="Go Back" />
+      <Header title={t('common.goBack')} />
       <ScreenWrapper>
-        {/* Header with Go Back */}
-
-
-        {/* Title */}
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>Select courts </Text>
+          <Text style={styles.title}>{t('courtSelection.title')} </Text>
           <TouchableOpacity onPress={() => setIsImageModalVisible(true)}>
-            <Text style={styles.viewCourts}>(view courts)</Text>
+            <Text style={styles.viewCourts}>{t('courtSelection.viewCourts')}</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Warning */}
         <View style={styles.warningContainer}>
           <Ionicons name="warning" size={12} color="#FFC107" style={styles.warningIcon} />
           <Text style={styles.warningText}>
-            <Text style={styles.warningBold}>Max. 3 sessions in a booking:</Text>
-            {' '}please deselect a session to choose a different one
+            <Text style={styles.warningBold}>{t('courtSelection.warningBold')}</Text>
+            {t('courtSelection.warningText')}
           </Text>
         </View>
 
-        {/* Selected Date */}
         <Text style={styles.selectedDate}>
-          Selected date: <Text style={styles.selectedDateValue}>{formatSelectedDate(selectedDate)}</Text>
+          {t('courtSelection.selectedDate')} <Text style={styles.selectedDateValue}>{formatSelectedDate(selectedDate)}</Text>
         </Text>
 
-        {/* Courts Grid */}
         <CourtSelector
           selectedSlots={selectedSlots}
           selectedCourts={selectedCourts}
           onCourtSelect={handleCourtPress}
         />
 
-        {/* Continue Button */}
         <View style={styles.buttonContainer}>
           <CustomButton
-            title="Continue to summary"
+            title={t('courtSelection.continueToSummary')}
             onPress={handleContinue}
             disabled={!allSelected}
           />
         </View>
       </ScreenWrapper>
 
-      {/* Courts Image Modal */}
       <Modal
         visible={isImageModalVisible}
         transparent={true}
@@ -215,7 +205,6 @@ const styles = StyleSheet.create({
   selectedDateValue: {
     fontFamily: typography.fontFamily,
     color: colors.lightGray,
-
   },
   scrollContent: {
     width: '100%',
@@ -297,4 +286,3 @@ const styles = StyleSheet.create({
     height: 280,
   },
 });
-

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList } from '../components';
 import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
@@ -37,7 +38,6 @@ const formatDateForCard = (date: Date): string => {
 };
 
 const extractCourtNumber = (courtId: string): string => {
-    // courtId format: "10:00-Court 3" -> extract "3"
     const match = courtId.match(/Court\s*(\d+)/i);
     return match ? match[1] : '1';
 };
@@ -45,6 +45,7 @@ const extractCourtNumber = (courtId: string): string => {
 export const SummaryScreen: React.FC = () => {
     const navigation = useNavigation<NavigationProp<BookStackParamList>>();
     const route = useRoute<SummaryRouteProp>();
+    const { t } = useTranslation();
     const [promoCode, setPromoCode] = useState('');
     const [cardholderName, setCardholderName] = useState('');
     const [cardNumber, setCardNumber] = useState('');
@@ -57,7 +58,6 @@ export const SummaryScreen: React.FC = () => {
     const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
     const selectedCourts = route.params?.selectedCourts || {};
 
-    // Build booking list from selected courts
     const bookings: Booking[] = selectedSlots
         .filter((slot) => selectedCourts[slot])
         .map((slot) => {
@@ -74,11 +74,10 @@ export const SummaryScreen: React.FC = () => {
     const userCredits: number = 3;
     const requiredCredits = bookings.length;
     
-    const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+    const { isAuthenticated } = useAuthStore();
 
     const handleApplyCode = () => {
         console.log('Applying promo code:', promoCode);
-        // TODO: Apply promo code logic
     };
 
     const handleCvcChange = (text: string) => {
@@ -91,10 +90,7 @@ export const SummaryScreen: React.FC = () => {
     };
 
     const handleExpiryDateChange = (text: string) => {
-        // Remove all non-digit characters
         const cleaned = text.replace(/\D/g, '');
-
-        // Format as MM/YY
         if (cleaned.length >= 2) {
             setExpiryDate(cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4));
         } else {
@@ -106,23 +102,20 @@ export const SummaryScreen: React.FC = () => {
         const errors: { [key: string]: string } = {};
 
         if (!cardholderName.trim()) {
-            errors.cardholderName = 'Cardholder name is required';
+            errors.cardholderName = t('summary.errors.cardholderNameRequired');
         }
-
         if (!cardNumber.trim()) {
-            errors.cardNumber = 'Card number is required';
+            errors.cardNumber = t('summary.errors.cardNumberRequired');
         }
-
         if (!expiryDate.trim()) {
-            errors.expiryDate = 'Expiry date is required';
+            errors.expiryDate = t('summary.errors.expiryDateRequired');
         } else if (expiryDate.length < 5) {
-            errors.expiryDate = 'Invalid expiry date format (MM/YY)';
+            errors.expiryDate = t('summary.errors.invalidExpiryDate');
         }
-
         if (!cvcNumber.trim()) {
-            errors.cvcNumber = 'CVC number is required';
+            errors.cvcNumber = t('summary.errors.cvcRequired');
         } else if (cvcNumber.length !== 3) {
-            errors.cvcNumber = 'CVC must be 3 digits';
+            errors.cvcNumber = t('summary.errors.cvcMustBe3Digits');
         }
 
         setValidationErrors(errors);
@@ -130,42 +123,28 @@ export const SummaryScreen: React.FC = () => {
     };
 
     const handleBookWithCredits = () => {
-        if (!validateForm()) {
-            return;
-        }
-        console.log('Booking with credits:', { bookings, requiredCredits });
-        // Generate random booking ID
+        if (!validateForm()) return;
         const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
         navigation.navigate('Success', { bookings, bookingId });
     };
 
     const handlePayAndBook = () => {
-        if (!validateForm()) {
-            return;
-        }
-        console.log('Pay and book:', { bookings, totalPrice });
-        // Generate random booking ID
+        if (!validateForm()) return;
         const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
         navigation.navigate('Success', { bookings, bookingId });
     };
 
     const handleLoginToBook = () => {
-        console.log('Navigate to login');
         navigation.getParent()?.navigate('Auth', { screen: 'Login' });
-    };
-
-    const handleCancel = () => {
-        navigation.goBack();
     };
 
     return (
         <PageLayout>
-            <Header title="Go Back" />
+            <Header title={t('common.goBack')} />
             <ScreenWrapper>
-                {/* Reservation Timer */}
                 {isAuthenticated && (
                     <View style={styles.reservationBanner}>
-                        <Text style={styles.reservationText}>⏱️ Your sessions are reserved for 4:59</Text>
+                        <Text style={styles.reservationText}>{t('summary.reservationTimer')}</Text>
                     </View>
                 )}
 
@@ -173,22 +152,20 @@ export const SummaryScreen: React.FC = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContent}
                 >
-                    {/* Court Card List */}
-                    <CourtCardList title="Summary" bookings={bookings} />
+                    <CourtCardList title={t('summary.title')} bookings={bookings} />
 
-                    {/* Apply Code Section */}
                     {isAuthenticated && (
                         <View style={styles.applyCodeSection}>
-                            <Text style={styles.applyCodeTitle}>Apply Code</Text>
+                            <Text style={styles.applyCodeTitle}>{t('summary.applyCode')}</Text>
                             <View style={styles.applyCodeRow}>
                                 <InputField
-                                    placeholder="Enter here"
+                                    placeholder={t('summary.enterHere')}
                                     value={promoCode}
                                     onChangeText={setPromoCode}
                                     style={styles.promoInput}
                                 />
                                 <CustomButton
-                                    title="Apply"
+                                    title={t('summary.apply')}
                                     onPress={handleApplyCode}
                                     style={styles.applyButton}
                                 />
@@ -196,12 +173,11 @@ export const SummaryScreen: React.FC = () => {
                         </View>
                     )}
 
-                    {/* Payment Details Section */}
                     {isAuthenticated && (
                         <View style={styles.paymentSection}>
-                            <Text style={styles.paymentTitle}>Payment details</Text>
+                            <Text style={styles.paymentTitle}>{t('summary.paymentDetails')}</Text>
 
-                            <Text style={styles.fieldLabel}>Cardholder Name</Text>
+                            <Text style={styles.fieldLabel}>{t('summary.cardholderName')}</Text>
                             <InputField
                                 placeholder="Giorgi Padelia"
                                 value={cardholderName}
@@ -212,7 +188,7 @@ export const SummaryScreen: React.FC = () => {
                                 <Text style={styles.errorText}>{validationErrors.cardholderName}</Text>
                             )}
 
-                            <Text style={styles.fieldLabel}>Card Number</Text>
+                            <Text style={styles.fieldLabel}>{t('summary.cardNumber')}</Text>
                             <InputField
                                 placeholder="xxxx xxxx xxxx xxxx"
                                 value={cardNumber}
@@ -225,7 +201,7 @@ export const SummaryScreen: React.FC = () => {
                                 <Text style={styles.errorText}>{validationErrors.cardNumber}</Text>
                             )}
 
-                            <Text style={styles.fieldLabel}>Expiry Date</Text>
+                            <Text style={styles.fieldLabel}>{t('summary.expiryDate')}</Text>
                             <InputField
                                 placeholder="MM/YY"
                                 value={expiryDate}
@@ -238,7 +214,7 @@ export const SummaryScreen: React.FC = () => {
                                 <Text style={styles.errorText}>{validationErrors.expiryDate}</Text>
                             )}
 
-                            <Text style={styles.fieldLabel}>CVC Number</Text>
+                            <Text style={styles.fieldLabel}>{t('summary.cvcNumber')}</Text>
                             <InputField
                                 placeholder="***"
                                 value={cvcNumber}
@@ -253,79 +229,67 @@ export const SummaryScreen: React.FC = () => {
                             )}
                             {cvcError && !validationErrors.cvcNumber && (
                                 <View style={styles.warningContainer}>
-                                    <Text style={styles.warningText}>⚠️ Please enter 3 digits</Text>
+                                    <Text style={styles.warningText}>{t('summary.cvcWarning')}</Text>
                                 </View>
                             )}
                         </View>
                     )}
-
-
                 </ScrollView>
 
-                {/* Buttons */}
                 <View style={styles.buttonContainer}>
                     {!isAuthenticated ? (
-                        // Not logged in: Show simple price and login button
                         <>
-                            <Text style={styles.priceText}>Price: {`₾${totalPrice}`}</Text>
+                            <Text style={styles.priceText}>{t('summary.price')} {`₾${totalPrice}`}</Text>
                             <CustomButton
-                                title="Log in to book"
+                                title={t('summary.loginToBook')}
                                 onPress={handleLoginToBook}
                             />
                         </>
                     ) : (
-                        // Logged in: Show full price/credits info and conditional buttons
                         <>
-                            {/* Price and Credits Info */}
                             {userCredits > 0 ? (
                                 <>
                                     <Text style={styles.priceText}>
-                                        Price: {`₾${totalPrice}`} / {requiredCredits} credit
+                                        {t('summary.price')} {`₾${totalPrice}`} / {requiredCredits} {t('summary.credit')}
                                     </Text>
                                     <Text style={styles.creditsText}>
-                                        Your credits: {userCredits}
+                                        {t('summary.yourCredits')} {userCredits}
                                     </Text>
                                 </>
                             ) : (
-                                <Text style={styles.priceText}>Price: {`₾${totalPrice}`}</Text>
+                                <Text style={styles.priceText}>{t('summary.price')} {`₾${totalPrice}`}</Text>
                             )}
 
-                            {/* Conditional Buttons */}
                             {userCredits === 0 ? (
-                                // No credits: Show only Pay button
                                 <CustomButton
-                                    title="Pay and book courts"
+                                    title={t('summary.payAndBook')}
                                     onPress={handlePayAndBook}
                                     style={styles.PayAndBookCourtsBTN}
                                 />
                             ) : userCredits >= requiredCredits ? (
-                                // Enough credits: Show both buttons
                                 <>
                                     <CustomButton
-                                        title="Book with credits"
+                                        title={t('summary.bookWithCredits')}
                                         onPress={handleBookWithCredits}
                                         variant="secondary"
                                     />
                                     <CustomButton
-                                        title="Pay and book courts"
+                                        title={t('summary.payAndBook')}
                                         onPress={handlePayAndBook}
                                         style={styles.PayAndBookCourtsBTN}
-
                                     />
                                 </>
                             ) : (
-                                // Not enough credits: Show both buttons with different text
                                 <>
                                     <CustomButton
-                                        title="Book with credits & card"
+                                        title={t('summary.bookWithCreditsAndCard')}
                                         onPress={handleBookWithCredits}
                                         variant="secondary"
                                     />
                                     <CustomButton
-                                        title="Pay and book courts"
+                                        title={t('summary.payAndBook')}
                                         onPress={handlePayAndBook}
                                         style={styles.PayAndBookCourtsBTN}
-
                                     />
                                 </>
                             )}

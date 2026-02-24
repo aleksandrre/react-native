@@ -1,11 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 
 export const ReservationTimer: React.FC = () => {
+    const { t } = useTranslation();
     return (
         <View style={styles.reservationBanner}>
-            <Text style={styles.reservationText}>⏱️ Your sessions are reserved for 4:59</Text>
+            <Text style={styles.reservationText}>{t('summary.reservationTimer')}</Text>
         </View>
     );
 };

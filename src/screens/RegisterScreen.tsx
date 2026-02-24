@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useRegister } from '../hooks';
 import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout, Checkbox } from '../components';
 import { colors, typography } from '../theme';
@@ -11,6 +12,7 @@ type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList
 
 export const RegisterScreen: React.FC = () => {
   const navigation = useNavigation<RegisterScreenNavigationProp>();
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -28,7 +30,7 @@ export const RegisterScreen: React.FC = () => {
     if (emailValue.length === 0) {
       setEmailError('');
     } else if (!emailRegex.test(emailValue)) {
-      setEmailError('Please enter a valid email');
+      setEmailError(t('register.emailError'));
     } else {
       setEmailError('');
     }
@@ -36,7 +38,7 @@ export const RegisterScreen: React.FC = () => {
 
   const validatePassword = (pwd: string) => {
     if (pwd.length > 0 && pwd.length < 6) {
-      setPasswordError('Please enter at least 6 characters');
+      setPasswordError(t('register.passwordError'));
     } else {
       setPasswordError('');
     }
@@ -44,7 +46,7 @@ export const RegisterScreen: React.FC = () => {
 
   const validateConfirmPassword = (confirmPwd: string) => {
     if (confirmPwd.length > 0 && confirmPwd !== password) {
-      setConfirmPasswordError('Please enter matching password');
+      setConfirmPasswordError(t('register.confirmPasswordError'));
     } else {
       setConfirmPasswordError('');
     }
@@ -65,28 +67,28 @@ export const RegisterScreen: React.FC = () => {
 
   const handleRegister = () => {
     if (!name || !email || !phone || !password || !confirmPassword) {
-      Alert.alert('შეცდომა', 'გთხოვთ შეავსოთ ყველა ველი');
+      Alert.alert(t('common.error'), t('register.fillAll'));
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email');
+      setEmailError(t('register.emailError'));
       return;
     }
 
     if (password.length < 6) {
-      setPasswordError('Please enter at least 6 characters');
+      setPasswordError(t('register.passwordError'));
       return;
     }
 
     if (password !== confirmPassword) {
-      setConfirmPasswordError('Please enter matching password');
+      setConfirmPasswordError(t('register.confirmPasswordError'));
       return;
     }
 
     if (!agreedToTerms) {
-      Alert.alert('შეცდომა', 'გთხოვთ დაეთანხმოთ წესებსა და კონფიდენციალურობის პოლიტიკას');
+      Alert.alert(t('common.error'), t('register.agreeTermsError'));
       return;
     }
 
@@ -95,22 +97,22 @@ export const RegisterScreen: React.FC = () => {
 
   return (
     <PageLayout style={styles.mainContainer}>
-      <Header title="Skip for now" variant="right" />
+      <Header title={t('common.skipForNow')} variant="right" />
       <ScreenWrapper>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Text style={styles.title}>Sign Up</Text>
+          <Text style={styles.title}>{t('register.title')}</Text>
 
           <LabeledInputField
-            label="Name*"
-            placeholder="Name"
+            label={t('register.nameLabel')}
+            placeholder={t('register.namePlaceholder')}
             value={name}
             onChangeText={setName}
             autoCapitalize="words"
           />
 
           <LabeledInputField
-            label="Email*"
-            placeholder="Email"
+            label={t('register.emailLabel')}
+            placeholder={t('register.emailPlaceholder')}
             value={email}
             onChangeText={(text) => {
               setEmail(text);
@@ -122,16 +124,16 @@ export const RegisterScreen: React.FC = () => {
           />
 
           <LabeledInputField
-            label="Phone*"
-            placeholder="Phone number"
+            label={t('register.phoneLabel')}
+            placeholder={t('register.phonePlaceholder')}
             value={phone}
             onChangeText={setPhone}
             keyboardType="phone-pad"
           />
 
           <LabeledInputField
-            label="Password*"
-            placeholder="Password"
+            label={t('register.passwordLabel')}
+            placeholder={t('register.passwordPlaceholder')}
             value={password}
             onChangeText={handlePasswordChange}
             secureTextEntry
@@ -139,8 +141,8 @@ export const RegisterScreen: React.FC = () => {
           />
 
           <LabeledInputField
-            label="Confirm password*"
-            placeholder="Confirm password"
+            label={t('register.confirmPasswordLabel')}
+            placeholder={t('register.confirmPasswordPlaceholder')}
             value={confirmPassword}
             onChangeText={handleConfirmPasswordChange}
             secureTextEntry
@@ -153,13 +155,13 @@ export const RegisterScreen: React.FC = () => {
               onToggle={() => setAgreedToTerms(!agreedToTerms)}
               label={
                 <Text style={styles.termsText}>
-                  I agree to the{' '}
+                  {t('register.agreeTermsPrefix')}
                   <Text style={styles.linkText} onPress={() => { }}>
-                    terms
+                    {t('register.terms')}
                   </Text>
-                  {' & '}
+                  {t('register.andSeparator')}
                   <Text style={styles.linkText} onPress={() => { }}>
-                    privacy policy
+                    {t('register.privacyPolicy')}
                   </Text>
                 </Text>
               }
@@ -167,15 +169,15 @@ export const RegisterScreen: React.FC = () => {
           </View>
 
           <CustomButton
-            title="Sign up"
+            title={t('register.signUpButton')}
             onPress={handleRegister}
             isLoading={registerMutation.isPending}
           />
 
           <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.linkContainer}>
             <Text style={styles.footerText}>
-              Already have an account?{' '}
-              <Text style={styles.footerLink}>Log in here</Text>
+              {t('register.alreadyHaveAccount')}
+              <Text style={styles.footerLink}>{t('register.logInHere')}</Text>
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -230,4 +232,3 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily,
   },
 });
-

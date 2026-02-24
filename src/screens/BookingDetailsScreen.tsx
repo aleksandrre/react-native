@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { PageLayout, ScreenWrapper, Header, CustomButton, InfoModal } from '../components';
 import { colors, typography } from '../theme';
 
@@ -20,25 +21,23 @@ type BookingDetailsRouteProp = RouteProp<RouteParams, 'BookingDetails'>;
 export const BookingDetailsScreen: React.FC = () => {
     const navigation = useNavigation<any>();
     const route = useRoute<BookingDetailsRouteProp>();
+    const { t } = useTranslation();
 
     const { courtNumber, date, time, status, bookingId, isPast } = route.params;
 
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-    // Determine subtitle text and if styles should be strikethrough
     const isCancelledOrRescheduled = status === 'Cancelled' || status === 'Rescheduled';
     const subtitleText = isPast || isCancelledOrRescheduled
-        ? 'Your booking was:'
-        : 'Your booking is confirmed:';
+        ? t('bookingDetails.bookingWas')
+        : t('bookingDetails.bookingConfirmed');
 
     const handleAddToCalendar = () => {
         console.log('Add to calendar');
-        // TODO: Add to calendar functionality
     };
 
     const handleMakeNewBooking = () => {
-        console.log('Make new booking');
         navigation.navigate('Book' as never);
     };
 
@@ -52,7 +51,6 @@ export const BookingDetailsScreen: React.FC = () => {
 
     const handleConfirmCancel = () => {
         setShowCancelModal(false);
-        // TODO: API call to cancel booking
         setShowSuccessModal(true);
     };
 
@@ -67,63 +65,61 @@ export const BookingDetailsScreen: React.FC = () => {
 
     return (
         <PageLayout>
-            <Header title="Go Back" />
+            <Header title={t('common.goBack')} />
             <ScreenWrapper>
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContent}
                 >
-                    {/* Booking Confirmation */}
                     <View style={styles.contentContainer}>
                         <Text style={styles.subtitle}>{subtitleText}</Text>
 
-                        {/* Booking Info */}
                         <View style={styles.bookingInfo}>
-                            <Text style={[styles.bookingText, isCancelledOrRescheduled && styles.strikethrough]}>Court {courtNumber}</Text>
-                            <Text style={[styles.bookingOn, isCancelledOrRescheduled && styles.strikethrough]}>at</Text>
+                            <Text style={[styles.bookingText, isCancelledOrRescheduled && styles.strikethrough]}>
+                                {t('success.court')} {courtNumber}
+                            </Text>
+                            <Text style={[styles.bookingOn, isCancelledOrRescheduled && styles.strikethrough]}>
+                                {t('bookingDetails.at')}
+                            </Text>
                             <Text style={[styles.bookingText, isCancelledOrRescheduled && styles.strikethrough]}>{time}</Text>
-                            <Text style={[styles.bookingOn, isCancelledOrRescheduled && styles.strikethrough]}>on</Text>
+                            <Text style={[styles.bookingOn, isCancelledOrRescheduled && styles.strikethrough]}>
+                                {t('bookingDetails.on')}
+                            </Text>
                             <Text style={[styles.bookingText, isCancelledOrRescheduled && styles.strikethrough]}>{date}</Text>
                         </View>
 
-                        {/* Status */}
-                        <Text style={styles.statusText}>Status: {status}</Text>
-
-                        {/* Booking ID */}
-                        <Text style={styles.bookingId}>Booking ID: {`{${bookingId}}`}</Text>
+                        <Text style={styles.statusText}>{t('bookingDetails.status')} {status}</Text>
+                        <Text style={styles.bookingId}>{t('bookingDetails.bookingId')} {`{${bookingId}}`}</Text>
                     </View>
                 </ScrollView>
 
-                {/* Buttons */}
                 <View style={styles.buttonContainer}>
                     {isPast || status === 'Cancelled' || status === 'Rescheduled' ? (
-                        // Past booking or cancelled/rescheduled - only Make new booking
                         <CustomButton
-                            title="Make a new booking"
+                            title={t('bookingDetails.makeNewBooking')}
                             onPress={handleMakeNewBooking}
                         />
                     ) : (
-                        // Upcoming booking - all buttons
                         <>
                             <CustomButton
                                 style={{ marginBottom: 10 }}
-                                title="Add to calendar"
+                                title={t('bookingDetails.addToCalendar')}
                                 onPress={handleAddToCalendar}
                                 variant="primary"
                             />
                             <CustomButton
                                 style={{ marginBottom: 10 }}
-                                title="Make a new booking"
+                                title={t('bookingDetails.makeNewBooking')}
                                 onPress={handleMakeNewBooking}
                             />
                             <CustomButton
                                 style={{ marginBottom: 10 }}
-                                title="Reschedule booking"
+                                title={t('bookingDetails.rescheduleBooking')}
                                 onPress={handleRescheduleBooking}
                                 variant="secondary"
                             />
                             <CustomButton
-                                title="Cancel booking"
+                                title={t('bookingDetails.cancelBooking')}
                                 onPress={handleCancelBooking}
                                 variant="secondary"
                             />
@@ -132,21 +128,19 @@ export const BookingDetailsScreen: React.FC = () => {
                 </View>
             </ScreenWrapper>
 
-            {/* Cancel Confirmation Modal */}
             <InfoModal
                 visible={showCancelModal}
-                title="Are you sure you want to cancel your booking?"
-                primaryButtonText="Yes, cancel booking"
-                secondaryButtonText="No, keep booking"
+                title={t('bookingDetails.cancelConfirm')}
+                primaryButtonText={t('bookingDetails.yesCancelBooking')}
+                secondaryButtonText={t('bookingDetails.noKeepBooking')}
                 onPrimaryPress={handleConfirmCancel}
                 onSecondaryPress={handleCancelModalClose}
             />
 
-            {/* Success Modal */}
             <InfoModal
                 visible={showSuccessModal}
-                title={`Your booking on ${date} at ${time} on Court ${courtNumber} has been cancelled and you have gained 1 credit.`}
-                primaryButtonText="Ok"
+                title={t('bookingDetails.cancelSuccess', { date, time, courtNumber })}
+                primaryButtonText={t('common.ok')}
                 onPrimaryPress={handleSuccessModalClose}
                 singleButton={true}
             />

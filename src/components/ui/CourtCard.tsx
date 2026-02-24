@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 import courtLogo from '../../../assets/court_logo.png';
 
@@ -12,6 +13,7 @@ interface CourtCardProps {
 }
 
 export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, onPress, cancelled }) => {
+  const { t } = useTranslation();
   const CardContent = (
     <View style={[styles.container]}>
       <ImageBackground
@@ -19,7 +21,7 @@ export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, o
         style={[styles.courtSection]}
         imageStyle={[styles.courtImage]}
       >
-        <Text style={[styles.courtLabel]}>court</Text>
+        <Text style={[styles.courtLabel]}>{t('courtCard.court')}</Text>
         <Text style={[styles.courtNumber]}>{courtNumber}</Text>
       </ImageBackground>
 

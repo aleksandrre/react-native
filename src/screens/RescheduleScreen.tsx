@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 import { PageLayout, ScreenWrapper, Header, CustomButton, DateSelector, TimeSlotSelector } from '../components';
 import { colors } from '../theme';
 
@@ -15,7 +16,7 @@ type RescheduleRouteProp = RouteProp<RouteParams, 'Reschedule'>;
 export const RescheduleScreen: React.FC = () => {
     const navigation = useNavigation<any>();
     const route = useRoute<RescheduleRouteProp>();
-    // bookingId might be needed for the actual reschedule API call later
+    const { t } = useTranslation();
     const { bookingId } = route.params || {};
 
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -23,7 +24,7 @@ export const RescheduleScreen: React.FC = () => {
 
     const handleDateSelect = (date: Date) => {
         setSelectedDate(date);
-        setSelectedSlots([]); // Clear time slots when date changes
+        setSelectedSlots([]);
     };
 
     const handleSlotsSelect = (slots: string[]) => {
@@ -42,7 +43,7 @@ export const RescheduleScreen: React.FC = () => {
 
     return (
         <PageLayout>
-            <Header title="Go Back" />
+            <Header title={t('common.goBack')} />
             <ScreenWrapper>
                 <ScrollView
                     contentContainerStyle={styles.scrollContent}
@@ -65,7 +66,7 @@ export const RescheduleScreen: React.FC = () => {
 
                 <View style={styles.buttonContainer}>
                     <CustomButton
-                        title="Continue to court"
+                        title={t('reschedule.continueToCourt')}
                         onPress={handleContinue}
                         disabled={selectedSlots.length !== 1}
                         variant="primary"
@@ -79,7 +80,7 @@ export const RescheduleScreen: React.FC = () => {
 const styles = StyleSheet.create({
     scrollContent: {
         flexGrow: 1,
-        paddingBottom: 100, // Space for the fixed button
+        paddingBottom: 100,
     },
     section: {
         marginBottom: 24,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { CourtCardList, PageLayout, ScreenWrapper, ImageHeader, CustomButton } from '../components';
 import { Booking } from '../types';
 import { colors, typography } from '../theme';
@@ -10,10 +11,10 @@ import { useAuthStore } from '../store/authStore';
 
 export const BookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<BookingsStackParamList>>();
+  const { t } = useTranslation();
   
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
 
-  // Mock data - სანამ API არ გვაქვს
   const upcomingBookings: Booking[] = [
     {
       courtNumber: '5',
@@ -49,10 +50,8 @@ export const BookingsScreen: React.FC = () => {
   ];
 
   const handleUpcomingBookingPress = (booking: Booking) => {
-    // Generate mock booking ID
     const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
 
-    // Determine status based on booking state
     let status: 'Confirmed' | 'Cancelled' | 'Rescheduled' = 'Confirmed';
     if (booking.cancelled) {
       status = 'Cancelled';
@@ -71,10 +70,8 @@ export const BookingsScreen: React.FC = () => {
   };
 
   const handlePastBookingPress = (booking: Booking) => {
-    // Generate mock booking ID
     const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
 
-    // Determine status based on booking state
     let status: 'Completed' | 'Cancelled' | 'Rescheduled' = 'Completed';
     if (booking.cancelled) {
       status = 'Cancelled';
@@ -93,14 +90,13 @@ export const BookingsScreen: React.FC = () => {
   };
 
   const handleMakeNewBooking = () => {
-    // Navigate to Book screen
     navigation.navigate('Book' as never);
   };
 
   return (
     <PageLayout>
       <ImageHeader
-        title="Bookings"
+        title={t('bookings.title')}
         imageSource={cover}
       />
       <ScreenWrapper>
@@ -111,61 +107,52 @@ export const BookingsScreen: React.FC = () => {
 
           {!isAuthenticated ? (
             <>
-              <Text style={styles.sectionTitle}>Become a member</Text>
+              <Text style={styles.sectionTitle}>{t('bookings.becomeMember')}</Text>
               <Text style={styles.emptyText}>
-                Please log in to see your upcoming and past bookings!
+                {t('bookings.pleaseLogIn')}
               </Text>
 
-              {/* ღილაკების კონტეინერი */}
               <CustomButton
                 style={{ marginBottom: 10 }}
-                title="Log In"
+                title={t('bookings.logIn')}
                 onPress={() => {
-                  // გადავდივართ Auth სთექის Login გვერდზე
                   navigation.getParent()?.navigate('Auth', { screen: 'Login' });
                 }}
               />
 
               <CustomButton
-                title="Register"
-                variant="secondary" // მეორე ღილაკი იყოს განსხვავებული სტილის
+                title={t('bookings.register')}
+                variant="secondary"
                 onPress={() => {
-                  // გადავდივართ Auth სთექის Register გვერდზე
                   navigation.getParent()?.navigate('Auth', { screen: 'Register' });
                 }}
               />
             </>
           ) : (
             <>
-              {/* Upcoming Section */}
               {upcomingBookings.length > 0 ? (
-                <CourtCardList title="Upcoming" bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
+                <CourtCardList title={t('bookings.upcoming')} bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
               ) : (
                 <View style={styles.emptyContainer}>
                   <Text style={styles.emptyText}>
-                    You have no upcoming bookings. Reserve a court now and enjoy some Padel!
+                    {t('bookings.noUpcoming')}
                   </Text>
                 </View>
               )}
 
-              {/* Make a new booking button - shown in scroll when there are past bookings */}
               {pastBookings.length > 0 && (
                 <View style={styles.buttonContainer}>
                   <CustomButton
-                    title="Make a new booking"
+                    title={t('bookings.makeNewBooking')}
                     onPress={handleMakeNewBooking}
                   />
                 </View>
               )}
 
-              {/* Past Section */}
-
               {pastBookings.length > 0 && (
                 <>
-                  <Text style={styles.sectionTitle}>Past</Text>
-
+                  <Text style={styles.sectionTitle}>{t('bookings.past')}</Text>
                   <CourtCardList title="" bookings={pastBookings} onBookingPress={handlePastBookingPress} />
-
                 </>
               )}
             </>
@@ -178,7 +165,7 @@ export const BookingsScreen: React.FC = () => {
         {pastBookings.length === 0 && (
           <View style={styles.fixedButtonContainer}>
             <CustomButton
-              title="Make a new booking"
+              title={t('bookings.makeNewBooking')}
               onPress={handleMakeNewBooking}
             />
           </View>
@@ -223,4 +210,3 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   }
 });
-

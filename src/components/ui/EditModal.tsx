@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import { BlurView } from 'expo-blur';
+import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 
 interface EditModalProps {
@@ -24,6 +25,7 @@ export const EditModal: React.FC<EditModalProps> = ({
     onClose,
     onSave,
 }) => {
+    const { t } = useTranslation();
     const [value, setValue] = useState(initialValue);
 
     useEffect(() => {
@@ -59,7 +61,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                     )}
 
                     {mode === 'otp' && (
-                        <Text style={styles.label}>OTP Code:</Text>
+                        <Text style={styles.label}>{t('profile.otpCode')}</Text>
                     )}
 
                     <TextInput
@@ -77,7 +79,7 @@ export const EditModal: React.FC<EditModalProps> = ({
                         style={styles.saveButton}
                         onPress={handleSave}
                     >
-                        <Text style={styles.saveButtonText}>Save</Text>
+                        <Text style={styles.saveButtonText}>{t('common.save')}</Text>
                     </TouchableOpacity>
                 </View>
             </BlurView>
