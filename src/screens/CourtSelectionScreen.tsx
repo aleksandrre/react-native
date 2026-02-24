@@ -174,13 +174,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     backgroundColor: 'rgba(255, 193, 7, 0.1)',
-    borderLeftWidth: 3,
     borderLeftColor: '#FFC107',
     marginTop: 10,
     marginBottom: 10,
   },
   warningIcon: {
-    marginRight: 8,
+    marginRight: 4,
     marginTop: 2,
   },
   warningText: {
