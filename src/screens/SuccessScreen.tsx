@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { PageLayout, ScreenWrapper, CustomButton, CourtCardList } from '../components';
 import { ImageHeader } from '../components/ui/ImageHeader';
 import { colors, typography } from '../theme';
@@ -13,23 +14,20 @@ type SuccessRouteProp = RouteProp<BookStackParamList, 'Success'>;
 export const SuccessScreen: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<BookStackParamList>>();
     const route = useRoute<SuccessRouteProp>();
+    const { t } = useTranslation();
 
     const bookings = route.params?.bookings || [];
     const bookingId = route.params?.bookingId || '002938';
     const isSingleBooking = route.params?.isSingleBooking || false;
 
     const handleBookAgain = () => {
-        // Navigate back to the beginning of booking flow
         const parentNav = navigation.getParent();
         if (parentNav) {
-            (parentNav as any).navigate('Book', {
-                screen: 'BookHome',
-            });
+            (parentNav as any).navigate('Book', { screen: 'BookHome' });
         }
     };
 
     const handleBookingPress = (booking: Booking, index: number) => {
-        // Navigate to single booking view
         navigation.push('Success', {
             bookings: [booking],
             bookingId: bookingId,
@@ -39,23 +37,19 @@ export const SuccessScreen: React.FC = () => {
 
     const handleAddToCalendar = () => {
         console.log('Add to calendar');
-        // TODO: Add to calendar functionality
     };
 
     const handleViewMyBookings = () => {
-        // Navigate to Bookings tab
         const parentNav = navigation.getParent();
         if (parentNav) {
-            (parentNav as any).navigate('Bookings', {
-                screen: 'BookingsHome',
-            });
+            (parentNav as any).navigate('Bookings', { screen: 'BookingsHome' });
         }
     };
 
     return (
         <PageLayout>
             <ImageHeader
-                title="Success!"
+                title={t('success.title')}
                 imageSource={require('../../assets/success.png')}
             />
 
@@ -64,25 +58,21 @@ export const SuccessScreen: React.FC = () => {
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContent}
                 >
-                    {/* Success Header */}
-                    {/* Success Message */}
                     <View style={styles.contentContainer}>
                         {isSingleBooking && bookings.length === 1 ? (
-                            // Single booking view
                             <>
-                                <Text style={styles.subtitle}>Your booking is confirmed:</Text>
+                                <Text style={styles.subtitle}>{t('success.bookingConfirmed')}</Text>
                                 <View style={styles.singleBookingInfo}>
-                                    <Text style={styles.singleBookingText}>{`Court ${bookings[0].courtNumber}`}</Text>
-                                    <Text style={styles.singleBookingOn}>at</Text>
+                                    <Text style={styles.singleBookingText}>{`${t('success.court')} ${bookings[0].courtNumber}`}</Text>
+                                    <Text style={styles.singleBookingOn}>{t('success.at')}</Text>
                                     <Text style={styles.singleBookingText}>{`${bookings[0].time}`}</Text>
-                                    <Text style={styles.singleBookingOn}>on</Text>
+                                    <Text style={styles.singleBookingOn}>{t('success.on')}</Text>
                                     <Text style={styles.singleBookingText}>{`${bookings[0].date}`}</Text>
                                 </View>
                             </>
                         ) : (
-                            // Multiple bookings view
                             <>
-                                <Text style={styles.subtitle}>Your bookings are confirmed:</Text>
+                                <Text style={styles.subtitle}>{t('success.bookingsConfirmed')}</Text>
                                 <CourtCardList
                                     title=""
                                     bookings={bookings}
@@ -92,35 +82,31 @@ export const SuccessScreen: React.FC = () => {
                             </>
                         )}
 
-                        {/* Booking ID */}
-                        <Text style={styles.bookingId}>Booking ID: {`{${bookingId}}`}</Text>
+                        <Text style={styles.bookingId}>{t('success.bookingId')} {`{${bookingId}}`}</Text>
                     </View>
                 </ScrollView>
 
-                {/* Fixed Book Again Button */}
                 <View style={styles.buttonContainer}>
                     {isSingleBooking ? (
-                        // Single booking buttons
                         <>
                             <CustomButton
-                                title="Add to calendar"
+                                title={t('success.addToCalendar')}
                                 onPress={handleAddToCalendar}
                                 variant="secondary"
                             />
                             <CustomButton
-                                title="View my bookings"
+                                title={t('success.viewMyBookings')}
                                 onPress={handleViewMyBookings}
                                 variant="secondary"
                             />
                             <CustomButton
-                                title="Book again"
+                                title={t('success.bookAgain')}
                                 onPress={handleBookAgain}
                             />
                         </>
                     ) : (
-                        // Multiple bookings button
                         <CustomButton
-                            title="Book again"
+                            title={t('success.bookAgain')}
                             onPress={handleBookAgain}
                         />
                     )}
@@ -137,7 +123,6 @@ const styles = StyleSheet.create({
         paddingBottom: 80,
         minHeight: '100%',
     },
-
     contentContainer: {
         paddingBottom: 20,
     },
@@ -192,6 +177,5 @@ const styles = StyleSheet.create({
         color: colors.lightGray,
         textAlign: 'center',
         marginBottom: 12,
-
     },
 });

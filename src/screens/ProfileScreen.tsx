@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Image } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal } from '../components';
 import { colors, typography } from '../theme';
 import profile from '../../assets/profile.png';
 import pencil from '../../assets/pencil.svg';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../store/authStore';
+import { useLanguageStore } from '../store/languageStore';
+
 export const ProfileScreen: React.FC = () => {
+  const { t } = useTranslation();
+  const { language, setLanguage } = useLanguageStore();
 
   const [name, setName] = useState('Name Surname');
   const [email, setEmail] = useState('name@mail.com');
   const [phone, setPhone] = useState('+xx xxx xxx xxx');
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
 
-
-  // Modal states
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [editType, setEditType] = useState<'name' | 'email' | 'phone'>('name');
@@ -52,7 +55,6 @@ export const ProfileScreen: React.FC = () => {
   };
 
   const handleSaveOTP = (otp: string) => {
-    // აქ უნდა იყოს OTP ვერიფიკაცია
     console.log('OTP:', otp);
     if (editType === 'email') {
       setEmail(pendingEmail);
@@ -62,7 +64,12 @@ export const ProfileScreen: React.FC = () => {
     setOtpModalVisible(false);
   };
 
-  // დამხმარე კომპონენტი ინფორმაციის ხაზებისთვის (დალოგინებულზე)
+  const getEditTitle = () => {
+    if (editType === 'name') return t('profile.editName');
+    if (editType === 'email') return t('profile.editEmail');
+    return t('profile.editPhone');
+  };
+
   const InfoRow = ({ label, value, editable = true, onEdit }: { label: string, value: string, editable?: boolean, onEdit?: () => void }) => (
     <View style={styles.infoRow}>
       <Text style={styles.infoText}>{label}: <Text style={styles.infoValue}>{value}</Text></Text>
@@ -76,60 +83,81 @@ export const ProfileScreen: React.FC = () => {
 
   return (
     <PageLayout>
-      <ImageHeader imageSource={profile} title="Profile" />
+      <ImageHeader imageSource={profile} title={t('profile.title')} />
       <ScreenWrapper>
         {isAuthenticated ? (
-          /* --- დალოგინებული მომხმარებლის ხედი --- */
           <View style={styles.section}>
-            <InfoRow label="Name" value={name} onEdit={() => handleEdit('name')} />
-            <InfoRow label="Email" value={email} onEdit={() => handleEdit('email')} />
-            <InfoRow label="Phone" value={phone} onEdit={() => handleEdit('phone')} />
+            <InfoRow label={t('profile.name')} value={name} onEdit={() => handleEdit('name')} />
+            <InfoRow label={t('profile.email')} value={email} onEdit={() => handleEdit('email')} />
+            <InfoRow label={t('profile.phone')} value={phone} onEdit={() => handleEdit('phone')} />
             <View style={styles.infoRow}>
-              <Text style={styles.infoText}>Language:</Text>
-              <View style={styles.langPicker}><Text style={styles.whiteText}>EN ▼</Text></View>
+              <Text style={styles.infoText}>{t('profile.language')}</Text>
+              <View style={styles.langPickerRow}>
+                <TouchableOpacity
+                  style={[styles.langOption, language === 'en' && styles.langOptionActive]}
+                  onPress={() => setLanguage('en')}
+                >
+                  <Text style={[styles.langOptionText, language === 'en' && styles.langOptionTextActive]}>EN</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.langOption, language === 'ka' && styles.langOptionActive]}
+                  onPress={() => setLanguage('ka')}
+                >
+                  <Text style={[styles.langOptionText, language === 'ka' && styles.langOptionTextActive]}>KA</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <Text style={[styles.infoText]}>Credits: <Text style={styles.infoValue}>{'{x}'}</Text></Text>
+            <Text style={[styles.infoText]}>{t('profile.credits')} <Text style={styles.infoValue}>{'{x}'}</Text></Text>
 
             <CustomButton
-              title="Log out"
+              title={t('profile.logOut')}
             />
           </View>
         ) : (
-          /* --- დაულოგინებელი მომხმარებლის ხედი --- */
           <View>
-            <Text style={styles.sectionTitle}>Become a member</Text>
-            <Text style={styles.subtitle}>Please log in to see all settings.</Text>
+            <Text style={styles.sectionTitle}>{t('profile.becomeMember')}</Text>
+            <Text style={styles.subtitle}>{t('profile.pleaseLogIn')}</Text>
 
             <CustomButton
-              title="Sign Up"
+              title={t('profile.signUp')}
               variant="primary"
               style={styles.signUpBtn}
               onPress={() => {
-                // გადავდივართ Auth სთექის შიგნით არსებულ Register გვერდზე
                 navigation.getParent()?.navigate('Auth', { screen: 'Register' });
               }}
             />
 
             <CustomButton
-              title="Log in"
+              title={t('profile.logIn')}
               variant="secondary"
               style={styles.signInBtn}
               onPress={() => {
-                // გადავდივართ Auth სთექის შიგნით არსებულ Login გვერდზე
                 navigation.getParent()?.navigate('Auth', { screen: 'Login' });
               }}
             />
 
             <View style={[styles.infoRow]}>
-              <Text style={styles.infoText}>Language:</Text>
-              <View style={styles.langPicker}><Text style={styles.whiteText}>EN ▼</Text></View>
+              <Text style={styles.infoText}>{t('profile.language')}</Text>
+              <View style={styles.langPickerRow}>
+                <TouchableOpacity
+                  style={[styles.langOption, language === 'en' && styles.langOptionActive]}
+                  onPress={() => setLanguage('en')}
+                >
+                  <Text style={[styles.langOptionText, language === 'en' && styles.langOptionTextActive]}>EN</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.langOption, language === 'ka' && styles.langOptionActive]}
+                  onPress={() => setLanguage('ka')}
+                >
+                  <Text style={[styles.langOptionText, language === 'ka' && styles.langOptionTextActive]}>KA</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         )}
 
-        {/* --- ორივე ხედისთვის საერთო "Contact Us" სექცია --- */}
         <View style={styles.contactSection}>
-          <Text style={styles.contactTitle}>Contact Us</Text>
+          <Text style={styles.contactTitle}>{t('profile.contactUs')}</Text>
           <Text style={styles.contactText}>Phone/WhatsApp:
             <Text style={styles.link} onPress={() => Linking.openURL('tel:+995599xxxxxx')}> +995 599 xxx xxx</Text>
           </Text>
@@ -138,29 +166,27 @@ export const ProfileScreen: React.FC = () => {
           </Text>
 
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Kus Tba Padel tech is built by:</Text>
+            <Text style={styles.footerText}>{t('profile.builtBy')}</Text>
             <Text style={styles.footerLink} onPress={() => Linking.openURL('https://conceptdigital.com')}>Conceptdigital.com</Text>
           </View>
         </View>
       </ScreenWrapper>
 
-      {/* Edit Modal */}
       <EditModal
         visible={editModalVisible}
-        title={`Edit ${editType === 'name' ? 'Name' : editType === 'email' ? 'Email' : 'Phone'}`}
+        title={getEditTitle()}
         placeholder={editType === 'name' ? 'Name Surname' : editType === 'email' ? 'name@mail.com' : '+xx xxx xxx xxx'}
         initialValue={tempValue}
         onClose={() => setEditModalVisible(false)}
         onSave={handleSaveEdit}
       />
 
-      {/* OTP Modal */}
       <EditModal
         visible={otpModalVisible}
-        title={`Edit ${editType === 'email' ? 'Email' : 'Phone'}`}
+        title={getEditTitle()}
         placeholder="XXXX"
         mode="otp"
-        message={`A verification OTP code has been sent to {${editType === 'email' ? pendingEmail : pendingPhone}}. Please enter your OTP code below to confirm and save.`}
+        message={t('profile.otpMessage', { contact: editType === 'email' ? pendingEmail : pendingPhone })}
         onClose={() => setOtpModalVisible(false)}
         onSave={handleSaveOTP}
       />
@@ -172,7 +198,6 @@ const styles = StyleSheet.create({
   section: {
     gap: 6,
   },
-
   sectionTitle: {
     fontSize: 18,
     lineHeight: 18,
@@ -185,14 +210,11 @@ const styles = StyleSheet.create({
     lineHeight: 23,
     color: colors.white,
     fontFamily:typography.fontFamily,
-    
   },
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    
-
   },
   infoText: {
     fontSize: 16,
@@ -203,7 +225,6 @@ const styles = StyleSheet.create({
   infoValue: {
     fontFamily:typography.fontFamilyBold
   },
-  whiteText: { color: colors.white, fontSize: 16, lineHeight: 20 },
   editButton: {
     height: 34,
     justifyContent: 'center',
@@ -214,32 +235,44 @@ const styles = StyleSheet.create({
     height: 24,
     tintColor: colors.primary,
   },
-  langPicker: {
+  langPickerRow: {
+    flexDirection: 'row',
+    gap: 4,
+  },
+  langOption: {
     borderWidth: 1,
     borderColor: colors.lightGray,
-    paddingHorizontal: 3,
+    paddingHorizontal: 8,
     paddingVertical: 6,
     borderRadius: 6,
-    width:47,
-    height:34
-
+    minWidth: 40,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  langOptionActive: {
+    borderColor: colors.white,
+    backgroundColor: colors.primary,
+  },
+  langOptionText: {
+    color: colors.lightGray,
+    fontSize: 14,
+    lineHeight: 18,
+    fontFamily: typography.fontFamilySemiBold,
+  },
+  langOptionTextActive: {
+    color: colors.white,
   },
   signUpBtn: {
     marginTop: 12,
-    
     marginBottom: 8,
-
   },
-
   signInBtn:{
     marginBottom:12
   },
-
-
   contactSection: {
     gap: 20,
     marginTop: 12
-
   },
   contactTitle: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily:typography.fontFamilyBold ,textAlign:"center"},
   contactText: { color: colors.white, fontSize: 16, lineHeight: 20,fontFamily:typography.fontFamily},

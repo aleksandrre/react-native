@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
@@ -8,6 +9,16 @@ import { Ionicons } from '@expo/vector-icons';
 
 export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
     const insets = useSafeAreaInsets();
+    const { t } = useTranslation();
+
+    const getTabLabel = (routeName: string): string => {
+        switch (routeName) {
+            case 'Book': return t('tabs.book');
+            case 'Bookings': return t('tabs.bookings');
+            case 'Profile': return t('tabs.profile');
+            default: return routeName;
+        }
+    };
     const getIconName = (routeName: string, isFocused: boolean): keyof typeof Ionicons.glyphMap => {
         switch (routeName) {
             case 'Book':
@@ -60,7 +71,7 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
                             color={isFocused ? colors.white : colors.textGray}
                         />
                         <Text style={[styles.label, isFocused && styles.labelFocused]}>
-                            {String(label)}
+                            {getTabLabel(route.name)}
                         </Text>
                     </TouchableOpacity>
                 );

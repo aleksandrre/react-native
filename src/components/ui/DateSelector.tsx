@@ -18,6 +18,7 @@ import {
   isBefore,
   getMonth,
 } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -35,6 +36,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
   onDateSelect,
   selectedDate: propSelectedDate,
 }) => {
+  const { t } = useTranslation();
   const today = useMemo(() => startOfDay(new Date()), []);
   const [selectedDate, setSelectedDate] = useState<Date>(
     propSelectedDate || today
@@ -124,7 +126,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Select date</Text>
+      <Text style={styles.title}>{t('dateSelector.title')}</Text>
 
       <View style={styles.datePickerContainer}>
         {/* Scrollable content — month labels & boundaries are inline */}

@@ -2,8 +2,10 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import { colors, typography } from '../theme';
+import { useLanguageStore } from '../store/languageStore';
 import onboardImage from '../../assets/onboard.png';
 import flagGB from '../../assets/flag_gb.png';
 import flagGE from '../../assets/flag_ge.png';
@@ -12,8 +14,16 @@ type OnboardingScreenNavigationProp = NativeStackNavigationProp<AuthStackParamLi
 
 export const OnboardingScreen: React.FC = () => {
   const navigation = useNavigation<OnboardingScreenNavigationProp>();
+  const { t } = useTranslation();
+  const { setLanguage } = useLanguageStore();
 
-  const handleNavigateToRegister = () => {
+  const handleBegin = () => {
+    setLanguage('en');
+    navigation.navigate('Register');
+  };
+
+  const handleGeorgian = () => {
+    setLanguage('ka');
     navigation.navigate('Register');
   };
 
@@ -21,7 +31,7 @@ export const OnboardingScreen: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.descriptionText}>
-          Book courts and manage your bookings with just a few taps
+          {t('onboarding.description')}
         </Text>
         
         <Image 
@@ -33,7 +43,7 @@ export const OnboardingScreen: React.FC = () => {
         <View style={styles.buttonsContainer}>
           <TouchableOpacity 
             style={styles.primaryButton} 
-            onPress={handleNavigateToRegister}
+            onPress={handleBegin}
             activeOpacity={0.8}
           >
             <Image source={flagGB} style={styles.flagIcon} />
@@ -42,7 +52,7 @@ export const OnboardingScreen: React.FC = () => {
           
           <TouchableOpacity 
             style={styles.primaryButton} 
-            onPress={handleNavigateToRegister}
+            onPress={handleGeorgian}
             activeOpacity={0.8}
           >
             <Image source={flagGE} style={styles.flagIcon} />
@@ -105,4 +115,3 @@ const styles = StyleSheet.create({
   },
   
 });
-

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { useLogin } from '../hooks';
 import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout } from '../components';
 import { colors, typography } from '../theme';
@@ -11,6 +12,7 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, '
 
 export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -19,7 +21,7 @@ export const LoginScreen: React.FC = () => {
   const validateEmail = (emailValue: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (emailValue.length > 0 && !emailRegex.test(emailValue)) {
-      setEmailError('Please enter a valid email');
+      setEmailError(t('login.emailError'));
     } else {
       setEmailError('');
     }
@@ -32,13 +34,13 @@ export const LoginScreen: React.FC = () => {
 
   const handleLogin = () => {
     if (!email || !password) {
-      Alert.alert('შეცდომა', 'გთხოვთ შეავსოთ ყველა ველი');
+      Alert.alert(t('common.error'), t('login.fillAll'));
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setEmailError('Please enter a valid email');
+      setEmailError(t('login.emailError'));
       return;
     }
 
@@ -47,18 +49,18 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <PageLayout style={styles.mainContainer}>
-      <Header title="Skip for now" variant="right" />
+      <Header title={t('common.skipForNow')} variant="right" />
       <ScreenWrapper>
         <ScrollView 
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
           <View style={styles.formContainer}>
-            <Text style={styles.title}>Welcome back! Log in:</Text>
+            <Text style={styles.title}>{t('login.title')}</Text>
 
             <LabeledInputField
-              label="Email"
-              placeholder="Email"
+              label={t('login.email')}
+              placeholder={t('login.emailPlaceholder')}
               value={email}
               onChangeText={handleEmailChange}
               keyboardType="email-address"
@@ -67,8 +69,8 @@ export const LoginScreen: React.FC = () => {
             />
 
             <LabeledInputField
-              label="Password"
-              placeholder="Password"
+              label={t('login.password')}
+              placeholder={t('login.passwordPlaceholder')}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -77,14 +79,14 @@ export const LoginScreen: React.FC = () => {
 
           <View style={styles.buttonsContainer}>
             <CustomButton
-              title="Log in"
+              title={t('login.loginButton')}
               onPress={handleLogin}
               isLoading={loginMutation.isPending}
               style={styles.loginButton}
             />
 
             <CustomButton
-              title="Sign up"
+              title={t('login.signUp')}
               onPress={() => navigation.navigate('Register')}
               variant="secondary"
               style={styles.signUpButton}

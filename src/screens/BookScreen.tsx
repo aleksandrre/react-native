@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { PageLayout, ScreenWrapper, DateSelector, ImageHeader, TimeSlotSelector, CustomButton } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors } from '../theme';
@@ -14,17 +15,16 @@ type BookScreenNavigationProp = NativeStackNavigationProp<
 
 export const BookScreen: React.FC = () => {
   const navigation = useNavigation<BookScreenNavigationProp>();
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
-    console.log('Selected date:', date);
   };
 
   const handleSlotsSelect = (slots: string[]) => {
     setSelectedSlots(slots);
-    console.log('Selected slots:', slots);
   };
 
   const handleContinue = () => {
@@ -39,7 +39,7 @@ export const BookScreen: React.FC = () => {
   return (
     <PageLayout>
       <ImageHeader
-        title="KUS TBA PADEL"
+        title={t('book.title')}
         imageSource={book}
       />
       <ScreenWrapper>
@@ -53,7 +53,7 @@ export const BookScreen: React.FC = () => {
         />
         <View style={styles.buttonContainer}>
           <CustomButton
-            title="Continue"
+            title={t('common.continue')}
             onPress={handleContinue}
             disabled={selectedSlots.length === 0}
           />
@@ -68,7 +68,3 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
-
-
-

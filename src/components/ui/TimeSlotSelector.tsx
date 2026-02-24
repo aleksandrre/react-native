@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 
 interface TimeSlot {
@@ -41,6 +42,7 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
   onSlotsSelect,
   maxSelections = 3,
 }) => {
+  const { t } = useTranslation();
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
 
   const handleSlotPress = (slotId: string, slotTime: string, available: boolean) => {
@@ -71,7 +73,7 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{maxSelections > 1 ? 'Select times' : 'Select time'}</Text>
+      <Text style={styles.title}>{maxSelections > 1 ? t('timeSlotSelector.selectTimes') : t('timeSlotSelector.selectTime')}</Text>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
