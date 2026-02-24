@@ -5,6 +5,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import { colors, typography } from '../theme';
 import onboardImage from '../../assets/onboard.png';
+import flagGB from '../../assets/flag_gb.png';
+import flagGE from '../../assets/flag_ge.png';
 
 type OnboardingScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Onboarding'>;
 
@@ -34,6 +36,7 @@ export const OnboardingScreen: React.FC = () => {
             onPress={handleNavigateToRegister}
             activeOpacity={0.8}
           >
+            <Image source={flagGB} style={styles.flagIcon} />
             <Text style={styles.primaryButtonText}>Begin</Text>
           </TouchableOpacity>
           
@@ -42,6 +45,7 @@ export const OnboardingScreen: React.FC = () => {
             onPress={handleNavigateToRegister}
             activeOpacity={0.8}
           >
+            <Image source={flagGE} style={styles.flagIcon} />
             <Text style={styles.primaryButtonText}>შესვლა</Text>
           </TouchableOpacity>
         </View>
@@ -84,6 +88,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1.5,
     borderColor: colors.white,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  flagIcon: {
+    width: 22,
+    height: 15,
+    borderRadius: 2,
   },
   primaryButtonText: {
     color: colors.white,
