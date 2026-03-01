@@ -3,7 +3,9 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
+import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { useDateLocale } from '../hooks';
 import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector } from '../components';
 import { colors, typography } from '../theme';
 
@@ -27,9 +29,9 @@ const getOrdinalSuffix = (day: number): string => {
     }
 };
 
-const formatSelectedDate = (date: Date): string => {
+const formatSelectedDate = (date: Date, locale: Locale): string => {
     const day = date.getDate();
-    const monthYear = format(date, 'MMM yyyy');
+    const monthYear = format(date, 'MMM yyyy', { locale });
     return `${day}${getOrdinalSuffix(day)} ${monthYear}`;
 };
 
@@ -37,6 +39,7 @@ export const RescheduleCourtScreen: React.FC = () => {
     const navigation = useNavigation<any>();
     const route = useRoute<RescheduleCourtRouteProp>();
     const { t } = useTranslation();
+    const dateLocale = useDateLocale();
 
     const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
     const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
@@ -59,7 +62,7 @@ export const RescheduleCourtScreen: React.FC = () => {
         const allSelected = selectedSlots.every((slot) => selectedCourts[slot]);
         if (!allSelected) return;
 
-        const dateStr = format(selectedDate, 'EEE, d MMM yyyy');
+        const dateStr = format(selectedDate, 'EEE, d MMM yyyy', { locale: dateLocale });
         const newCourtId = selectedCourts[selectedSlots[0] || ''] || '';
         const newCourtNumber = newCourtId.split('-').pop()?.replace('Court ', '') || 'X';
 
@@ -90,7 +93,7 @@ export const RescheduleCourtScreen: React.FC = () => {
 
                 <View style={styles.dateContainer}>
                     <Text style={styles.selectedDate}>
-                        {t('rescheduleCourt.selectedTime')} <Text style={styles.selectedDateValue}>{formatSelectedDate(selectedDate)}</Text>
+                        {t('rescheduleCourt.selectedTime')} <Text style={styles.selectedDateValue}>{formatSelectedDate(selectedDate, dateLocale)}</Text>
                     </Text>
                 </View>
 

@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { format } from 'date-fns';
+import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { useDateLocale } from '../hooks';
 import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList } from '../components';
 import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
@@ -30,10 +32,10 @@ const getOrdinalSuffix = (day: number): string => {
     }
 };
 
-const formatDateForCard = (date: Date): string => {
-    const dayName = format(date, 'EEE');
+const formatDateForCard = (date: Date, locale: Locale): string => {
+    const dayName = format(date, 'EEE', { locale });
     const day = date.getDate();
-    const monthYear = format(date, 'MMM yyyy');
+    const monthYear = format(date, 'MMM yyyy', { locale });
     return `${dayName}, ${day} ${monthYear}`;
 };
 
@@ -46,6 +48,7 @@ export const SummaryScreen: React.FC = () => {
     const navigation = useNavigation<NavigationProp<BookStackParamList>>();
     const route = useRoute<SummaryRouteProp>();
     const { t } = useTranslation();
+    const dateLocale = useDateLocale();
     const [promoCode, setPromoCode] = useState('');
     const [cardholderName, setCardholderName] = useState('');
     const [cardNumber, setCardNumber] = useState('');
@@ -64,7 +67,7 @@ export const SummaryScreen: React.FC = () => {
             const courtId = selectedCourts[slot] as string;
             return {
                 courtNumber: extractCourtNumber(courtId),
-                date: formatDateForCard(selectedDate),
+                date: formatDateForCard(selectedDate, dateLocale),
                 time: slot,
             };
         });
