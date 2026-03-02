@@ -1,19 +1,17 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const BASE_URL = 'https://api.example.com'; // შეცვალე შენი API URL-ით
+export const API_BASE_URL = 'http://dev.local/wp-json/turtle-booking/v1';
 
-// publicApi: Login, Register და საჯარო მონაცემებისთვის
 export const publicApi = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// privateApi: პროფილი, კალათა და სხვა დაცული რესურსებისთვის
 export const privateApi = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

@@ -1,14 +1,15 @@
 import { User } from './user';
 
 export interface LoginRequest {
-  email: string;
+  username: string;
   password: string;
 }
 
 export interface RegisterRequest {
+  username: string;
   email: string;
   password: string;
-  name: string;
+  phone: string;
 }
 
 export interface AuthResponse {

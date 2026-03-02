@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
@@ -13,45 +13,23 @@ type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, '
 export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const { t } = useTranslation();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
   const loginMutation = useLogin();
 
-  const validateEmail = (emailValue: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (emailValue.length > 0 && !emailRegex.test(emailValue)) {
-      setEmailError(t('login.emailError'));
-    } else {
-      setEmailError('');
-    }
-  };
-
-  const handleEmailChange = (text: string) => {
-    setEmail(text);
-    validateEmail(text);
-  };
-
   const handleLogin = () => {
-    if (!email || !password) {
+    if (!username || !password) {
       Alert.alert(t('common.error'), t('login.fillAll'));
       return;
     }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailError(t('login.emailError'));
-      return;
-    }
-
-    loginMutation.mutate({ email, password });
+    loginMutation.mutate({ username, password });
   };
 
   return (
     <PageLayout style={styles.mainContainer}>
       <Header title={t('common.skipForNow')} variant="right" />
       <ScreenWrapper>
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
@@ -59,13 +37,11 @@ export const LoginScreen: React.FC = () => {
             <Text style={styles.title}>{t('login.title')}</Text>
 
             <LabeledInputField
-              label={t('login.email')}
-              placeholder={t('login.emailPlaceholder')}
-              value={email}
-              onChangeText={handleEmailChange}
-              keyboardType="email-address"
+              label={t('login.username')}
+              placeholder={t('login.usernamePlaceholder')}
+              value={username}
+              onChangeText={setUsername}
               autoCapitalize="none"
-              error={emailError}
             />
 
             <LabeledInputField

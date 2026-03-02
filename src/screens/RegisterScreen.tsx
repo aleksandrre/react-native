@@ -13,7 +13,7 @@ type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList
 export const RegisterScreen: React.FC = () => {
   const navigation = useNavigation<RegisterScreenNavigationProp>();
   const { t } = useTranslation();
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
@@ -66,7 +66,7 @@ export const RegisterScreen: React.FC = () => {
   };
 
   const handleRegister = () => {
-    if (!name || !email || !phone || !password || !confirmPassword) {
+    if (!username || !email || !phone || !password || !confirmPassword) {
       Alert.alert(t('common.error'), t('register.fillAll'));
       return;
     }
@@ -92,7 +92,7 @@ export const RegisterScreen: React.FC = () => {
       return;
     }
 
-    registerMutation.mutate({ name, email, password });
+    registerMutation.mutate({ username, email, password, phone });
   };
 
   return (
@@ -103,11 +103,11 @@ export const RegisterScreen: React.FC = () => {
           <Text style={styles.title}>{t('register.title')}</Text>
 
           <LabeledInputField
-            label={t('register.nameLabel')}
-            placeholder={t('register.namePlaceholder')}
-            value={name}
-            onChangeText={setName}
-            autoCapitalize="words"
+            label={t('register.usernameLabel')}
+            placeholder={t('register.usernamePlaceholder')}
+            value={username}
+            onChangeText={setUsername}
+            autoCapitalize="none"
           />
 
           <LabeledInputField
