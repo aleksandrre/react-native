@@ -19,6 +19,7 @@ import {
   getMonth,
 } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { useDateLocale } from '../../hooks';
 import { colors, typography } from '../../theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -37,6 +38,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
   selectedDate: propSelectedDate,
 }) => {
   const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const today = useMemo(() => startOfDay(new Date()), []);
   const [selectedDate, setSelectedDate] = useState<Date>(
     propSelectedDate || today
@@ -105,10 +107,10 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
   const stickyMonthLabel = useMemo(() => {
     const firstIdx = Math.max(0, Math.floor(scrollX / DAY_WIDTH));
     if (firstIdx < dates.length && !monthStartFlags[firstIdx]) {
-      return format(dates[firstIdx], 'MMM');
+      return format(dates[firstIdx], 'MMM', { locale: dateLocale });
     }
     return null;
-  }, [scrollX, dates, monthStartFlags]);
+  }, [scrollX, dates, monthStartFlags, dateLocale]);
 
   const scrollByDays = (days: number) => {
     const currentSnap = Math.round(scrollX / DAY_WIDTH) * DAY_WIDTH;
@@ -148,7 +150,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
             const isSelected = isSameDay(date, selectedDate);
             const isToday = isSameDay(date, today);
             const isPast = isBefore(date, today);
-            const dayOfWeek = format(date, 'EEEEE');
+            const dayOfWeek = format(date, 'EEEEE', { locale: dateLocale });
             const dayNumber = format(date, 'd');
             const isNewMonth = monthStartFlags[index];
             const showBoundary = isNewMonth && index !== 0;
@@ -162,7 +164,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
                 <View style={styles.monthLabelCell}>
                   {isNewMonth && (
                     <Text style={styles.monthText}>
-                      {format(date, 'MMM')}
+                      {format(date, 'MMM', { locale: dateLocale })}
                     </Text>
                   )}
                 </View>

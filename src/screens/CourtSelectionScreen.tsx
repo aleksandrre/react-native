@@ -5,7 +5,9 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
+import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { useDateLocale } from '../hooks';
 import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
@@ -33,9 +35,9 @@ const getOrdinalSuffix = (day: number): string => {
   }
 };
 
-const formatSelectedDate = (date: Date): string => {
+const formatSelectedDate = (date: Date, locale: Locale): string => {
   const day = date.getDate();
-  const monthYear = format(date, 'MMM yyyy');
+  const monthYear = format(date, 'MMM yyyy', { locale });
   return `${day}${getOrdinalSuffix(day)} ${monthYear}`;
 };
 
@@ -45,6 +47,7 @@ export const CourtSelectionScreen: React.FC = () => {
   const navigation = useNavigation<CourtSelectionNavigationProp>();
   const route = useRoute<CourtSelectionRouteProp>();
   const { t } = useTranslation();
+  const dateLocale = useDateLocale();
 
   const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
   const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
@@ -96,7 +99,7 @@ export const CourtSelectionScreen: React.FC = () => {
         </View>
 
         <Text style={styles.selectedDate}>
-          {t('courtSelection.selectedDate')} <Text style={styles.selectedDateValue}>{formatSelectedDate(selectedDate)}</Text>
+          {t('courtSelection.selectedDate')} <Text style={styles.selectedDateValue}>{formatSelectedDate(selectedDate, dateLocale)}</Text>
         </Text>
 
         <CourtSelector
