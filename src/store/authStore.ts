@@ -28,7 +28,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const token = await SecureStore.getItemAsync('auth_token');
       set({
-        isAuthenticated: false,
+        isAuthenticated: true,
         token,
         isLoading: false,
       });
@@ -36,7 +36,7 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     } catch (error) {
       console.log("Shemovida catch ში")
-      set({ isAuthenticated: false, token: null, isLoading: false });
+      set({ isAuthenticated: true, token: null, isLoading: false });
     }
   },
 }));
