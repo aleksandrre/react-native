@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
+import { User } from '../types';
 
 interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   token: string | null;
-  login: (token: string) => Promise<void>;
+  user: User | null;
+  login: (token: string, user: User) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -14,14 +16,25 @@ export const useAuthStore = create<AuthState>((set) => ({
   isAuthenticated: false,
   isLoading: true,
   token: null,
-  login: async (token: string) => {
-    await SecureStore.setItemAsync('auth_token', token);
-    set({ isAuthenticated: true, token });
+  user: null,
+
+  login: async (token: string, user: User) => {
+    try {
+      await SecureStore.setItemAsync('auth_token', token);
+    } catch {
+      // SecureStore-ი შეიძლება fail-ს გაკეთოს web-ზე ან ზოგ მოწყობილობაზე
+      // მაგრამ session-ისთვის მაინც ვლოგინდებით
+    }
+    set({ isAuthenticated: true, token, user });
   },
 
   logout: async () => {
-    await SecureStore.deleteItemAsync('auth_token');
-    set({ isAuthenticated: false, token: null });
+    try {
+      await SecureStore.deleteItemAsync('auth_token');
+    } catch {
+      // ignore
+    }
+    set({ isAuthenticated: false, token: null, user: null });
   },
 
   checkAuth: async () => {
@@ -37,4 +50,3 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 }));
-

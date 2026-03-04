@@ -2,6 +2,7 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
 export const API_BASE_URL = 'http://dev.local/wp-json/turtle-booking/v1';
+// export const API_BASE_URL = 'http://192.168.0.105:8081/wp-json/turtle-booking/v1';
 
 export const publicApi = axios.create({
   baseURL: API_BASE_URL,

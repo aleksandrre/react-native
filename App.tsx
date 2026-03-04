@@ -19,6 +19,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const queryClient = new QueryClient();
+const Stack = createNativeStackNavigator();
 
 function AppContent() {
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
@@ -34,7 +35,6 @@ function AppContent() {
       </View>
     );
   }
-  const Stack = createNativeStackNavigator();
 
   return (
     // <NavigationContainer>

@@ -10,11 +10,10 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: async (data) => {
-      await login(data.token);
+      await login(data.token, data.user);
     },
     onError: (error: any) => {
       Alert.alert('შეცდომა', error.response?.data?.message || 'ავტორიზაცია ვერ მოხერხდა');
     },
   });
 };
-
