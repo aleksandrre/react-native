@@ -13,10 +13,7 @@ export const ProfileScreen: React.FC = () => {
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
 
-  const [name, setName] = useState('Name Surname');
-  const [email, setEmail] = useState('name@mail.com');
-  const [phone, setPhone] = useState('+xx xxx xxx xxx');
-  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { isAuthenticated, user, logout } = useAuthStore();
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [otpModalVisible, setOtpModalVisible] = useState(false);
@@ -29,26 +26,18 @@ export const ProfileScreen: React.FC = () => {
 
   const handleEdit = (type: 'name' | 'email' | 'phone') => {
     setEditType(type);
-    if (type === 'name') {
-      setTempValue(name);
-    } else if (type === 'email') {
-      setTempValue(email);
-    } else if (type === 'phone') {
-      setTempValue(phone);
-    }
+    if (type === 'name') setTempValue(user?.display_name ?? '');
+    else if (type === 'email') setTempValue(user?.email ?? '');
+    else if (type === 'phone') setTempValue(user?.phone ?? '');
     setEditModalVisible(true);
   };
 
   const handleSaveEdit = (value: string) => {
     if (editType === 'name') {
-      setName(value);
       setEditModalVisible(false);
-    } else if (editType === 'email') {
-      setPendingEmail(value);
-      setEditModalVisible(false);
-      setOtpModalVisible(true);
-    } else if (editType === 'phone') {
-      setPendingPhone(value);
+    } else {
+      setPendingEmail(editType === 'email' ? value : '');
+      setPendingPhone(editType === 'phone' ? value : '');
       setEditModalVisible(false);
       setOtpModalVisible(true);
     }
@@ -56,12 +45,11 @@ export const ProfileScreen: React.FC = () => {
 
   const handleSaveOTP = (otp: string) => {
     console.log('OTP:', otp);
-    if (editType === 'email') {
-      setEmail(pendingEmail);
-    } else if (editType === 'phone') {
-      setPhone(pendingPhone);
-    }
     setOtpModalVisible(false);
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   const getEditTitle = () => {
@@ -87,9 +75,9 @@ export const ProfileScreen: React.FC = () => {
       <ScreenWrapper>
         {isAuthenticated ? (
           <View style={styles.section}>
-            <InfoRow label={t('profile.name')} value={name} onEdit={() => handleEdit('name')} />
-            <InfoRow label={t('profile.email')} value={email} onEdit={() => handleEdit('email')} />
-            <InfoRow label={t('profile.phone')} value={phone} onEdit={() => handleEdit('phone')} />
+            <InfoRow label={t('profile.name')} value={user?.display_name ?? '—'} onEdit={() => handleEdit('name')} />
+            <InfoRow label={t('profile.email')} value={user?.email ?? '—'} onEdit={() => handleEdit('email')} />
+            <InfoRow label={t('profile.phone')} value={user?.phone ?? '—'} onEdit={() => handleEdit('phone')} />
             <View style={styles.infoRow}>
               <Text style={styles.infoText}>{t('profile.language')}</Text>
               <View style={styles.langPickerRow}>
@@ -107,10 +95,11 @@ export const ProfileScreen: React.FC = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            <Text style={[styles.infoText]}>{t('profile.credits')} <Text style={styles.infoValue}>{'{x}'}</Text></Text>
+            <Text style={styles.infoText}>{t('profile.credits')} <Text style={styles.infoValue}>{user?.credits ?? 0}</Text></Text>
 
             <CustomButton
               title={t('profile.logOut')}
+              onPress={handleLogout}
             />
           </View>
         ) : (
