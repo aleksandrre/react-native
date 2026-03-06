@@ -58,6 +58,7 @@ export const RescheduleScreen: React.FC = () => {
 
                     <View style={styles.section}>
                         <TimeSlotSelector
+                            selectedDate={selectedDate}
                             maxSelections={1}
                             onSlotsSelect={handleSlotsSelect}
                         />

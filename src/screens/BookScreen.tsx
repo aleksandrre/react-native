@@ -21,6 +21,7 @@ export const BookScreen: React.FC = () => {
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
+    setSelectedSlots([]);
   };
 
   const handleSlotsSelect = (slots: string[]) => {
@@ -48,6 +49,7 @@ export const BookScreen: React.FC = () => {
           onDateSelect={handleDateSelect}
         />
         <TimeSlotSelector
+          selectedDate={selectedDate}
           onSlotsSelect={handleSlotsSelect}
           maxSelections={3}
         />

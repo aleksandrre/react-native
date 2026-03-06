@@ -169,6 +169,7 @@ const ka = {
   timeSlotSelector: {
     selectTimes: 'დროის არჩევა',
     selectTime: 'დრო',
+    error: 'საათების ჩატვირთვა ვერ მოხერხდა',
   },
   courtCard: {
     court: 'კორტი',

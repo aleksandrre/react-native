@@ -169,6 +169,7 @@ const en = {
   timeSlotSelector: {
     selectTimes: 'Select times',
     selectTime: 'Select time',
+    error: 'Failed to load available slots',
   },
   courtCard: {
     court: 'court',
