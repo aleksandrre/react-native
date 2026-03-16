@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { useDateLocale } from '../hooks';
+import { useDateLocale, useAvailableCourts } from '../hooks';
 import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
@@ -54,6 +54,8 @@ export const CourtSelectionScreen: React.FC = () => {
 
   const [selectedCourts, setSelectedCourts] = useState<CourtSelection>({});
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
+
+  const { courtsBySlot, isLoading: courtsLoading } = useAvailableCourts(selectedDate, selectedSlots);
 
   const handleCourtPress = (timeSlot: string, courtId: string) => {
     setSelectedCourts((prev) => {
@@ -106,6 +108,8 @@ export const CourtSelectionScreen: React.FC = () => {
           selectedSlots={selectedSlots}
           selectedCourts={selectedCourts}
           onCourtSelect={handleCourtPress}
+          courtsBySlot={courtsBySlot}
+          isLoading={courtsLoading}
         />
 
         <View style={styles.buttonContainer}>
