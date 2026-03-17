@@ -25,6 +25,10 @@ interface CourtSelection {
   [timeSlot: string]: string | null;
 }
 
+interface CourtIdSelection {
+  [timeSlot: string]: number;
+}
+
 const getOrdinalSuffix = (day: number): string => {
   if (day > 3 && day < 21) return 'th';
   switch (day % 10) {
@@ -53,14 +57,24 @@ export const CourtSelectionScreen: React.FC = () => {
   const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
 
   const [selectedCourts, setSelectedCourts] = useState<CourtSelection>({});
+  const [selectedCourtIds, setSelectedCourtIds] = useState<CourtIdSelection>({});
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
 
   const { courtsBySlot, isLoading: courtsLoading } = useAvailableCourts(selectedDate, selectedSlots);
 
-  const handleCourtPress = (timeSlot: string, courtId: string) => {
+  const handleCourtPress = (timeSlot: string, courtId: number, courtTitle: string) => {
+    const isAlreadySelected = selectedCourts[timeSlot] === courtTitle;
+
     setSelectedCourts((prev) => {
-      const currentSelection = prev[timeSlot];
-      if (currentSelection === courtId) {
+      if (isAlreadySelected) {
+        const { [timeSlot]: _, ...rest } = prev;
+        return rest;
+      }
+      return { ...prev, [timeSlot]: courtTitle };
+    });
+
+    setSelectedCourtIds((prev) => {
+      if (isAlreadySelected) {
         const { [timeSlot]: _, ...rest } = prev;
         return rest;
       }
@@ -76,6 +90,7 @@ export const CourtSelectionScreen: React.FC = () => {
       selectedDate,
       selectedSlots,
       selectedCourts,
+      selectedCourtIds,
     });
   };
 

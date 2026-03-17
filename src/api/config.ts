@@ -1,5 +1,5 @@
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import { useAuthStore } from '../store/authStore';
 
 export const API_BASE_URL = 'http://dev.local/wp-json/turtle-booking/v1';
 // export const API_BASE_URL = 'http://192.168.0.105:8081/wp-json/turtle-booking/v1';
@@ -18,10 +18,10 @@ export const privateApi = axios.create({
   },
 });
 
-// ავტომატურად დაამატებს ტოკენს privateApi-ს რექვესტებს
+// ტოკენს იღებს Zustand store-დან (SecureStore-ს ნაცვლად, რომელიც web-ზე არ მუშაობს)
 privateApi.interceptors.request.use(
-  async (config) => {
-    const token = await SecureStore.getItemAsync('auth_token');
+  (config) => {
+    const token = useAuthStore.getState().token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -35,10 +35,9 @@ privateApi.interceptors.request.use(
 // რესფონსის ინტერსეპტორი - 401 შეცდომის შემთხვევაში
 privateApi.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  (error) => {
     if (error.response?.status === 401) {
-      // ტოკენი არავალიდურია, წაშალეთ
-      await SecureStore.deleteItemAsync('auth_token');
+      useAuthStore.getState().logout();
     }
     return Promise.reject(error);
   }

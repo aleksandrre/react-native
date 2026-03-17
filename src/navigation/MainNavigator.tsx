@@ -24,6 +24,7 @@ export type BookStackParamList = {
     selectedDate: Date;
     selectedSlots: string[];
     selectedCourts: { [timeSlot: string]: string | null };
+    selectedCourtIds: { [timeSlot: string]: number };
   };
   Success: {
     bookings: Booking[];

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { format } from 'date-fns';
 import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { useDateLocale } from '../hooks';
+import { useDateLocale, useCreateBooking } from '../hooks';
 import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList } from '../components';
 import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
@@ -17,6 +17,7 @@ type RouteParams = {
         selectedDate: Date;
         selectedSlots: string[];
         selectedCourts: { [timeSlot: string]: string | null };
+        selectedCourtIds: { [timeSlot: string]: number };
     };
 };
 
@@ -39,9 +40,16 @@ const formatDateForCard = (date: Date, locale: Locale): string => {
     return `${dayName}, ${day} ${monthYear}`;
 };
 
-const extractCourtNumber = (courtId: string): string => {
-    const match = courtId.match(/Court\s*(\d+)/i);
+const extractCourtNumber = (courtTitle: string): string => {
+    const match = courtTitle.match(/Court\s*(\d+)/i);
     return match ? match[1] : '1';
+};
+
+const formatDateForApi = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 };
 
 export const SummaryScreen: React.FC = () => {
@@ -60,6 +68,7 @@ export const SummaryScreen: React.FC = () => {
     const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
     const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
     const selectedCourts = route.params?.selectedCourts || {};
+    const selectedCourtIds = route.params?.selectedCourtIds || {};
 
     const bookings: Booking[] = selectedSlots
         .filter((slot) => selectedCourts[slot])
@@ -78,6 +87,17 @@ export const SummaryScreen: React.FC = () => {
     const requiredCredits = bookings.length;
     
     const { isAuthenticated } = useAuthStore();
+    const { mutate: createBookings, isPending: isCreatingBooking } = useCreateBooking();
+
+    const buildBookingRequests = (useCredit: boolean) =>
+        selectedSlots
+            .filter((slot) => selectedCourtIds[slot] != null)
+            .map((slot) => ({
+                court_id: selectedCourtIds[slot],
+                date: formatDateForApi(selectedDate),
+                time: slot,
+                use_credit: useCredit,
+            }));
 
     const handleApplyCode = () => {
         console.log('Applying promo code:', promoCode);
@@ -121,21 +141,47 @@ export const SummaryScreen: React.FC = () => {
             errors.cvcNumber = t('summary.errors.cvcMustBe3Digits');
         }
 
+        console.log('[SummaryScreen] validateForm errors:', errors, {
+            cardholderName,
+            cardNumberLen: cardNumber.length,
+            expiryDate,
+            cvcLen: cvcNumber.length,
+        });
+
         setValidationErrors(errors);
         return Object.keys(errors).length === 0;
     };
 
-    const handleBookWithCredits = () => {
-        if (!validateForm()) return;
-        const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
-        navigation.navigate('Success', { bookings, bookingId });
+    const submitBookings = (useCredit: boolean) => {
+        if (!validateForm()) {
+            console.log('[SummaryScreen] validateForm failed:', validationErrors);
+            return;
+        }
+
+        const requests = buildBookingRequests(useCredit);
+        console.log('[SummaryScreen] booking requests:', JSON.stringify(requests));
+
+        if (requests.length === 0) {
+            console.warn('[SummaryScreen] No court IDs found in selectedCourtIds:', selectedCourtIds);
+            Alert.alert('Error', 'Could not find court IDs. Please go back and re-select courts.');
+            return;
+        }
+
+        createBookings(requests, {
+            onSuccess: (data) => {
+                console.log('[SummaryScreen] createBookings success:', data);
+                const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
+                navigation.navigate('Success', { bookings, bookingId });
+            },
+            onError: (error) => {
+                console.error('[SummaryScreen] createBookings error:', error);
+                Alert.alert(t('common.error'), t('summary.bookingFailed'));
+            },
+        });
     };
 
-    const handlePayAndBook = () => {
-        if (!validateForm()) return;
-        const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
-        navigation.navigate('Success', { bookings, bookingId });
-    };
+    const handleBookWithCredits = () => submitBookings(true);
+    const handlePayAndBook = () => submitBookings(false);
 
     const handleLoginToBook = () => {
         navigation.getParent()?.navigate('Auth', { screen: 'Login' });
@@ -267,6 +313,7 @@ export const SummaryScreen: React.FC = () => {
                                 <CustomButton
                                     title={t('summary.payAndBook')}
                                     onPress={handlePayAndBook}
+                                    disabled={isCreatingBooking}
                                     style={styles.PayAndBookCourtsBTN}
                                 />
                             ) : userCredits >= requiredCredits ? (
@@ -274,11 +321,13 @@ export const SummaryScreen: React.FC = () => {
                                     <CustomButton
                                         title={t('summary.bookWithCredits')}
                                         onPress={handleBookWithCredits}
+                                        disabled={isCreatingBooking}
                                         variant="secondary"
                                     />
                                     <CustomButton
                                         title={t('summary.payAndBook')}
                                         onPress={handlePayAndBook}
+                                        disabled={isCreatingBooking}
                                         style={styles.PayAndBookCourtsBTN}
                                     />
                                 </>
@@ -287,11 +336,13 @@ export const SummaryScreen: React.FC = () => {
                                     <CustomButton
                                         title={t('summary.bookWithCreditsAndCard')}
                                         onPress={handleBookWithCredits}
+                                        disabled={isCreatingBooking}
                                         variant="secondary"
                                     />
                                     <CustomButton
                                         title={t('summary.payAndBook')}
                                         onPress={handlePayAndBook}
+                                        disabled={isCreatingBooking}
                                         style={styles.PayAndBookCourtsBTN}
                                     />
                                 </>

@@ -6,7 +6,7 @@ import { Court } from '../../types';
 interface CourtSelectorProps {
     selectedSlots: string[];
     selectedCourts: { [timeSlot: string]: string | null };
-    onCourtSelect: (timeSlot: string, courtTitle: string) => void;
+    onCourtSelect: (timeSlot: string, courtId: number, courtTitle: string) => void;
     courtsBySlot: Record<string, Court[]>;
     isLoading?: boolean;
 }
@@ -50,7 +50,7 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
                                         styles.courtButton,
                                         isSelected && styles.courtButtonSelected,
                                     ]}
-                                    onPress={() => onCourtSelect(timeSlot, court.title)}
+                                    onPress={() => onCourtSelect(timeSlot, court.id, court.title)}
                                     activeOpacity={0.7}
                                 >
                                     <Text
