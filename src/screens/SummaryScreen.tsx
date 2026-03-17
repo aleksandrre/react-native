@@ -89,15 +89,16 @@ export const SummaryScreen: React.FC = () => {
     const { isAuthenticated } = useAuthStore();
     const { mutate: createBookings, isPending: isCreatingBooking } = useCreateBooking();
 
-    const buildBookingRequests = (useCredit: boolean) =>
-        selectedSlots
+    const buildBookingRequest = (useCredit: boolean) => ({
+        use_credit: useCredit,
+        bookings: selectedSlots
             .filter((slot) => selectedCourtIds[slot] != null)
             .map((slot) => ({
                 court_id: selectedCourtIds[slot],
                 date: formatDateForApi(selectedDate),
                 time: slot,
-                use_credit: useCredit,
-            }));
+            })),
+    });
 
     const handleApplyCode = () => {
         console.log('Applying promo code:', promoCode);
@@ -158,16 +159,16 @@ export const SummaryScreen: React.FC = () => {
             return;
         }
 
-        const requests = buildBookingRequests(useCredit);
-        console.log('[SummaryScreen] booking requests:', JSON.stringify(requests));
+        const request = buildBookingRequest(useCredit);
+        console.log('[SummaryScreen] booking request:', JSON.stringify(request));
 
-        if (requests.length === 0) {
+        if (request.bookings.length === 0) {
             console.warn('[SummaryScreen] No court IDs found in selectedCourtIds:', selectedCourtIds);
             Alert.alert('Error', 'Could not find court IDs. Please go back and re-select courts.');
             return;
         }
 
-        createBookings(requests, {
+        createBookings(request, {
             onSuccess: (data) => {
                 console.log('[SummaryScreen] createBookings success:', data);
                 const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();

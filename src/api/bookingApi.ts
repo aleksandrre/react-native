@@ -16,7 +16,7 @@ export const bookingApi = {
     return response.data;
   },
 
-  createBooking: async (data: CreateBookingRequest): Promise<CreateBookingResponse> => {
+  createBookings: async (data: CreateBookingRequest): Promise<CreateBookingResponse> => {
     const response = await privateApi.post<CreateBookingResponse>('/bookings', data);
     return response.data;
   },

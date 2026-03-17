@@ -12,11 +12,15 @@ export interface Booking {
   rescheduled?: boolean;
 }
 
-export interface CreateBookingRequest {
+export interface BookingItem {
   court_id: number;
   date: string;
   time: string;
+}
+
+export interface CreateBookingRequest {
   use_credit: boolean;
+  bookings: BookingItem[];
 }
 
 export interface CreateBookingResponse {
