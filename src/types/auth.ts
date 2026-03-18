@@ -17,3 +17,9 @@ export interface AuthResponse {
   user: User;
 }
 
+export interface UpdateProfileRequest {
+  email: string;
+  display_name: string;
+  phone: string;
+}
+

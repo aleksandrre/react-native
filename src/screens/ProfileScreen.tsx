@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Image, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal } from '../components';
 import { colors, typography } from '../theme';
@@ -8,19 +8,18 @@ import pencil from '../../assets/pencil.svg';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../store/authStore';
 import { useLanguageStore } from '../store/languageStore';
+import { useUpdateProfile } from '../hooks';
 
 export const ProfileScreen: React.FC = () => {
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
 
   const { isAuthenticated, user, logout } = useAuthStore();
+  const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile();
 
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [editType, setEditType] = useState<'name' | 'email' | 'phone'>('name');
   const [tempValue, setTempValue] = useState('');
-  const [pendingEmail, setPendingEmail] = useState('');
-  const [pendingPhone, setPendingPhone] = useState('');
 
   const navigation = useNavigation<any>();
 
@@ -28,24 +27,21 @@ export const ProfileScreen: React.FC = () => {
     setEditType(type);
     if (type === 'name') setTempValue(user?.display_name ?? '');
     else if (type === 'email') setTempValue(user?.email ?? '');
-    else if (type === 'phone') setTempValue(user?.phone ?? '');
+    else setTempValue(user?.phone ?? '');
     setEditModalVisible(true);
   };
 
   const handleSaveEdit = (value: string) => {
-    if (editType === 'name') {
-      setEditModalVisible(false);
-    } else {
-      setPendingEmail(editType === 'email' ? value : '');
-      setPendingPhone(editType === 'phone' ? value : '');
-      setEditModalVisible(false);
-      setOtpModalVisible(true);
-    }
-  };
+    const payload = {
+      display_name: editType === 'name' ? value : (user?.display_name ?? ''),
+      email: editType === 'email' ? value : (user?.email ?? ''),
+      phone: editType === 'phone' ? value : (user?.phone ?? ''),
+    };
 
-  const handleSaveOTP = (otp: string) => {
-    console.log('OTP:', otp);
-    setOtpModalVisible(false);
+    updateProfile(payload, {
+      onSuccess: () => setEditModalVisible(false),
+      onError: () => Alert.alert(t('common.error'), t('profile.updateFailed')),
+    });
   };
 
   const handleLogout = () => {
@@ -168,16 +164,7 @@ export const ProfileScreen: React.FC = () => {
         initialValue={tempValue}
         onClose={() => setEditModalVisible(false)}
         onSave={handleSaveEdit}
-      />
-
-      <EditModal
-        visible={otpModalVisible}
-        title={getEditTitle()}
-        placeholder="XXXX"
-        mode="otp"
-        message={t('profile.otpMessage', { contact: editType === 'email' ? pendingEmail : pendingPhone })}
-        onClose={() => setOtpModalVisible(false)}
-        onSave={handleSaveOTP}
+        isSaving={isSaving}
       />
     </PageLayout>
   );

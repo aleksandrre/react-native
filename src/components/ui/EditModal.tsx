@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
@@ -11,6 +11,7 @@ interface EditModalProps {
     initialValue?: string;
     message?: string;
     mode?: 'input' | 'otp';
+    isSaving?: boolean;
     onClose: () => void;
     onSave: (value: string) => void;
 }
@@ -22,6 +23,7 @@ export const EditModal: React.FC<EditModalProps> = ({
     initialValue = '',
     message,
     mode = 'input',
+    isSaving = false,
     onClose,
     onSave,
 }) => {
@@ -50,7 +52,7 @@ export const EditModal: React.FC<EditModalProps> = ({
         >
             <BlurView intensity={10} style={styles.overlay}>
                 <View style={styles.modalContainer}>
-                    <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+                    <TouchableOpacity style={styles.closeButton} onPress={onClose} disabled={isSaving}>
                         <Text style={styles.closeText}>✕</Text>
                     </TouchableOpacity>
 
@@ -71,15 +73,21 @@ export const EditModal: React.FC<EditModalProps> = ({
                         value={value}
                         onChangeText={setValue}
                         autoFocus
+                        editable={!isSaving}
                         keyboardType={mode === 'otp' ? 'number-pad' : 'default'}
                         maxLength={mode === 'otp' ? 6 : undefined}
                     />
 
                     <TouchableOpacity
-                        style={styles.saveButton}
+                        style={[styles.saveButton, isSaving && styles.saveButtonDisabled]}
                         onPress={handleSave}
+                        disabled={isSaving}
                     >
-                        <Text style={styles.saveButtonText}>{t('common.save')}</Text>
+                        {isSaving ? (
+                            <ActivityIndicator size="small" color={colors.white} />
+                        ) : (
+                            <Text style={styles.saveButtonText}>{t('common.save')}</Text>
+                        )}
                     </TouchableOpacity>
                 </View>
             </BlurView>
@@ -161,6 +169,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    saveButtonDisabled: {
+        opacity: 0.6,
     },
     saveButtonText: {
         color: colors.white,

@@ -5,4 +5,5 @@ export * from './useAvailableSlots';
 export * from './useAvailableCourts';
 export * from './useCreateBooking';
 export * from './useBookings';
+export * from './useUpdateProfile';
 
