@@ -1,5 +1,5 @@
 import { publicApi, privateApi } from './config';
-import { Court, CreateBookingRequest, CreateBookingResponse } from '../types';
+import { Court, CreateBookingRequest, CreateBookingResponse, ApiBookingsResponse } from '../types';
 
 export const bookingApi = {
   getAvailableSlots: async (date: string): Promise<string[]> => {
@@ -18,6 +18,11 @@ export const bookingApi = {
 
   createBookings: async (data: CreateBookingRequest): Promise<CreateBookingResponse> => {
     const response = await privateApi.post<CreateBookingResponse>('/bookings', data);
+    return response.data;
+  },
+
+  getBookings: async (): Promise<ApiBookingsResponse> => {
+    const response = await privateApi.get<ApiBookingsResponse>('/bookings');
     return response.data;
   },
 };

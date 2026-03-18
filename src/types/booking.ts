@@ -28,3 +28,21 @@ export interface CreateBookingResponse {
   [key: string]: unknown;
 }
 
+export interface ApiBooking {
+  id: string;
+  court_id: string;
+  user_id: string;
+  booking_date: string;
+  start_time: string;
+  end_time: string;
+  price: string;
+  status: string;
+  created_at: string;
+  court_title: string;
+}
+
+export interface ApiBookingsResponse {
+  upcoming: ApiBooking[];
+  past: ApiBooking[];
+}
+

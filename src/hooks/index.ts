@@ -4,4 +4,5 @@ export * from './useDateLocale';
 export * from './useAvailableSlots';
 export * from './useAvailableCourts';
 export * from './useCreateBooking';
+export * from './useBookings';
 
