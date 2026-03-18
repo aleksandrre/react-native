@@ -46,3 +46,14 @@ export interface ApiBookingsResponse {
   past: ApiBooking[];
 }
 
+export interface LockSlotRequest {
+  court_id: number;
+  date: string;
+  time: string;
+}
+
+export interface LockSlotResponse {
+  success: boolean;
+  expires_at?: string;
+}
+

@@ -1,5 +1,12 @@
 import { publicApi, privateApi } from './config';
-import { Court, CreateBookingRequest, CreateBookingResponse, ApiBookingsResponse } from '../types';
+import {
+  Court,
+  CreateBookingRequest,
+  CreateBookingResponse,
+  ApiBookingsResponse,
+  LockSlotRequest,
+  LockSlotResponse,
+} from '../types';
 
 export const bookingApi = {
   getAvailableSlots: async (date: string): Promise<string[]> => {
@@ -23,6 +30,11 @@ export const bookingApi = {
 
   getBookings: async (): Promise<ApiBookingsResponse> => {
     const response = await privateApi.get<ApiBookingsResponse>('/bookings');
+    return response.data;
+  },
+
+  lockSlot: async (data: LockSlotRequest): Promise<LockSlotResponse> => {
+    const response = await privateApi.post<LockSlotResponse>('/lock-slot', data);
     return response.data;
   },
 };

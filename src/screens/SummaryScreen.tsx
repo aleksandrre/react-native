@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { format } from 'date-fns';
 import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { useDateLocale, useCreateBooking } from '../hooks';
-import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList } from '../components';
+import { useDateLocale, useCreateBooking, useReservationTimer } from '../hooks';
+import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList, ReservationTimer } from '../components';
 import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
 import { Booking } from '../types';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { useAuthStore } from '../store/authStore';
+import { bookingApi } from '../api/bookingApi';
 
 type RouteParams = {
     Summary: {
@@ -88,6 +89,8 @@ export const SummaryScreen: React.FC = () => {
     
     const { isAuthenticated } = useAuthStore();
     const { mutate: createBookings, isPending: isCreatingBooking } = useCreateBooking();
+    const { formatted: reservationTime, isExpired } = useReservationTimer(5 * 60);
+    const hasLockedSlotsRef = useRef(false);
 
     const buildBookingRequest = (useCredit: boolean) => ({
         use_credit: useCredit,
@@ -99,6 +102,32 @@ export const SummaryScreen: React.FC = () => {
                 time: slot,
             })),
     });
+
+    useEffect(() => {
+        if (!isAuthenticated) return;
+        if (hasLockedSlotsRef.current) return;
+
+        hasLockedSlotsRef.current = true;
+
+        const dateForApi = formatDateForApi(selectedDate);
+
+        selectedSlots
+            .filter((slot) => selectedCourtIds[slot] != null)
+            .forEach((slot) => {
+                const courtId = selectedCourtIds[slot];
+                if (!courtId) return;
+
+                bookingApi
+                    .lockSlot({
+                        court_id: courtId,
+                        date: dateForApi,
+                        time: slot,
+                    })
+                    .catch((error) => {
+                        console.error('[SummaryScreen] lockSlot error', error);
+                    });
+            });
+    }, [isAuthenticated, selectedSlots, selectedCourtIds, selectedDate]);
 
     const handleApplyCode = () => {
         console.log('Applying promo code:', promoCode);
@@ -154,7 +183,7 @@ export const SummaryScreen: React.FC = () => {
     };
 
     const submitBookings = (useCredit: boolean) => {
-        if (!validateForm()) {
+        if (!validateForm() || isExpired) {
             console.log('[SummaryScreen] validateForm failed:', validationErrors);
             return;
         }
@@ -192,10 +221,8 @@ export const SummaryScreen: React.FC = () => {
         <PageLayout>
             <Header title={t('common.goBack')} />
             <ScreenWrapper>
-                {isAuthenticated && (
-                    <View style={styles.reservationBanner}>
-                        <Text style={styles.reservationText}>{t('summary.reservationTimer')}</Text>
-                    </View>
+                {isAuthenticated && !isExpired && (
+                    <ReservationTimer formattedTime={reservationTime} />
                 )}
 
                 <ScrollView
@@ -310,11 +337,15 @@ export const SummaryScreen: React.FC = () => {
                                 <Text style={styles.priceText}>{t('summary.price')} {`₾${totalPrice}`}</Text>
                             )}
 
+                            {isExpired && (
+                                <Text style={styles.errorText}>{t('summary.reservationExpired')}</Text>
+                            )}
+
                             {userCredits === 0 ? (
                                 <CustomButton
                                     title={t('summary.payAndBook')}
                                     onPress={handlePayAndBook}
-                                    disabled={isCreatingBooking}
+                                    disabled={isCreatingBooking || isExpired}
                                     style={styles.PayAndBookCourtsBTN}
                                 />
                             ) : userCredits >= requiredCredits ? (
@@ -322,13 +353,13 @@ export const SummaryScreen: React.FC = () => {
                                     <CustomButton
                                         title={t('summary.bookWithCredits')}
                                         onPress={handleBookWithCredits}
-                                        disabled={isCreatingBooking}
+                                        disabled={isCreatingBooking || isExpired}
                                         variant="secondary"
                                     />
                                     <CustomButton
                                         title={t('summary.payAndBook')}
                                         onPress={handlePayAndBook}
-                                        disabled={isCreatingBooking}
+                                        disabled={isCreatingBooking || isExpired}
                                         style={styles.PayAndBookCourtsBTN}
                                     />
                                 </>
@@ -337,13 +368,13 @@ export const SummaryScreen: React.FC = () => {
                                     <CustomButton
                                         title={t('summary.bookWithCreditsAndCard')}
                                         onPress={handleBookWithCredits}
-                                        disabled={isCreatingBooking}
+                                        disabled={isCreatingBooking || isExpired}
                                         variant="secondary"
                                     />
                                     <CustomButton
                                         title={t('summary.payAndBook')}
                                         onPress={handlePayAndBook}
-                                        disabled={isCreatingBooking}
+                                        disabled={isCreatingBooking || isExpired}
                                         style={styles.PayAndBookCourtsBTN}
                                     />
                                 </>
