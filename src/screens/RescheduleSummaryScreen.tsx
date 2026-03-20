@@ -40,14 +40,16 @@ export const RescheduleSummaryScreen: React.FC = () => {
                 use_credit: false,
             },
             {
-                onSuccess: () => {
+                onSuccess: (data) => {
+                    const newBookingId = String(data.booking_id);
                     navigation.navigate('Success', {
                         bookings: [{
                             courtNumber: newBooking.courtNumber,
                             date: newBooking.date,
                             time: newBooking.time,
                         }],
-                        bookingId,
+                        bookingId: newBookingId,
+                        bookingIds: [newBookingId],
                         isSingleBooking: true,
                     });
                 },
