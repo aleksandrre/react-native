@@ -98,7 +98,7 @@ export const BookingDetailsScreen: React.FC = () => {
                         </View>
 
                         <Text style={styles.statusText}>{t('bookingDetails.status')} {status}</Text>
-                        <Text style={styles.bookingId}>{t('bookingDetails.bookingId')} {`{${bookingId}}`}</Text>
+                        <Text style={styles.bookingId}>{t('bookingDetails.bookingId')} {`${bookingId}`}</Text>
                     </View>
                 </ScrollView>
 

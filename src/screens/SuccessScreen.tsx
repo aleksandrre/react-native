@@ -88,7 +88,7 @@ export const SuccessScreen: React.FC = () => {
 
                         <Text style={styles.bookingId}>
                             {t('success.bookingId')}{' '}
-                            {bookingIds.length > 0 ? `{\u00a0${bookingIds.join(', ')}\u00a0}` : bookingId ? `{\u00a0${bookingId}\u00a0}` : ''}
+                            {bookingIds.length > 0 ? `\u00a0${bookingIds.join(', ')}\u00a0` : bookingId ? `\u00a0${bookingId}\u00a0` : ''}
                         </Text>
                     </View>
                 </ScrollView>
