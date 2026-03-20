@@ -143,12 +143,18 @@ export const ProfileScreen: React.FC = () => {
 
         <View style={styles.contactSection}>
           <Text style={styles.contactTitle}>{t('profile.contactUs')}</Text>
-          <Text style={styles.contactText}>Phone/WhatsApp:
-            <Text style={styles.link} onPress={() => Linking.openURL('tel:+995599xxxxxx')}> +995 599 xxx xxx</Text>
-          </Text>
-          <Text style={styles.contactText}>Email:
-            <Text style={styles.link} onPress={() => Linking.openURL('mailto:kustbapadel@gmail.com')}> kustbapadel@gmail.com</Text>
-          </Text>
+          <View style={styles.contactRow}>
+            <Text style={styles.contactLabel}>Phone/WhatsApp:</Text>
+            <Text style={styles.linkText} onPress={() => Linking.openURL('tel:+995585889977')}>
+              +995 585 88 99 77
+            </Text>
+          </View>
+          <View style={styles.contactRow}>
+            <Text style={styles.contactLabel}>Email:</Text>
+            <Text style={styles.linkText} onPress={() => Linking.openURL('mailto:kustbapadel@gmail.com')}>
+              kustbapadel@gmail.com
+            </Text>
+          </View>
 
           <View style={styles.footer}>
             <Text style={styles.footerText}>{t('profile.builtBy')}</Text>
@@ -252,7 +258,15 @@ const styles = StyleSheet.create({
   },
   contactTitle: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily:typography.fontFamilyBold ,textAlign:"center"},
   contactText: { color: colors.white, fontSize: 16, lineHeight: 20,fontFamily:typography.fontFamily},
-  link: { textDecorationLine: 'underline', fontSize: 16, lineHeight: 20,fontFamily:typography.fontFamily },
+  contactRow: { flexDirection: 'row', alignItems: 'center' },
+  contactLabel: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamily, marginRight: 6 },
+  linkText: {
+    color: colors.white,
+    fontSize: 16,
+    lineHeight: 16,
+    fontFamily: typography.fontFamily,
+    textDecorationLine: 'underline',
+  },
   footer: { marginTop: 7, alignItems: 'center' },
   footerText: { color: colors.white, fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
   footerLink: { color: colors.lightPurple, textDecorationLine: 'underline', fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
