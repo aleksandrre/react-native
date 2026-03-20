@@ -24,7 +24,9 @@ export interface CreateBookingRequest {
 }
 
 export interface CreateBookingResponse {
-  id: number;
+  message: string;
+  booking_ids?: number[];
+  booking_id?: number;
   [key: string]: unknown;
 }
 

@@ -17,9 +17,11 @@ export const SuccessScreen: React.FC = () => {
     const { t } = useTranslation();
 
     const bookings = route.params?.bookings || [];
-    const bookingId = route.params?.bookingId || '002938';
+    const bookingId = route.params?.bookingId;
+    const bookingIds = route.params?.bookingIds || [];
     const isSingleBooking = route.params?.isSingleBooking || false;
-
+    console.log(route, 'route.params');
+    
     const handleBookAgain = () => {
         const parentNav = navigation.getParent();
         if (parentNav) {
@@ -28,9 +30,11 @@ export const SuccessScreen: React.FC = () => {
     };
 
     const handleBookingPress = (booking: Booking, index: number) => {
+        const idForIndex = bookingIds[index] ?? bookingId;
         navigation.push('Success', {
             bookings: [booking],
-            bookingId: bookingId,
+            bookingId: idForIndex ? String(idForIndex) : '',
+            bookingIds: idForIndex ? [String(idForIndex)] : [],
             isSingleBooking: true,
         });
     };
@@ -82,7 +86,10 @@ export const SuccessScreen: React.FC = () => {
                             </>
                         )}
 
-                        <Text style={styles.bookingId}>{t('success.bookingId')} {`{${bookingId}}`}</Text>
+                        <Text style={styles.bookingId}>
+                            {t('success.bookingId')}{' '}
+                            {bookingIds.length > 0 ? `{\u00a0${bookingIds.join(', ')}\u00a0}` : bookingId ? `{\u00a0${bookingId}\u00a0}` : ''}
+                        </Text>
                     </View>
                 </ScrollView>
 

@@ -203,8 +203,14 @@ export const SummaryScreen: React.FC = () => {
                 if (useCredit) {
                     refreshCredits();
                 }
-                const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
-                navigation.navigate('Success', { bookings, bookingId });
+                const bookingIds = data?.booking_ids ?? [];
+                const bookingId = bookingIds[0] != null ? String(bookingIds[0]) : undefined;
+                navigation.navigate('Success', {
+                    bookings,
+                    bookingId: bookingId ?? '',
+                    bookingIds: bookingIds.map(String),
+                    isSingleBooking: bookings.length === 1,
+                });
             },
             onError: (error) => {
                 console.error('[SummaryScreen] createBookings error:', error);
