@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
 import { User } from '../types';
+import { authApi } from '../api/authApi';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -11,6 +12,7 @@ interface AuthState {
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
   updateUser: (user: User) => void;
+  refreshCredits: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -53,5 +55,16 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   updateUser: (user: User) => {
     set((state) => ({ user: { ...state.user, ...user } }));
+  },
+
+  refreshCredits: async () => {
+    try {
+      const credits = await authApi.getCredits();
+      set((state) => ({
+        user: state.user ? { ...state.user, credits } : null,
+      }));
+    } catch {
+      // silent — ძველი credits მნიშვნელობა რჩება
+    }
   },
 }));

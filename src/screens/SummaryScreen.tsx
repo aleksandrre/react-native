@@ -84,10 +84,10 @@ export const SummaryScreen: React.FC = () => {
 
     const pricePerSession = 40;
     const totalPrice = bookings.length * pricePerSession;
-    const userCredits: number = 3;
     const requiredCredits = bookings.length;
-    
-    const { isAuthenticated } = useAuthStore();
+
+    const { isAuthenticated, user, refreshCredits } = useAuthStore();
+    const userCredits = user?.credits ?? 0;
     const { mutate: createBookings, isPending: isCreatingBooking } = useCreateBooking();
     const { formatted: reservationTime, isExpired } = useReservationTimer(5 * 60);
     const hasLockedSlotsRef = useRef(false);
@@ -200,6 +200,9 @@ export const SummaryScreen: React.FC = () => {
         createBookings(request, {
             onSuccess: (data) => {
                 console.log('[SummaryScreen] createBookings success:', data);
+                if (useCredit) {
+                    refreshCredits();
+                }
                 const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
                 navigation.navigate('Success', { bookings, bookingId });
             },

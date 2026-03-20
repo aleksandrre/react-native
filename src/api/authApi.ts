@@ -17,4 +17,9 @@ export const authApi = {
     const response = await privateApi.post<User>('/user/profile', data);
     return response.data;
   },
+
+  getCredits: async (): Promise<number> => {
+    const response = await privateApi.get<{ credits: number }>('/credits');
+    return response.data.credits;
+  },
 };
