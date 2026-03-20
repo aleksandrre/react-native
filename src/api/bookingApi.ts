@@ -37,4 +37,8 @@ export const bookingApi = {
     const response = await privateApi.post<LockSlotResponse>('/lock-slot', data);
     return response.data;
   },
+
+  cancelBooking: async (bookingId: string): Promise<void> => {
+    await privateApi.post(`/bookings/${bookingId}/cancel`);
+  },
 };

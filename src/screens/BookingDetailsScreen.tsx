@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { PageLayout, ScreenWrapper, Header, CustomButton, InfoModal } from '../components';
 import { colors, typography } from '../theme';
+import { useCancelBooking } from '../hooks';
 
 type RouteParams = {
     BookingDetails: {
@@ -28,6 +29,8 @@ export const BookingDetailsScreen: React.FC = () => {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
 
+    const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking();
+
     const isCancelledOrRescheduled = status === 'Cancelled' || status === 'Rescheduled';
     const subtitleText = isPast || isCancelledOrRescheduled
         ? t('bookingDetails.bookingWas')
@@ -51,7 +54,10 @@ export const BookingDetailsScreen: React.FC = () => {
 
     const handleConfirmCancel = () => {
         setShowCancelModal(false);
-        setShowSuccessModal(true);
+        cancelBooking(bookingId, {
+            onSuccess: () => setShowSuccessModal(true),
+            onError: () => Alert.alert(t('common.error'), t('bookingDetails.cancelError')),
+        });
     };
 
     const handleCancelModalClose = () => {
@@ -121,6 +127,7 @@ export const BookingDetailsScreen: React.FC = () => {
                             <CustomButton
                                 title={t('bookingDetails.cancelBooking')}
                                 onPress={handleCancelBooking}
+                                disabled={isCancelling}
                                 variant="secondary"
                             />
                         </>
