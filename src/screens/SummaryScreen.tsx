@@ -193,7 +193,7 @@ export const SummaryScreen: React.FC = () => {
 
         if (request.bookings.length === 0) {
             console.warn('[SummaryScreen] No court IDs found in selectedCourtIds:', selectedCourtIds);
-            Alert.alert('Error', 'Could not find court IDs. Please go back and re-select courts.');
+            Alert.alert(t('common.error'), 'Could not find court IDs. Please go back and re-select courts.');
             return;
         }
 
