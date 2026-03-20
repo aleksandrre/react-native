@@ -73,9 +73,9 @@ const ka = {
     rescheduleBooking: 'ჯავშნის გადატანა',
     cancelBooking: 'ჯავშნის გაუქმება',
     cancelConfirm: 'დარწმუნებული ხართ, რომ გსურთ ჯავშნის გაუქმება?',
-    yesCancelBooking: 'დიახ, გავაუქმო',
-    noKeepBooking: 'არა, შევინარჩუნო',
-    cancelSuccess: 'თქვენი ჯავშანი {{date}}-ს {{time}}-ზე, კორტ {{courtNumber}}-ზე გაუქმებულია და თქვენ მიეცით 1 კრედიტი.',
+    yesCancelBooking: 'დიახ',
+    noKeepBooking: 'არა',
+    cancelSuccess: 'თქვენი ჯავშანი {{date}}-ს {{time}}-ზე, კორტ {{courtNumber}}-ზე გაუქმებულია. თქვენ დაგერიცხათ  1 კრედიტი.',
   },
   courtSelection: {
     title: 'კორტის არჩევა',
