@@ -93,10 +93,9 @@ export const ProfileScreen: React.FC = () => {
             </View>
             <Text style={styles.infoText}>{t('profile.credits')} <Text style={styles.infoValue}>{user?.credits ?? 0}</Text></Text>
 
-            <CustomButton
-              title={t('profile.logOut')}
-              onPress={handleLogout}
-            />
+            <TouchableOpacity  onPress={handleLogout}>
+              <Text style={styles.logoutLinkText}>{t('profile.logOut')}</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <View>
@@ -264,6 +263,14 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 16,
     lineHeight: 16,
+    fontFamily: typography.fontFamily,
+    textDecorationLine: 'underline',
+  },
+  
+  logoutLinkText: {
+    color: colors.white,
+    fontSize: 16,
+    lineHeight: 34,
     fontFamily: typography.fontFamily,
     textDecorationLine: 'underline',
   },
