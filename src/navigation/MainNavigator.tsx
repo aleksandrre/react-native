@@ -53,11 +53,13 @@ export type BookingsStackParamList = {
   };
   Reschedule: {
     bookingId: string;
+    oldBooking: { courtNumber: string; date: string; time: string };
   };
   RescheduleCourt: {
-    selectedDate: Date;
+    selectedDate: string;
     selectedSlots: string[];
     bookingId: string;
+    oldBooking: { courtNumber: string; date: string; time: string };
   };
   RescheduleSummary: {
     bookingId: string;
@@ -71,6 +73,8 @@ export type BookingsStackParamList = {
       date: string;
       time: string;
     };
+    newCourtId: number;
+    newDateForApi: string;
   };
   Success: {
     bookings: Booking[];

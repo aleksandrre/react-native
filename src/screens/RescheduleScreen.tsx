@@ -8,6 +8,7 @@ import { colors } from '../theme';
 type RouteParams = {
     Reschedule: {
         bookingId: string;
+        oldBooking: { courtNumber: string; date: string; time: string };
     };
 };
 
@@ -17,7 +18,7 @@ export const RescheduleScreen: React.FC = () => {
     const navigation = useNavigation<any>();
     const route = useRoute<RescheduleRouteProp>();
     const { t } = useTranslation();
-    const { bookingId } = route.params || {};
+    const { bookingId, oldBooking } = route.params || {};
 
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
     const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
@@ -36,7 +37,8 @@ export const RescheduleScreen: React.FC = () => {
             navigation.navigate('RescheduleCourt', {
                 selectedDate: selectedDate.toISOString(),
                 selectedSlots,
-                bookingId
+                bookingId,
+                oldBooking,
             });
         }
     };

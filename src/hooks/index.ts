@@ -8,5 +8,6 @@ export * from './useBookings';
 export * from './useUpdateProfile';
 export * from './useReservationTimer';
 export * from './useCancelBooking';
+export * from './useRescheduleBooking';
 export * from './useUpdateProfile';
 

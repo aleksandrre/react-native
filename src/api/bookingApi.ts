@@ -41,4 +41,11 @@ export const bookingApi = {
   cancelBooking: async (bookingId: string): Promise<void> => {
     await privateApi.post(`/bookings/${bookingId}/cancel`);
   },
+
+  rescheduleBooking: async (
+    bookingId: string,
+    data: { court_id: number; date: string; time: string; use_credit: boolean }
+  ): Promise<void> => {
+    await privateApi.post(`/bookings/${bookingId}/reschedule`, data);
+  },
 };

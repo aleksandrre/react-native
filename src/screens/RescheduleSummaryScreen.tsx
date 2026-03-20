@@ -1,24 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { PageLayout, ScreenWrapper, Header, CustomButton, ReservationTimer, CourtCard } from '../components';
 import { colors, typography } from '../theme';
-import { format } from 'date-fns';
+import { useRescheduleBooking, useReservationTimer } from '../hooks';
 
 type RouteParams = {
     RescheduleSummary: {
         bookingId: string;
-        oldBooking: {
-            courtNumber: string;
-            date: string;
-            time: string;
-        };
-        newBooking: {
-            courtNumber: string;
-            date: string;
-            time: string;
-        };
+        oldBooking: { courtNumber: string; date: string; time: string };
+        newBooking: { courtNumber: string; date: string; time: string };
+        newCourtId: number;
+        newDateForApi: string;
     };
 };
 
@@ -29,40 +23,56 @@ export const RescheduleSummaryScreen: React.FC = () => {
     const route = useRoute<RescheduleSummaryRouteProp>();
     const { t } = useTranslation();
 
-    const { bookingId, oldBooking, newBooking } = route.params || {
-        bookingId: '123',
-        oldBooking: { courtNumber: '3', date: 'Fri, 17 Dec 2025', time: '10:00' },
-        newBooking: { courtNumber: '3', date: 'Fri, 17 Dec 2025', time: '11:00' }
-    };
+    const { bookingId, oldBooking, newBooking, newCourtId, newDateForApi } = route.params;
+
+    const { formatted: reservationTime, isExpired } = useReservationTimer(5 * 60);
+    const { mutate: reschedule, isPending } = useRescheduleBooking();
 
     const handleReschedule = () => {
-        console.log('Rescheduling booking ID:', bookingId);
-        navigation.navigate('Success', {
-            bookings: [{
-                courtNumber: newBooking.courtNumber,
-                date: newBooking.date,
-                time: newBooking.time
-            }],
-            bookingId: bookingId,
-            isSingleBooking: true
-        });
+        if (isExpired) return;
+
+        reschedule(
+            {
+                bookingId,
+                court_id: newCourtId,
+                date: newDateForApi,
+                time: newBooking.time,
+                use_credit: false,
+            },
+            {
+                onSuccess: () => {
+                    navigation.navigate('Success', {
+                        bookings: [{
+                            courtNumber: newBooking.courtNumber,
+                            date: newBooking.date,
+                            time: newBooking.time,
+                        }],
+                        bookingId,
+                        isSingleBooking: true,
+                    });
+                },
+                onError: () => {
+                    Alert.alert(t('common.error'), t('rescheduleSummary.rescheduleError'));
+                },
+            }
+        );
     };
 
     return (
         <PageLayout>
             <Header title={t('common.goBack')} />
             <ScreenWrapper>
-                <ReservationTimer />
+                {!isExpired && <ReservationTimer formattedTime={reservationTime} />}
 
-                <ScrollView contentContainerStyle={styles.content}>
+                <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
                     <Text style={styles.sectionTitle}>{t('rescheduleSummary.summary')}</Text>
 
                     <Text style={styles.label}>{t('rescheduleSummary.bookingToChange')}</Text>
                     <View style={styles.cardContainer}>
                         <CourtCard
-                            courtNumber={oldBooking?.courtNumber || '3'}
-                            date={oldBooking?.date || 'Date'}
-                            time={oldBooking?.time || 'Time'}
+                            courtNumber={oldBooking.courtNumber}
+                            date={oldBooking.date}
+                            time={oldBooking.time}
                             cancelled={true}
                         />
                     </View>
@@ -70,17 +80,22 @@ export const RescheduleSummaryScreen: React.FC = () => {
                     <Text style={styles.label}>{t('rescheduleSummary.newBookingTime')}</Text>
                     <View style={styles.cardContainer}>
                         <CourtCard
-                            courtNumber={newBooking?.courtNumber || '3'}
-                            date={newBooking?.date || 'Date'}
-                            time={newBooking?.time || 'Time'}
+                            courtNumber={newBooking.courtNumber}
+                            date={newBooking.date}
+                            time={newBooking.time}
                         />
                     </View>
+
+                    {isExpired && (
+                        <Text style={styles.expiredText}>{t('summary.reservationExpired')}</Text>
+                    )}
                 </ScrollView>
 
                 <View style={styles.buttonContainer}>
                     <CustomButton
                         title={t('rescheduleSummary.rescheduleToThisTime')}
                         onPress={handleReschedule}
+                        disabled={isPending || isExpired}
                         variant="primary"
                     />
                 </View>
@@ -109,6 +124,14 @@ const styles = StyleSheet.create({
     },
     cardContainer: {
         marginBottom: 20,
+    },
+    expiredText: {
+        fontSize: 14,
+        lineHeight: 18,
+        fontFamily: typography.fontFamily,
+        color: '#FF4444',
+        textAlign: 'center',
+        marginTop: 8,
     },
     buttonContainer: {
         position: 'absolute',

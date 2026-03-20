@@ -45,7 +45,10 @@ export const BookingDetailsScreen: React.FC = () => {
     };
 
     const handleRescheduleBooking = () => {
-        navigation.navigate('Reschedule', { bookingId });
+        navigation.navigate('Reschedule', {
+            bookingId,
+            oldBooking: { courtNumber, date, time },
+        });
     };
 
     const handleCancelBooking = () => {
