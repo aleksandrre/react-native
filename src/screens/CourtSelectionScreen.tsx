@@ -11,6 +11,7 @@ import { useDateLocale, useAvailableCourts } from '../hooks';
 import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
+import { useLanguageStore } from '../store/languageStore';
 
 type RouteParams = {
   CourtSelection: {
@@ -39,9 +40,11 @@ const getOrdinalSuffix = (day: number): string => {
   }
 };
 
-const formatSelectedDate = (date: Date, locale: Locale): string => {
+const formatSelectedDate = (date: Date, locale: Locale, language: 'en' | 'ka'): string => {
   const day = date.getDate();
   const monthYear = format(date, 'MMM yyyy', { locale });
+  // Georgian dates typically do not use ordinal suffixes (st/nd/th).
+  if (language === 'ka') return `${day} ${monthYear}`;
   return `${day}${getOrdinalSuffix(day)} ${monthYear}`;
 };
 
@@ -52,6 +55,7 @@ export const CourtSelectionScreen: React.FC = () => {
   const route = useRoute<CourtSelectionRouteProp>();
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
+  const { language } = useLanguageStore();
 
   const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
   const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
@@ -116,7 +120,10 @@ export const CourtSelectionScreen: React.FC = () => {
         </View>
 
         <Text style={styles.selectedDate}>
-          {t('courtSelection.selectedDate')} <Text style={styles.selectedDateValue}>{formatSelectedDate(selectedDate, dateLocale)}</Text>
+          {t('courtSelection.selectedDate')}{" "}
+          <Text style={styles.selectedDateValue}>
+            {formatSelectedDate(selectedDate, dateLocale, language)}
+          </Text>
         </Text>
 
         <CourtSelector
