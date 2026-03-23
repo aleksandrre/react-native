@@ -13,6 +13,7 @@ import {
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
 import { useAuthStore } from './src/store/authStore';
+import { useLanguageStore } from './src/store/languageStore';
 import { MainNavigator, AuthNavigator } from './src/navigation';
 import { colors } from './src/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -23,9 +24,11 @@ const Stack = createNativeStackNavigator();
 
 function AppContent() {
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { initLanguage } = useLanguageStore();
 
   useEffect(() => {
-    checkAuth();
+    // პარალელურად ვიტვირთავთ token+user და language
+    Promise.all([checkAuth(), initLanguage()]);
   }, []);
 
   if (isLoading) {

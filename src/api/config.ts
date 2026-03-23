@@ -1,8 +1,19 @@
 import axios from 'axios';
-import { useAuthStore } from '../store/authStore';
 
-export const API_BASE_URL = 'http://dev.local/wp-json/turtle-booking/v1';
-// export const API_BASE_URL = 'http://192.168.0.105:8081/wp-json/turtle-booking/v1';
+// export const API_BASE_URL = 'http://dev.local/wp-json/turtle-booking/v1';
+export const API_BASE_URL = 'http://192.168.0.100:10004/wp-json/turtle-booking/v1';
+
+// Module-level ცვლადები — circular dependency-ს გარეშე
+let _token: string | null = null;
+let _onUnauthorized: (() => void) | null = null;
+
+export const setAuthToken = (token: string | null) => {
+  _token = token;
+};
+
+export const setOnUnauthorized = (cb: () => void) => {
+  _onUnauthorized = cb;
+};
 
 export const publicApi = axios.create({
   baseURL: API_BASE_URL,
@@ -18,26 +29,21 @@ export const privateApi = axios.create({
   },
 });
 
-// ტოკენს იღებს Zustand store-დან (SecureStore-ს ნაცვლად, რომელიც web-ზე არ მუშაობს)
 privateApi.interceptors.request.use(
   (config) => {
-    const token = useAuthStore.getState().token;
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (_token) {
+      config.headers.Authorization = `Bearer ${_token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// რესფონსის ინტერსეპტორი - 401 შეცდომის შემთხვევაში
 privateApi.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      useAuthStore.getState().logout();
+      _onUnauthorized?.();
     }
     return Promise.reject(error);
   }
