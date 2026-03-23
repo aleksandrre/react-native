@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 import { Court } from '../../types';
 
@@ -18,7 +19,8 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
     courtsBySlot,
     isLoading = false,
 }) => {
-    // ვიზუალური სტრუქტურა იგივე რჩება, უბრალოდ კორტების სია მოდის API-დან
+    const { t } = useTranslation();
+
     if (isLoading) {
         // loading-ის დროს ძველი layout არ ვშლით, უბრალოდ არაფერი ვხატავთ
         return null;
@@ -41,7 +43,8 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
                         </View>
 
                         {courts.map((court) => {
-                            const isSelected = selectedCourts[timeSlot] === court.title;
+                            const isSelected = selectedCourts[timeSlot] === court.court_number;
+                            const courtLabel = `${t('courtCard.court')} ${court.court_number}`;
 
                             return (
                                 <TouchableOpacity
@@ -50,7 +53,7 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
                                         styles.courtButton,
                                         isSelected && styles.courtButtonSelected,
                                     ]}
-                                    onPress={() => onCourtSelect(timeSlot, court.id, court.title)}
+                                    onPress={() => onCourtSelect(timeSlot, court.id, court.court_number)}
                                     activeOpacity={0.7}
                                 >
                                     <Text
@@ -59,7 +62,7 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
                                             isSelected && styles.courtTextSelected,
                                         ]}
                                     >
-                                        {court.title}
+                                        {courtLabel}
                                     </Text>
                                 </TouchableOpacity>
                             );

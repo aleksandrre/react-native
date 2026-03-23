@@ -32,10 +32,6 @@ const formatDateForApi = (date: Date): string => {
     return `${year}-${month}-${day}`;
 };
 
-const extractCourtNumber = (courtTitle: string): string => {
-    const match = courtTitle.match(/\d+/);
-    return match ? match[0] : courtTitle;
-};
 
 export const RescheduleCourtScreen: React.FC = () => {
     const navigation = useNavigation<any>();
@@ -88,7 +84,7 @@ export const RescheduleCourtScreen: React.FC = () => {
             bookingId,
             oldBooking: oldBooking ?? { courtNumber: '', date: dateDisplayStr, time: slot },
             newBooking: {
-                courtNumber: extractCourtNumber(courtTitle),
+                courtNumber: courtTitle,
                 date: dateDisplayStr,
                 time: slot,
             },

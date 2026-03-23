@@ -1,6 +1,6 @@
 export interface Court {
   id: number;
-  title: string;
+  court_number: string;
   price: string;
 }
 
@@ -40,7 +40,7 @@ export interface ApiBooking {
   price: string;
   status: string;
   created_at: string;
-  court_title: string;
+  court_number: string;
 }
 
 export interface ApiBookingsResponse {

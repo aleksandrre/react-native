@@ -41,10 +41,6 @@ const formatDateForCard = (date: Date, locale: Locale): string => {
     return `${dayName}, ${day} ${monthYear}`;
 };
 
-const extractCourtNumber = (courtTitle: string): string => {
-    const match = courtTitle.match(/Court\s*(\d+)/i);
-    return match ? match[1] : '1';
-};
 
 const formatDateForApi = (date: Date): string => {
     const year = date.getFullYear();
@@ -76,7 +72,7 @@ export const SummaryScreen: React.FC = () => {
         .map((slot) => {
             const courtId = selectedCourts[slot] as string;
             return {
-                courtNumber: extractCourtNumber(courtId),
+                courtNumber: courtId,
                 date: formatDateForCard(selectedDate, dateLocale),
                 time: slot,
             };
