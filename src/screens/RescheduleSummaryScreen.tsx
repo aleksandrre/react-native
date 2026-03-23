@@ -9,8 +9,8 @@ import { useRescheduleBooking, useReservationTimer } from '../hooks';
 type RouteParams = {
     RescheduleSummary: {
         bookingId: string;
-        oldBooking: { courtNumber: string; date: string; time: string };
-        newBooking: { courtNumber: string; date: string; time: string };
+        oldBooking: { courtNumber: string; rawDate: string; time: string };
+        newBooking: { courtNumber: string; rawDate: string; time: string };
         newCourtId: number;
         newDateForApi: string;
     };
@@ -45,7 +45,7 @@ export const RescheduleSummaryScreen: React.FC = () => {
                     navigation.navigate('Success', {
                         bookings: [{
                             courtNumber: newBooking.courtNumber,
-                            date: newBooking.date,
+                            rawDate: newBooking.rawDate,
                             time: newBooking.time,
                         }],
                         bookingId: newBookingId,
@@ -73,7 +73,7 @@ export const RescheduleSummaryScreen: React.FC = () => {
                     <View style={styles.cardContainer}>
                         <CourtCard
                             courtNumber={oldBooking.courtNumber}
-                            date={oldBooking.date}
+                            rawDate={oldBooking.rawDate}
                             time={oldBooking.time}
                             cancelled={true}
                         />
@@ -83,7 +83,7 @@ export const RescheduleSummaryScreen: React.FC = () => {
                     <View style={styles.cardContainer}>
                         <CourtCard
                             courtNumber={newBooking.courtNumber}
-                            date={newBooking.date}
+                            rawDate={newBooking.rawDate}
                             time={newBooking.time}
                         />
                     </View>

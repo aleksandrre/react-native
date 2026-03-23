@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { format } from 'date-fns';
-import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { useDateLocale, useAvailableCourts } from '../hooks';
+import { useAvailableCourts, useDateLocale } from '../hooks';
 import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector } from '../components';
 import { colors, typography } from '../theme';
 
@@ -13,17 +12,11 @@ type RouteParams = {
         selectedDate: string;
         selectedSlots: string[];
         bookingId: string;
-        oldBooking: { courtNumber: string; date: string; time: string };
+        oldBooking: { courtNumber: string; rawDate: string; time: string };
     };
 };
 
 type RescheduleCourtRouteProp = RouteProp<RouteParams, 'RescheduleCourt'>;
-
-const formatSelectedDate = (date: Date, locale: Locale): string => {
-    const day = date.getDate();
-    const monthYear = format(date, 'MMM yyyy', { locale });
-    return `${day} ${monthYear}`;
-};
 
 const formatDateForApi = (date: Date): string => {
     const year = date.getFullYear();
@@ -77,19 +70,19 @@ export const RescheduleCourtScreen: React.FC = () => {
         const slot = selectedSlots[0];
         if (!slot || !selectedCourtIds[slot]) return;
 
-        const dateDisplayStr = format(selectedDate, 'EEE, d MMM yyyy', { locale: dateLocale });
+        const newDateForApi = formatDateForApi(selectedDate);
         const courtTitle = selectedCourts[slot] ?? '';
 
         navigation.navigate('RescheduleSummary', {
             bookingId,
-            oldBooking: oldBooking ?? { courtNumber: '', date: dateDisplayStr, time: slot },
+            oldBooking: oldBooking ?? { courtNumber: '', rawDate: newDateForApi, time: slot },
             newBooking: {
                 courtNumber: courtTitle,
-                date: dateDisplayStr,
+                rawDate: newDateForApi,
                 time: slot,
             },
             newCourtId: selectedCourtIds[slot],
-            newDateForApi: formatDateForApi(selectedDate),
+            newDateForApi,
         });
     };
 
@@ -108,7 +101,7 @@ export const RescheduleCourtScreen: React.FC = () => {
                     <Text style={styles.selectedDate}>
                         {t('rescheduleCourt.selectedTime')}{' '}
                         <Text style={styles.selectedDateValue}>
-                            {formatSelectedDate(selectedDate, dateLocale)}
+                            {format(selectedDate, 'd MMM yyyy', { locale: dateLocale })}
                         </Text>
                     </Text>
                 </View>

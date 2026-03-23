@@ -30,7 +30,7 @@ export const BookingsScreen: React.FC = () => {
 
     navigation.navigate('BookingDetails', {
       courtNumber: booking.courtNumber,
-      date: booking.date,
+      rawDate: booking.rawDate,
       time: booking.time,
       status,
       bookingId: booking.id ?? '',
@@ -45,7 +45,7 @@ export const BookingsScreen: React.FC = () => {
 
     navigation.navigate('BookingDetails', {
       courtNumber: booking.courtNumber,
-      date: booking.date,
+      rawDate: booking.rawDate,
       time: booking.time,
       status,
       bookingId: booking.id ?? '',

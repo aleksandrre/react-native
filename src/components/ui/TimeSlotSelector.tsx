@@ -32,23 +32,20 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
   }, [selectedDate]);
 
   const handleSlotPress = (time: string) => {
-    setSelectedSlots((prev) => {
-      let newSelection: string[];
+    let newSelection: string[];
 
-      if (prev.includes(time)) {
-        newSelection = prev.filter((t) => t !== time);
-      } else {
-        if (maxSelections === 1) {
-          newSelection = [time];
-        } else {
-          if (prev.length >= maxSelections) return prev;
-          newSelection = [...prev, time];
-        }
-      }
+    if (selectedSlots.includes(time)) {
+      newSelection = selectedSlots.filter((t) => t !== time);
+    } else if (maxSelections === 1) {
+      newSelection = [time];
+    } else if (selectedSlots.length >= maxSelections) {
+      return;
+    } else {
+      newSelection = [...selectedSlots, time];
+    }
 
-      onSlotsSelect?.(newSelection);
-      return newSelection;
-    });
+    setSelectedSlots(newSelection);
+    onSlotsSelect?.(newSelection);
   };
 
   return (

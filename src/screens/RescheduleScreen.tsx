@@ -8,7 +8,7 @@ import { colors } from '../theme';
 type RouteParams = {
     Reschedule: {
         bookingId: string;
-        oldBooking: { courtNumber: string; date: string; time: string };
+        oldBooking: { courtNumber: string; rawDate: string; time: string };
     };
 };
 

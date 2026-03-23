@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { PageLayout, ScreenWrapper, Header, CustomButton, InfoModal } from '../components';
 import { colors, typography } from '../theme';
-import { useCancelBooking } from '../hooks';
+import { useCancelBooking, useDateLocale } from '../hooks';
 
 type RouteParams = {
     BookingDetails: {
         courtNumber: string;
-        date: string;
+        rawDate: string;
         time: string;
         status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
         bookingId: string;
@@ -24,7 +25,9 @@ export const BookingDetailsScreen: React.FC = () => {
     const route = useRoute<BookingDetailsRouteProp>();
     const { t } = useTranslation();
 
-    const { courtNumber, date, time, status, bookingId, isPast } = route.params;
+    const { courtNumber, rawDate, time, status, bookingId, isPast } = route.params;
+    const dateLocale = useDateLocale();
+    const date = format(parseISO(rawDate), 'EEE, d MMM yyyy', { locale: dateLocale });
 
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -47,7 +50,7 @@ export const BookingDetailsScreen: React.FC = () => {
     const handleRescheduleBooking = () => {
         navigation.navigate('Reschedule', {
             bookingId,
-            oldBooking: { courtNumber, date, time },
+            oldBooking: { courtNumber, rawDate, time },
         });
     };
 

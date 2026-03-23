@@ -91,7 +91,7 @@ export const CourtSelectionScreen: React.FC = () => {
     if (!allSelected) return;
 
     navigation.navigate('Summary', {
-      selectedDate,
+      selectedDate: selectedDate.toISOString(),
       selectedSlots,
       selectedCourts,
       selectedCourtIds,

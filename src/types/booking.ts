@@ -6,7 +6,7 @@ export interface Court {
 
 export interface Booking {
   courtNumber: string;
-  date: string;
+  rawDate: string; // ISO "YYYY-MM-DD"
   time: string;
   cancelled?: boolean;
   rescheduled?: boolean;

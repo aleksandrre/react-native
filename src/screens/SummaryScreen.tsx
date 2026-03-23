@@ -1,10 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
-import { format } from 'date-fns';
-import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { useDateLocale, useCreateBooking, useReservationTimer } from '../hooks';
+import { useCreateBooking, useReservationTimer } from '../hooks';
 import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList, ReservationTimer } from '../components';
 import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
@@ -24,24 +22,6 @@ type RouteParams = {
 
 type SummaryRouteProp = RouteProp<RouteParams, 'Summary'>;
 
-const getOrdinalSuffix = (day: number): string => {
-    if (day > 3 && day < 21) return 'th';
-    switch (day % 10) {
-        case 1: return 'st';
-        case 2: return 'nd';
-        case 3: return 'rd';
-        default: return 'th';
-    }
-};
-
-const formatDateForCard = (date: Date, locale: Locale): string => {
-    const dayName = format(date, 'EEE', { locale });
-    const day = date.getDate();
-    const monthYear = format(date, 'MMM yyyy', { locale });
-    return `${dayName}, ${day} ${monthYear}`;
-};
-
-
 const formatDateForApi = (date: Date): string => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -53,7 +33,6 @@ export const SummaryScreen: React.FC = () => {
     const navigation = useNavigation<NavigationProp<BookStackParamList>>();
     const route = useRoute<SummaryRouteProp>();
     const { t } = useTranslation();
-    const dateLocale = useDateLocale();
     const [promoCode, setPromoCode] = useState('');
     const [cardholderName, setCardholderName] = useState('');
     const [cardNumber, setCardNumber] = useState('');
@@ -73,7 +52,7 @@ export const SummaryScreen: React.FC = () => {
             const courtId = selectedCourts[slot] as string;
             return {
                 courtNumber: courtId,
-                date: formatDateForCard(selectedDate, dateLocale),
+                rawDate: formatDateForApi(selectedDate),
                 time: slot,
             };
         });

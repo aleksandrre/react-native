@@ -17,11 +17,11 @@ import { Booking } from '../types';
 export type BookStackParamList = {
   BookHome: undefined;
   CourtSelection: {
-    selectedDate: Date;
+    selectedDate: string;
     selectedSlots: string[];
   };
   Summary: {
-    selectedDate: Date;
+    selectedDate: string;
     selectedSlots: string[];
     selectedCourts: { [timeSlot: string]: string | null };
     selectedCourtIds: { [timeSlot: string]: number };
@@ -34,7 +34,7 @@ export type BookStackParamList = {
   };
   BookingDetails: {
     courtNumber: string;
-    date: string;
+    rawDate: string;
     time: string;
     status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
     bookingId: string;
@@ -46,7 +46,7 @@ export type BookingsStackParamList = {
   BookingsHome: undefined;
   BookingDetails: {
     courtNumber: string;
-    date: string;
+    rawDate: string;
     time: string;
     status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
     bookingId: string;
@@ -54,24 +54,24 @@ export type BookingsStackParamList = {
   };
   Reschedule: {
     bookingId: string;
-    oldBooking: { courtNumber: string; date: string; time: string };
+    oldBooking: { courtNumber: string; rawDate: string; time: string };
   };
   RescheduleCourt: {
     selectedDate: string;
     selectedSlots: string[];
     bookingId: string;
-    oldBooking: { courtNumber: string; date: string; time: string };
+    oldBooking: { courtNumber: string; rawDate: string; time: string };
   };
   RescheduleSummary: {
     bookingId: string;
     oldBooking: {
       courtNumber: string;
-      date: string;
+      rawDate: string;
       time: string;
     };
     newBooking: {
       courtNumber: string;
-      date: string;
+      rawDate: string;
       time: string;
     };
     newCourtId: number;

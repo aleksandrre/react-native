@@ -1,19 +1,23 @@
 import React from 'react';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
+import { useDateLocale } from '../../hooks';
 import courtLogo from '../../../assets/court_logo.png';
 
 interface CourtCardProps {
   courtNumber: string;
-  date: string;
+  rawDate: string; // ISO "YYYY-MM-DD"
   time: string;
   onPress?: () => void;
   cancelled?: boolean;
 }
 
-export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, onPress, cancelled }) => {
+export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, rawDate, time, onPress, cancelled }) => {
   const { t } = useTranslation();
+  const dateLocale = useDateLocale();
+  const formattedDate = format(parseISO(rawDate), 'EEE, d MMM yyyy', { locale: dateLocale });
   const CardContent = (
     <View style={[styles.container]}>
       <ImageBackground
@@ -26,7 +30,7 @@ export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, o
       </ImageBackground>
 
       <View style={styles.dateTimeSection}>
-        <Text style={[styles.dateText, cancelled && styles.textStrikethrough]}>{date}</Text>
+        <Text style={[styles.dateText, cancelled && styles.textStrikethrough]}>{formattedDate}</Text>
         <Text style={[styles.timeText, cancelled && styles.textStrikethrough]}>{time}</Text>
       </View>
     </View>

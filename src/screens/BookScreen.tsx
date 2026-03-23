@@ -32,7 +32,7 @@ export const BookScreen: React.FC = () => {
     if (selectedSlots.length === 0) return;
     
     navigation.navigate('CourtSelection', {
-      selectedDate,
+      selectedDate: selectedDate.toISOString(),
       selectedSlots,
     });
   };
