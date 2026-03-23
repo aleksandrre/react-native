@@ -83,7 +83,7 @@ const ka = {
     warningBold: 'მაქს. 3 სესია ჯავშანში:',
     warningText: ' გთხოვთ მოხსნათ სხვა სესია, განსხვავებული სესიის ასარჩევად',
     selectedDate: 'არჩეული თარიღი:',
-    continueToSummary: 'გაგრძელება შეჯამებამდე',
+    continueToSummary: 'გაგრძელება',
   },
   summary: {
     title: 'შეჯამება',
@@ -127,12 +127,12 @@ const ka = {
     bookAgain: 'თავიდან ჯავშნა',
   },
   reschedule: {
-    continueToCourt: 'გაგრძელება კორტამდე',
+    continueToCourt: 'გაგრძელება',
   },
   rescheduleCourt: {
     selectACourt: 'კორტის არჩევა',
     selectedTime: 'არჩეული დრო:',
-    continueToSummary: 'გაგრძელება შეჯამებამდე',
+    continueToSummary: 'გაგრძელება',
   },
   rescheduleSummary: {
     summary: 'შეჯამება',
@@ -156,7 +156,12 @@ const ka = {
     signUp: 'რეგისტრაცია',
     logIn: 'შესვლა',
     contactUs: 'დაგვიკავშირდი',
-    builtBy: 'Kus Tba Padel ტექნოლოგია შექმნილია:',
+    builtBy: 'კუს ტბა პადელის აპლიკაცია  შექმნილია conceptdigital.com-ის მიერ.',
+    builtByPrefix: 'კუს ტბა პადელის აპლიკაცია  შექმნილია ',
+    builtByLinkText: 'conceptdigital.com',
+    builtBySuffix: '-ის მიერ.',
+    phoneWhatsApp: 'მობილური/ვოთსაპი:',
+    emailContact: 'ელფოსტა:',
     editName: 'სახელის რედაქტირება',
     editEmail: 'ელ-ფოსტის რედაქტირება',
     editPhone: 'ტელეფონის რედაქტირება',
