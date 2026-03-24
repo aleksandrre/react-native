@@ -23,11 +23,11 @@ type RouteParams = {
 type CourtSelectionRouteProp = RouteProp<RouteParams, 'CourtSelection'>;
 
 interface CourtSelection {
-  [timeSlot: string]: string | null;
+  [timeSlot: string]: string[];
 }
 
 interface CourtIdSelection {
-  [timeSlot: string]: number;
+  [timeSlot: string]: number[];
 }
 
 const getOrdinalSuffix = (day: number): string => {
@@ -66,29 +66,48 @@ export const CourtSelectionScreen: React.FC = () => {
 
   const { courtsBySlot, isLoading: courtsLoading } = useAvailableCourts(selectedDate, selectedSlots);
 
+  const MAX_COURTS = 3;
+
+  const totalSelectedCourts = Object.values(selectedCourts).reduce(
+    (sum, courts) => sum + courts.length,
+    0
+  );
+
   const handleCourtPress = (timeSlot: string, courtId: number, courtTitle: string) => {
-    const isAlreadySelected = selectedCourts[timeSlot] === courtTitle;
+    const currentForSlot = selectedCourts[timeSlot] ?? [];
+    const isAlreadySelected = currentForSlot.includes(courtTitle);
+
+    if (!isAlreadySelected && totalSelectedCourts >= MAX_COURTS) return;
 
     setSelectedCourts((prev) => {
+      const current = prev[timeSlot] ?? [];
       if (isAlreadySelected) {
-        const { [timeSlot]: _, ...rest } = prev;
-        return rest;
+        const updated = current.filter((c) => c !== courtTitle);
+        if (updated.length === 0) {
+          const { [timeSlot]: _, ...rest } = prev;
+          return rest;
+        }
+        return { ...prev, [timeSlot]: updated };
       }
-      return { ...prev, [timeSlot]: courtTitle };
+      return { ...prev, [timeSlot]: [...current, courtTitle] };
     });
 
     setSelectedCourtIds((prev) => {
+      const current = prev[timeSlot] ?? [];
       if (isAlreadySelected) {
-        const { [timeSlot]: _, ...rest } = prev;
-        return rest;
+        const updated = current.filter((id) => id !== courtId);
+        if (updated.length === 0) {
+          const { [timeSlot]: _, ...rest } = prev;
+          return rest;
+        }
+        return { ...prev, [timeSlot]: updated };
       }
-      return { ...prev, [timeSlot]: courtId };
+      return { ...prev, [timeSlot]: [...current, courtId] };
     });
   };
 
   const handleContinue = () => {
-    const allSelected = selectedSlots.every((slot) => selectedCourts[slot]);
-    if (!allSelected) return;
+    if (totalSelectedCourts === 0) return;
 
     navigation.navigate('Summary', {
       selectedDate: selectedDate.toISOString(),
@@ -98,7 +117,7 @@ export const CourtSelectionScreen: React.FC = () => {
     });
   };
 
-  const allSelected = selectedSlots.every((slot) => selectedCourts[slot]);
+  const allSelected = totalSelectedCourts > 0;
 
   return (
     <PageLayout>
@@ -111,13 +130,15 @@ export const CourtSelectionScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.warningContainer}>
-          <Ionicons name="warning" size={12} color="#FFC107" style={styles.warningIcon} />
-          <Text style={styles.warningText}>
-            <Text style={styles.warningBold}>{t('courtSelection.warningBold')}</Text>
-            {t('courtSelection.warningText')}
-          </Text>
-        </View>
+        {totalSelectedCourts >= MAX_COURTS && (
+          <View style={styles.warningContainer}>
+            <Ionicons name="warning" size={12} color="#FFC107" style={styles.warningIcon} />
+            <Text style={styles.warningText}>
+              <Text style={styles.warningBold}>{t('courtSelection.warningBold')}</Text>
+              {t('courtSelection.warningText')}
+            </Text>
+          </View>
+        )}
 
         <Text style={styles.selectedDate}>
           {t('courtSelection.selectedDate')}{" "}
@@ -132,6 +153,7 @@ export const CourtSelectionScreen: React.FC = () => {
           onCourtSelect={handleCourtPress}
           courtsBySlot={courtsBySlot}
           isLoading={courtsLoading}
+          maxReached={totalSelectedCourts >= MAX_COURTS}
         />
 
         <View style={styles.buttonContainer}>

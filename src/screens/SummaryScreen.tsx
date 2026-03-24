@@ -15,8 +15,8 @@ type RouteParams = {
     Summary: {
         selectedDate: Date;
         selectedSlots: string[];
-        selectedCourts: { [timeSlot: string]: string | null };
-        selectedCourtIds: { [timeSlot: string]: number };
+        selectedCourts: { [timeSlot: string]: string[] };
+        selectedCourtIds: { [timeSlot: string]: number[] };
     };
 };
 
@@ -46,16 +46,14 @@ export const SummaryScreen: React.FC = () => {
     const selectedCourts = route.params?.selectedCourts || {};
     const selectedCourtIds = route.params?.selectedCourtIds || {};
 
-    const bookings: Booking[] = selectedSlots
-        .filter((slot) => selectedCourts[slot])
-        .map((slot) => {
-            const courtId = selectedCourts[slot] as string;
-            return {
-                courtNumber: courtId,
-                rawDate: formatDateForApi(selectedDate),
-                time: slot,
-            };
-        });
+    const bookings: Booking[] = selectedSlots.flatMap((slot) => {
+        const courts = selectedCourts[slot] ?? [];
+        return courts.map((courtNumber) => ({
+            courtNumber,
+            rawDate: formatDateForApi(selectedDate),
+            time: slot,
+        }));
+    });
 
     const pricePerSession = 40;
     const totalPrice = bookings.length * pricePerSession;
@@ -69,13 +67,14 @@ export const SummaryScreen: React.FC = () => {
 
     const buildBookingRequest = (useCredit: boolean) => ({
         use_credit: useCredit,
-        bookings: selectedSlots
-            .filter((slot) => selectedCourtIds[slot] != null)
-            .map((slot) => ({
-                court_id: selectedCourtIds[slot],
+        bookings: selectedSlots.flatMap((slot) => {
+            const courtIds = selectedCourtIds[slot] ?? [];
+            return courtIds.map((courtId) => ({
+                court_id: courtId,
                 date: formatDateForApi(selectedDate),
                 time: slot,
-            })),
+            }));
+        }),
     });
 
     useEffect(() => {
@@ -86,12 +85,9 @@ export const SummaryScreen: React.FC = () => {
 
         const dateForApi = formatDateForApi(selectedDate);
 
-        selectedSlots
-            .filter((slot) => selectedCourtIds[slot] != null)
-            .forEach((slot) => {
-                const courtId = selectedCourtIds[slot];
-                if (!courtId) return;
-
+        selectedSlots.forEach((slot) => {
+            const courtIds = selectedCourtIds[slot] ?? [];
+            courtIds.forEach((courtId) => {
                 bookingApi
                     .lockSlot({
                         court_id: courtId,
@@ -102,6 +98,7 @@ export const SummaryScreen: React.FC = () => {
                         console.error('[SummaryScreen] lockSlot error', error);
                     });
             });
+        });
     }, [isAuthenticated, selectedSlots, selectedCourtIds, selectedDate]);
 
     const handleApplyCode = () => {

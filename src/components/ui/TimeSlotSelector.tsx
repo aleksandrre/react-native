@@ -7,6 +7,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 import { useAvailableSlots } from '../../hooks';
@@ -53,6 +54,16 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
       <Text style={styles.title}>
         {maxSelections > 1 ? t('timeSlotSelector.selectTimes') : t('timeSlotSelector.selectTime')}
       </Text>
+
+      {selectedSlots.length >= maxSelections && (
+        <View style={styles.warningContainer}>
+          <Ionicons name="warning" size={12} color="#FFC107" style={styles.warningIcon} />
+          <Text style={styles.warningText}>
+            <Text style={styles.warningBold}>{t('timeSlotSelector.warningBold')}</Text>
+            {t('timeSlotSelector.warningText')}
+          </Text>
+        </View>
+      )}
 
       {isLoading ? (
         <ActivityIndicator color={colors.primary} style={styles.loader} />
@@ -101,6 +112,29 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamilyBold,
     color: colors.white,
     marginBottom: 10,
+  },
+  warningContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+    borderLeftColor: '#FFC107',
+    marginBottom: 10,
+  },
+  warningIcon: {
+    marginRight: 4,
+    marginTop: 2,
+  },
+  warningText: {
+    flex: 1,
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: typography.fontFamily,
+    color: colors.white,
+  },
+  warningBold: {
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: typography.fontFamilyBold,
   },
   loader: {
     marginTop: 20,

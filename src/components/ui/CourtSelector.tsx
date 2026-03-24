@@ -6,10 +6,11 @@ import { Court } from '../../types';
 
 interface CourtSelectorProps {
     selectedSlots: string[];
-    selectedCourts: { [timeSlot: string]: string | null };
+    selectedCourts: { [timeSlot: string]: string[] };
     onCourtSelect: (timeSlot: string, courtId: number, courtTitle: string) => void;
     courtsBySlot: Record<string, Court[]>;
     isLoading?: boolean;
+    maxReached?: boolean;
 }
 
 export const CourtSelector: React.FC<CourtSelectorProps> = ({
@@ -18,6 +19,7 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
     onCourtSelect,
     courtsBySlot,
     isLoading = false,
+    maxReached = false,
 }) => {
     const { t } = useTranslation();
 
@@ -43,7 +45,8 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
                         </View>
 
                         {courts.map((court) => {
-                            const isSelected = selectedCourts[timeSlot] === court.court_number;
+                            const isSelected = (selectedCourts[timeSlot] ?? []).includes(court.court_number);
+                            const isDisabled = maxReached && !isSelected;
                             const courtLabel = `${t('courtCard.court')} ${court.court_number}`;
 
                             return (
@@ -52,14 +55,16 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
                                     style={[
                                         styles.courtButton,
                                         isSelected && styles.courtButtonSelected,
+                                        isDisabled && styles.courtButtonDisabled,
                                     ]}
-                                    onPress={() => onCourtSelect(timeSlot, court.id, court.court_number)}
-                                    activeOpacity={0.7}
+                                    onPress={() => !isDisabled && onCourtSelect(timeSlot, court.id, court.court_number)}
+                                    activeOpacity={isDisabled ? 1 : 0.7}
                                 >
                                     <Text
                                         style={[
                                             styles.courtText,
                                             isSelected && styles.courtTextSelected,
+                                            isDisabled && styles.courtTextDisabled,
                                         ]}
                                     >
                                         {courtLabel}
@@ -111,6 +116,9 @@ const styles = StyleSheet.create({
         backgroundColor: colors.primary,
         borderColor: colors.lightPurple,
     },
+    courtButtonDisabled: {
+        opacity: 0.3,
+    },
     courtText: {
         fontSize: 14,
         lineHeight: 18,
@@ -119,5 +127,8 @@ const styles = StyleSheet.create({
     },
     courtTextSelected: {
         fontFamily: typography.fontFamilyBold,
+    },
+    courtTextDisabled: {
+        color: colors.lightGray,
     },
 });

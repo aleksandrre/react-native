@@ -80,8 +80,8 @@ const ka = {
   courtSelection: {
     title: 'კორტის არჩევა',
     viewCourts: '(კორტების ნახვა)',
-    warningBold: 'მაქს. 3 სესია ჯავშანში:',
-    warningText: ' გთხოვთ მოხსნათ სხვა სესია, განსხვავებული სესიის ასარჩევად',
+    warningBold: 'მაქს. 3 კორტი ჯავშანში:',
+    warningText: ' გთხოვთ მოხსნათ კორტი, განსხვავებული კორტის ასარჩევად',
     selectedDate: 'არჩეული თარიღი:',
     continueToSummary: 'გაგრძელება',
   },
@@ -176,6 +176,8 @@ const ka = {
     selectTimes: 'დროის არჩევა',
     selectTime: 'დრო',
     error: 'საათების ჩატვირთვა ვერ მოხერხდა',
+    warningBold: 'მაქს. 3 სესია ჯავშანში:',
+    warningText: ' გთხოვთ მოხსნათ სხვა სესია, განსხვავებული სესიის ასარჩევად',
   },
   courtCard: {
     court: 'კორტი',

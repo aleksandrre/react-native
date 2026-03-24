@@ -23,8 +23,8 @@ export type BookStackParamList = {
   Summary: {
     selectedDate: string;
     selectedSlots: string[];
-    selectedCourts: { [timeSlot: string]: string | null };
-    selectedCourtIds: { [timeSlot: string]: number };
+    selectedCourts: { [timeSlot: string]: string[] };
+    selectedCourtIds: { [timeSlot: string]: number[] };
   };
   Success: {
     bookings: Booking[];

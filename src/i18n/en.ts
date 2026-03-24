@@ -83,8 +83,8 @@ const en = {
   courtSelection: {
     title: 'Select Courts',
     viewCourts: '(View Courts)',
-    warningBold: 'Max. 3 Sessions in a Booking:',
-    warningText: ' Please Deselect a Session to Choose a Different One',
+    warningBold: 'Max. 3 Courts in a Booking:',
+    warningText: ' Please Deselect a Court to Choose a Different One',
     selectedDate: 'Selected Date:',
     continueToSummary: 'Continue to Summary',
   },
@@ -182,6 +182,8 @@ const en = {
     selectTimes: 'Select Times',
     selectTime: 'Select Time',
     error: 'Failed to load available slots',
+    warningBold: 'Max. 3 Sessions in a Booking:',
+    warningText: ' Please Deselect a Session to Choose a Different One',
   },
   courtCard: {
     court: 'Court',
