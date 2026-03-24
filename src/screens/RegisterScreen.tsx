@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView, Linking } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,7 @@ import { useRegister } from '../hooks';
 import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout, Checkbox } from '../components';
 import { colors, typography } from '../theme';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
+import { useLanguageStore } from '../store/languageStore';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>;
 type RegisterScreenRouteProp = RouteProp<AuthStackParamList, 'Register'>;
@@ -16,6 +17,14 @@ export const RegisterScreen: React.FC = () => {
   const route = useRoute<RegisterScreenRouteProp>();
   const { t } = useTranslation();
   const fromApp = route.params?.fromApp ?? false;
+  const { language } = useLanguageStore();
+
+  const openTerms = () => {
+    const url = language === 'ka'
+      ? 'https://kustbapadel.ge/terms-and-rules/'
+      : 'https://kustbapadel.ge/en/terms-and-conditions/';
+    Linking.openURL(url);
+  };
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -162,11 +171,11 @@ export const RegisterScreen: React.FC = () => {
               label={
                 <Text style={styles.termsText}>
                   {t('register.agreeTermsPrefix')}
-                  <Text style={styles.linkText} onPress={() => { }}>
+                  <Text style={styles.linkText} onPress={openTerms}>
                     {t('register.terms')}
                   </Text>
                   {t('register.andSeparator')}
-                  <Text style={styles.linkText} onPress={() => { }}>
+                  <Text style={styles.linkText} onPress={openTerms}>
                     {t('register.privacyPolicy')}
                   </Text>
                 </Text>
