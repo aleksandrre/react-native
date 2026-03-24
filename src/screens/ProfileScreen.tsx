@@ -143,29 +143,21 @@ export const ProfileScreen: React.FC = () => {
         <View style={styles.contactSection}>
           <Text style={styles.contactTitle}>{t('profile.contactUs')}</Text>
           <View style={styles.contactRow}>
-            <Text style={styles.contactLabel}>{t('profile.phoneWhatsApp')}</Text>
+            <Text style={styles.contactLabel}>Phone/WhatsApp:</Text>
             <Text style={styles.linkText} onPress={() => Linking.openURL('tel:+995585889977')}>
               +995 585 88 99 77
             </Text>
           </View>
           <View style={styles.contactRow}>
-            <Text style={styles.contactLabel}>{t('profile.emailContact')}</Text>
+            <Text style={styles.contactLabel}>Email:</Text>
             <Text style={styles.linkText} onPress={() => Linking.openURL('mailto:kustbapadel@gmail.com')}>
               kustbapadel@gmail.com
             </Text>
           </View>
 
           <View style={styles.footer}>
-            <Text style={styles.footerText}>
-              {t('profile.builtByPrefix')}
-              <Text
-                style={styles.footerLink}
-                onPress={() => Linking.openURL('https://www.conceptdigital.com/?utm_source=client&utm_medium=app&utm_campaign=kustbapadel')}
-              >
-                {t('profile.builtByLinkText')}
-              </Text>
-              {t('profile.builtBySuffix')}
-            </Text>
+            <Text style={styles.footerText}>{t('profile.builtBy')}</Text>
+            <Text style={styles.footerLink} onPress={() => Linking.openURL('https://conceptdigital.com')}>Conceptdigital.com</Text>
           </View>
         </View>
       </ScreenWrapper>
@@ -282,25 +274,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily,
     textDecorationLine: 'underline',
   },
-  footer: {
-    marginTop: 7,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  footerText: {
-    color: colors.white,
-    fontSize: 14,
-    lineHeight: 18,
-    fontFamily: typography.fontFamily,
-    textAlign: 'center',
-    width: '100%',
-  },
-  footerLink: {
-    color: colors.lightPurple,
-    textDecorationLine: 'underline',
-    fontSize: 14,
-    lineHeight: 18,
-    fontFamily: typography.fontFamily,
-    textAlign: 'center',
-  },
+  footer: { marginTop: 7, alignItems: 'center' },
+  footerText: { color: colors.white, fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
+  footerLink: { color: colors.lightPurple, textDecorationLine: 'underline', fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
 });

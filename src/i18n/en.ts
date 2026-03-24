@@ -18,8 +18,8 @@ const en = {
   },
   login: {
     title: 'Welcome back! Log in:',
-    username: 'Username',
-    usernamePlaceholder: 'Username',
+    email: 'Email',
+    emailPlaceholder: 'Email',
     password: 'Password',
     passwordPlaceholder: 'Password',
     loginButton: 'Log In',
@@ -28,8 +28,8 @@ const en = {
   },
   register: {
     title: 'Sign Up',
-    usernameLabel: 'Username*',
-    usernamePlaceholder: 'Username',
+    usernameLabel: 'Name*',
+    usernamePlaceholder: 'Name',
     emailLabel: 'Email*',
     emailPlaceholder: 'Email',
     phoneLabel: 'Phone*',

@@ -37,8 +37,8 @@ export const LoginScreen: React.FC = () => {
             <Text style={styles.title}>{t('login.title')}</Text>
 
             <LabeledInputField
-              label={t('login.username')}
-              placeholder={t('login.usernamePlaceholder')}
+              label={t('login.email')}
+              placeholder={t('login.emailPlaceholder')}
               value={username}
               onChangeText={setUsername}
               autoCapitalize="none"

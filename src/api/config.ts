@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// export const API_BASE_URL = 'http://dev.local/wp-json/turtle-booking/v1';
-export const API_BASE_URL = 'https://ca0e-46-49-71-80.ngrok-free.app/wp-json/turtle-booking/v1';
+export const API_BASE_URL = 'http://dev.local:10004/wp-json/turtle-booking/v1';
+// export const API_BASE_URL = 'https://ca0e-46-49-71-80.ngrok-free.app/wp-json/turtle-booking/v1';
 // Module-level ცვლადები — circular dependency-ს გარეშე
 let _token: string | null = null;
 let _onUnauthorized: (() => void) | null = null;
@@ -18,7 +18,7 @@ export const publicApi = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true', // <-- აი ეს დაამატე
+    // 'ngrok-skip-browser-warning': 'true', // <-- აი ეს დაამატე
   },
 });
 
@@ -26,7 +26,7 @@ export const privateApi = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
-    'ngrok-skip-browser-warning': 'true', // <-- აი ეს დაამატე
+    // 'ngrok-skip-browser-warning': 'true', // <-- აი ეს დაამატე
   },
 });
 

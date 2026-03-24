@@ -17,8 +17,8 @@ const ka = {
   },
   login: {
     title: 'კეთილი იყოს დაბრუნება! შედი:',
-    username: 'მომხმარებლის სახელი',
-    usernamePlaceholder: 'მომხმარებლის სახელი',
+    email: 'ელფოსტა',
+    emailPlaceholder: 'ელფოსტა',
     password: 'პაროლი',
     passwordPlaceholder: 'პაროლი',
     loginButton: 'შესვლა',
