@@ -5,7 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
+import {
+    BottomTabBookActiveIcon,
+    BottomTabBookIcon,
+    BottomTabBookingsActiveIcon,
+    BottomTabBookingsIcon,
+    BottomTabProfileActiveIcon,
+    BottomTabProfileIcon,
+} from '../icons/BottomTabIcons';
 
 export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
     const insets = useSafeAreaInsets();
@@ -17,18 +24,6 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
             case 'Bookings': return t('tabs.bookings');
             case 'Profile': return t('tabs.profile');
             default: return routeName;
-        }
-    };
-    const getIconName = (routeName: string, isFocused: boolean): keyof typeof Ionicons.glyphMap => {
-        switch (routeName) {
-            case 'Book':
-                return isFocused ? 'calendar' : 'calendar-outline';
-            case 'Bookings':
-                return isFocused ? 'calendar' : 'calendar-outline';
-            case 'Profile':
-                return isFocused ? 'person' : 'person-outline';
-            default:
-                return 'help-outline';
         }
     };
 
@@ -65,11 +60,31 @@ export const BottomTabBar: React.FC<BottomTabBarProps> = ({ state, descriptors, 
                         onPress={onPress}
                         style={styles.tab}
                     >
-                        <Ionicons
-                            name={getIconName(route.name, isFocused)}
-                            size={24}
-                            color={isFocused ? colors.white : colors.textGray}
-                        />
+                        {(() => {
+                            const iconColor = isFocused ? colors.white : colors.textGray;
+                            switch (route.name) {
+                                case 'Book':
+                                    return isFocused ? (
+                                        <BottomTabBookActiveIcon />
+                                    ) : (
+                                        <BottomTabBookIcon color={iconColor} />
+                                    );
+                                case 'Bookings':
+                                    return isFocused ? (
+                                        <BottomTabBookingsActiveIcon />
+                                    ) : (
+                                        <BottomTabBookingsIcon color={iconColor} />
+                                    );
+                                case 'Profile':
+                                    return isFocused ? (
+                                        <BottomTabProfileActiveIcon />
+                                    ) : (
+                                        <BottomTabProfileIcon color={iconColor} />
+                                    );
+                                default:
+                                    return null;
+                            }
+                        })()}
                         <Text style={[styles.label, isFocused && styles.labelFocused]}>
                             {getTabLabel(route.name)}
                         </Text>
