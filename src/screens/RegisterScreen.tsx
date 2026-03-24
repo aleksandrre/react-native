@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useRegister } from '../hooks';
@@ -9,10 +9,13 @@ import { colors, typography } from '../theme';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>;
+type RegisterScreenRouteProp = RouteProp<AuthStackParamList, 'Register'>;
 
 export const RegisterScreen: React.FC = () => {
   const navigation = useNavigation<RegisterScreenNavigationProp>();
+  const route = useRoute<RegisterScreenRouteProp>();
   const { t } = useTranslation();
+  const fromApp = route.params?.fromApp ?? false;
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -97,7 +100,10 @@ export const RegisterScreen: React.FC = () => {
 
   return (
     <PageLayout style={styles.mainContainer}>
-      <Header title={t('common.skipForNow')} variant="right" />
+      <Header
+        title={fromApp ? t('common.goBack') : t('common.skipForNow')}
+        variant={fromApp ? 'left' : 'right'}
+      />
       <ScreenWrapper>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text style={styles.title}>{t('register.title')}</Text>
@@ -174,7 +180,7 @@ export const RegisterScreen: React.FC = () => {
             isLoading={registerMutation.isPending}
           />
 
-          <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.linkContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate('Login', { fromApp })} style={styles.linkContainer}>
             <Text style={styles.footerText}>
               {t('register.alreadyHaveAccount')}
               <Text style={styles.footerLink}>{t('register.logInHere')}</Text>

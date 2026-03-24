@@ -8,8 +8,8 @@ import { RegisterScreen } from '../screens/RegisterScreen';
 export type AuthStackParamList = {
   Splash: undefined;
   Onboarding: undefined;
-  Login: undefined;
-  Register: undefined;
+  Login: { fromApp?: boolean } | undefined;
+  Register: { fromApp?: boolean } | undefined;
 };
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();

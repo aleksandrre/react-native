@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useLogin } from '../hooks';
@@ -9,10 +9,13 @@ import { colors, typography } from '../theme';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
+type LoginScreenRouteProp = RouteProp<AuthStackParamList, 'Login'>;
 
 export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
+  const route = useRoute<LoginScreenRouteProp>();
   const { t } = useTranslation();
+  const fromApp = route.params?.fromApp ?? false;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const loginMutation = useLogin();
@@ -27,7 +30,10 @@ export const LoginScreen: React.FC = () => {
 
   return (
     <PageLayout style={styles.mainContainer}>
-      <Header title={t('common.skipForNow')} variant="right" />
+      <Header
+        title={fromApp ? t('common.goBack') : t('common.skipForNow')}
+        variant={fromApp ? 'left' : 'right'}
+      />
       <ScreenWrapper>
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -63,7 +69,7 @@ export const LoginScreen: React.FC = () => {
 
             <CustomButton
               title={t('login.signUp')}
-              onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate('Register', { fromApp })}
               variant="secondary"
               style={styles.signUpButton}
             />

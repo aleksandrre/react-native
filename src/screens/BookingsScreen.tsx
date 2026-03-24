@@ -76,12 +76,12 @@ export const BookingsScreen: React.FC = () => {
               <CustomButton
                 style={{ marginBottom: 10 }}
                 title={t('bookings.logIn')}
-                onPress={() => navigation.getParent()?.navigate('Auth', { screen: 'Login' })}
+                onPress={() => navigation.getParent()?.navigate('Auth', { screen: 'Login', params: { fromApp: true } })}
               />
               <CustomButton
                 title={t('bookings.register')}
                 variant="secondary"
-                onPress={() => navigation.getParent()?.navigate('Auth', { screen: 'Register' })}
+                onPress={() => navigation.getParent()?.navigate('Auth', { screen: 'Register', params: { fromApp: true } })}
               />
             </>
           ) : isLoading ? (

@@ -107,7 +107,7 @@ export const ProfileScreen: React.FC = () => {
               variant="primary"
               style={styles.signUpBtn}
               onPress={() => {
-                navigation.getParent()?.navigate('Auth', { screen: 'Register' });
+                navigation.getParent()?.navigate('Auth', { screen: 'Register', params: { fromApp: true } });
               }}
             />
 
@@ -116,7 +116,7 @@ export const ProfileScreen: React.FC = () => {
               variant="secondary"
               style={styles.signInBtn}
               onPress={() => {
-                navigation.getParent()?.navigate('Auth', { screen: 'Login' });
+                navigation.getParent()?.navigate('Auth', { screen: 'Login', params: { fromApp: true } });
               }}
             />
 

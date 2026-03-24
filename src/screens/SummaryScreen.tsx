@@ -195,7 +195,7 @@ export const SummaryScreen: React.FC = () => {
     const handlePayAndBook = () => submitBookings(false);
 
     const handleLoginToBook = () => {
-        navigation.getParent()?.navigate('Auth', { screen: 'Login' });
+        navigation.getParent()?.navigate('Auth', { screen: 'Login', params: { fromApp: true } });
     };
 
     return (
