@@ -44,15 +44,18 @@ export const BookScreen: React.FC = () => {
         imageSource={book}
       />
       <ScreenWrapper>
-        <DateSelector
-          selectedDate={selectedDate}
-          onDateSelect={handleDateSelect}
-        />
-        <TimeSlotSelector
-          selectedDate={selectedDate}
-          onSlotsSelect={handleSlotsSelect}
-          maxSelections={3}
-        />
+        <View style={styles.content}>
+          <DateSelector
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+          />
+          <TimeSlotSelector
+            selectedDate={selectedDate}
+            onSlotsSelect={handleSlotsSelect}
+            maxSelections={3}
+          />
+        </View>
+
         <View style={styles.buttonContainer}>
           <CustomButton
             title={t('common.continue')}
@@ -66,7 +69,10 @@ export const BookScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+  },
   buttonContainer: {
-    marginTop: 20,
+    marginBottom: 0,
   },
 });
