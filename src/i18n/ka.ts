@@ -163,7 +163,7 @@ const ka = {
     logIn: 'შესვლა',
     contactUs: 'დაგვიკავშირდი',
     builtByPrefix: 'კუს ტბა პადელის აპლიკაცია  შექმნილია ',
-    builtByLinkText: 'conceptdigital.com',
+    builtByLinkText: 'Conceptdigital.com',
     builtBySuffix: '-ის მიერ.',
     phoneWhatsApp: 'მობილური/ვოთსაპი:',
     emailContact: 'ელ-ფოსტა:',
