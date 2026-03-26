@@ -2,7 +2,7 @@ const ka = {
   common: {
     goBack: 'უკან',
     skipForNow: 'გამოტოვება',
-    continue: 'გაგრძელება1',
+    continue: 'გაგრძელება',
     save: 'შენახვა',
     ok: 'კარგი',
     error: 'შეცდომა',
@@ -88,7 +88,7 @@ const ka = {
     warningBold: 'მაქს. 3 კორტი ჯავშანში:',
     warningText: ' გთხოვთ მოხსნათ კორტი, განსხვავებული კორტის ასარჩევად',
     selectedDate: 'არჩეული თარიღი:',
-    continueToSummary: 'გაგრძელება2',
+    continueToSummary: 'გაგრძელება',
   },
   summary: {
     title: 'შეჯამება',
