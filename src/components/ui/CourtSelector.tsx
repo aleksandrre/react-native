@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
         borderRadius: 23,
         backgroundColor: colors.primary,
         borderColor: colors.lightPurple,
+        marginBottom: 4,
     },
     courtButtonDisabled: {
         opacity: 0.3,
