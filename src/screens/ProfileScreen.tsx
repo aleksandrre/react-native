@@ -156,8 +156,13 @@ export const ProfileScreen: React.FC = () => {
           </View>
 
           <View style={styles.footer}>
-            <Text style={styles.footerText}>{t('profile.builtBy')}</Text>
-            <Text style={styles.footerLink} onPress={() => Linking.openURL('https://conceptdigital.com')}>Conceptdigital.com</Text>
+            <Text style={styles.footerText}>{t('profile.builtByPrefix')}</Text>
+            <Text style={styles.footerLine}>
+              <Text style={styles.footerLink} onPress={() => Linking.openURL('https://conceptdigital.com')}>
+                {t('profile.builtByLinkText')}
+              </Text>
+              <Text style={styles.footerText}>{t('profile.builtBySuffix')}</Text>
+            </Text>
           </View>
         </View>
       </ScreenWrapper>
@@ -275,6 +280,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   footer: { marginTop: 7, alignItems: 'center' },
+  footerLine: { fontSize: 14, lineHeight: 18, fontFamily: typography.fontFamily },
   footerText: { color: colors.white, fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
   footerLink: { color: colors.lightPurple, textDecorationLine: 'underline', fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
 });
