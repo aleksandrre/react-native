@@ -109,11 +109,19 @@ export const CourtSelectionScreen: React.FC = () => {
   const handleContinue = () => {
     if (totalSelectedCourts === 0) return;
 
+    const courtPriceMap: { [courtId: number]: number } = {};
+    Object.values(courtsBySlot).forEach((courts) => {
+      courts.forEach((court) => {
+        courtPriceMap[court.id] = parseFloat(court.price) || 0;
+      });
+    });
+
     navigation.navigate('Summary', {
       selectedDate: selectedDate.toISOString(),
       selectedSlots,
       selectedCourts,
       selectedCourtIds,
+      courtPriceMap,
     });
   };
 

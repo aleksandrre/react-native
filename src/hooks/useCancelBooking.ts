@@ -4,12 +4,15 @@ import { useAuthStore } from '../store/authStore';
 
 export const useCancelBooking = () => {
   const queryClient = useQueryClient();
-  const refreshCredits = useAuthStore((s) => s.refreshCredits);
 
   return useMutation({
-    mutationFn: (bookingId: string) => bookingApi.cancelBooking(bookingId),
-    onSuccess: () => {
-      refreshCredits();
+    mutationFn: ({ bookingId }: { bookingId: string; price?: number }) =>
+      bookingApi.cancelBooking(bookingId),
+    onSuccess: (_, { price }) => {
+      const { user, updateUser } = useAuthStore.getState();
+      if (user && price != null) {
+        updateUser({ ...user, credits: user.credits + price });
+      }
       queryClient.invalidateQueries({ queryKey: ['bookings'] });
     },
   });

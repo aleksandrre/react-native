@@ -75,9 +75,11 @@ const en = {
     rescheduleBooking: 'Reschedule Booking',
     cancelBooking: 'Cancel Booking',
     cancelConfirm: 'Are you sure you want to cancel your booking?',
+    rescheduleConfirm: 'Are you happy to cancel this booking to schedule a new booking?',
     yesCancelBooking: 'Yes, Cancel Booking',
     noKeepBooking: 'No, Keep Booking',
-    cancelSuccess: 'Your booking on {{date}} at {{time}} on Court {{courtNumber}} has been cancelled and you have gained 1 credit.',
+    cancelSuccess: 'Your booking on {{date}} at {{time}} on Court {{courtNumber}} has been cancelled and you have gained {{credits}} credit(s).',
+    rescheduleSuccess: 'Your booking on {{date}} at {{time}} on Court {{courtNumber}} has been cancelled. You have gained {{credits}} credit(s). Please make a new booking.',
     cancelError: 'Failed to cancel booking. Please try again.',
   },
   courtSelection: {

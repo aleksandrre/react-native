@@ -9,6 +9,7 @@ const mapApiBooking = (b: ApiBooking): Booking & { id: string } => ({
   courtNumber: b.court_number,
   rawDate: b.booking_date,
   time: `${formatTime(b.start_time)} - ${formatTime(b.end_time)}`,
+  price: parseFloat(b.price),
   cancelled: b.status === 'cancelled',
   rescheduled: b.status === 'rescheduled',
 });

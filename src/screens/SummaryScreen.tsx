@@ -17,6 +17,7 @@ type RouteParams = {
         selectedSlots: string[];
         selectedCourts: { [timeSlot: string]: string[] };
         selectedCourtIds: { [timeSlot: string]: number[] };
+        courtPriceMap: { [courtId: number]: number };
     };
 };
 
@@ -34,17 +35,12 @@ export const SummaryScreen: React.FC = () => {
     const route = useRoute<SummaryRouteProp>();
     const { t } = useTranslation();
     const [promoCode, setPromoCode] = useState('');
-    const [cardholderName, setCardholderName] = useState('');
-    const [cardNumber, setCardNumber] = useState('');
-    const [expiryDate, setExpiryDate] = useState('');
-    const [cvcNumber, setCvcNumber] = useState('');
-    const [cvcError, setCvcError] = useState(false);
-    const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
 
     const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
     const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
     const selectedCourts = route.params?.selectedCourts || {};
     const selectedCourtIds = route.params?.selectedCourtIds || {};
+    const courtPriceMap = route.params?.courtPriceMap || {};
 
     const bookings: Booking[] = selectedSlots.flatMap((slot) => {
         const courts = selectedCourts[slot] ?? [];
@@ -55,9 +51,10 @@ export const SummaryScreen: React.FC = () => {
         }));
     });
 
-    const pricePerSession = 40;
-    const totalPrice = bookings.length * pricePerSession;
-    const requiredCredits = bookings.length;
+    const totalPrice = selectedSlots
+        .flatMap((slot) => selectedCourtIds[slot] ?? [])
+        .reduce((sum, courtId) => sum + (courtPriceMap[courtId] ?? 0), 0);
+    const requiredCredits = totalPrice;
 
     const { isAuthenticated, user, refreshCredits } = useAuthStore();
     const userCredits = user?.credits ?? 0;
@@ -105,58 +102,8 @@ export const SummaryScreen: React.FC = () => {
         console.log('Applying promo code:', promoCode);
     };
 
-    const handleCvcChange = (text: string) => {
-        setCvcNumber(text);
-        if (text.length > 0 && text.length !== 3) {
-            setCvcError(true);
-        } else {
-            setCvcError(false);
-        }
-    };
-
-    const handleExpiryDateChange = (text: string) => {
-        const cleaned = text.replace(/\D/g, '');
-        if (cleaned.length >= 2) {
-            setExpiryDate(cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4));
-        } else {
-            setExpiryDate(cleaned);
-        }
-    };
-
-    const validateForm = (): boolean => {
-        const errors: { [key: string]: string } = {};
-
-        if (!cardholderName.trim()) {
-            errors.cardholderName = t('summary.errors.cardholderNameRequired');
-        }
-        if (!cardNumber.trim()) {
-            errors.cardNumber = t('summary.errors.cardNumberRequired');
-        }
-        if (!expiryDate.trim()) {
-            errors.expiryDate = t('summary.errors.expiryDateRequired');
-        } else if (expiryDate.length < 5) {
-            errors.expiryDate = t('summary.errors.invalidExpiryDate');
-        }
-        if (!cvcNumber.trim()) {
-            errors.cvcNumber = t('summary.errors.cvcRequired');
-        } else if (cvcNumber.length !== 3) {
-            errors.cvcNumber = t('summary.errors.cvcMustBe3Digits');
-        }
-
-        console.log('[SummaryScreen] validateForm errors:', errors, {
-            cardholderName,
-            cardNumberLen: cardNumber.length,
-            expiryDate,
-            cvcLen: cvcNumber.length,
-        });
-
-        setValidationErrors(errors);
-        return Object.keys(errors).length === 0;
-    };
-
     const submitBookings = (useCredit: boolean) => {
-        if (!validateForm() || isExpired) {
-            console.log('[SummaryScreen] validateForm failed:', validationErrors);
+        if (isExpired) {
             return;
         }
 
@@ -231,67 +178,6 @@ export const SummaryScreen: React.FC = () => {
                         </View>
                     )}
 
-                    {isAuthenticated && (
-                        <View style={styles.paymentSection}>
-                            <Text style={styles.paymentTitle}>{t('summary.paymentDetails')}</Text>
-
-                            <Text style={styles.fieldLabel}>{t('summary.cardholderName')}</Text>
-                            <InputField
-                                placeholder="Giorgi Padelia"
-                                value={cardholderName}
-                                onChangeText={setCardholderName}
-                                style={styles.paymentInput}
-                            />
-                            {validationErrors.cardholderName && (
-                                <Text style={styles.errorText}>{validationErrors.cardholderName}</Text>
-                            )}
-
-                            <Text style={styles.fieldLabel}>{t('summary.cardNumber')}</Text>
-                            <InputField
-                                placeholder="xxxx xxxx xxxx xxxx"
-                                value={cardNumber}
-                                onChangeText={setCardNumber}
-                                keyboardType="numeric"
-                                maxLength={19}
-                                style={styles.paymentInput}
-                            />
-                            {validationErrors.cardNumber && (
-                                <Text style={styles.errorText}>{validationErrors.cardNumber}</Text>
-                            )}
-
-                            <Text style={styles.fieldLabel}>{t('summary.expiryDate')}</Text>
-                            <InputField
-                                placeholder="MM/YY"
-                                value={expiryDate}
-                                onChangeText={handleExpiryDateChange}
-                                keyboardType="numeric"
-                                maxLength={5}
-                                style={styles.paymentInput}
-                            />
-                            {validationErrors.expiryDate && (
-                                <Text style={styles.errorText}>{validationErrors.expiryDate}</Text>
-                            )}
-
-                            <Text style={styles.fieldLabel}>{t('summary.cvcNumber')}</Text>
-                            <InputField
-                                placeholder="***"
-                                value={cvcNumber}
-                                onChangeText={handleCvcChange}
-                                keyboardType="numeric"
-                                maxLength={3}
-                                secureTextEntry
-                                style={styles.paymentInput}
-                            />
-                            {validationErrors.cvcNumber && (
-                                <Text style={styles.errorText}>{validationErrors.cvcNumber}</Text>
-                            )}
-                            {cvcError && !validationErrors.cvcNumber && (
-                                <View style={styles.warningContainer}>
-                                    <Text style={styles.warningText}>{t('summary.cvcWarning')}</Text>
-                                </View>
-                            )}
-                        </View>
-                    )}
                 </ScrollView>
 
                 <View style={styles.buttonContainer}>
@@ -305,61 +191,37 @@ export const SummaryScreen: React.FC = () => {
                         </>
                     ) : (
                         <>
-                            {userCredits > 0 ? (
-                                <>
-                                    <Text style={styles.priceText}>
-                                        {t('summary.price')} {`₾${totalPrice}`} / {requiredCredits} {t('summary.credit')}
-                                    </Text>
-                                    <Text style={styles.creditsText}>
-                                        {t('summary.yourCredits')} {userCredits}
-                                    </Text>
-                                </>
-                            ) : (
-                                <Text style={styles.priceText}>{t('summary.price')} {`₾${totalPrice}`}</Text>
+                            <Text style={styles.priceText}>
+                                {t('summary.price')} {`₾${totalPrice}`} / {requiredCredits} {t('summary.credit')}
+                            </Text>
+                            {userCredits > 0 && (
+                                <Text style={styles.creditsText}>
+                                    {t('summary.yourCredits')} {userCredits}
+                                </Text>
                             )}
 
                             {isExpired && (
                                 <Text style={styles.errorText}>{t('summary.reservationExpired')}</Text>
                             )}
 
-                            {userCredits === 0 ? (
+                            {userCredits > 0 && (
                                 <CustomButton
-                                    title={t('summary.payAndBook')}
-                                    onPress={handlePayAndBook}
+                                    title={
+                                        userCredits >= requiredCredits
+                                            ? t('summary.bookWithCredits')
+                                            : t('summary.bookWithCreditsAndCard')
+                                    }
+                                    onPress={handleBookWithCredits}
                                     disabled={isCreatingBooking || isExpired}
-                                    style={styles.PayAndBookCourtsBTN}
+                                    variant="secondary"
                                 />
-                            ) : userCredits >= requiredCredits ? (
-                                <>
-                                    <CustomButton
-                                        title={t('summary.bookWithCredits')}
-                                        onPress={handleBookWithCredits}
-                                        disabled={isCreatingBooking || isExpired}
-                                        variant="secondary"
-                                    />
-                                    <CustomButton
-                                        title={t('summary.payAndBook')}
-                                        onPress={handlePayAndBook}
-                                        disabled={isCreatingBooking || isExpired}
-                                        style={styles.PayAndBookCourtsBTN}
-                                    />
-                                </>
-                            ) : (
-                                <>
-                                    <CustomButton
-                                        title={t('summary.bookWithCreditsAndCard')}
-                                        onPress={handleBookWithCredits}
-                                        disabled={isCreatingBooking || isExpired}
-                                        variant="secondary"
-                                    />
-                                    <CustomButton
-                                        title={t('summary.payAndBook')}
-                                        onPress={handlePayAndBook}
-                                        disabled={isCreatingBooking || isExpired}
-                                        style={styles.PayAndBookCourtsBTN}
-                                    />
-                                </>
                             )}
+                            <CustomButton
+                                title={t('summary.payAndBook')}
+                                onPress={handlePayAndBook}
+                                disabled={isCreatingBooking || isExpired}
+                                style={styles.PayAndBookCourtsBTN}
+                            />
                         </>
                     )}
                 </View>

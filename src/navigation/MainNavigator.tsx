@@ -25,6 +25,7 @@ export type BookStackParamList = {
     selectedSlots: string[];
     selectedCourts: { [timeSlot: string]: string[] };
     selectedCourtIds: { [timeSlot: string]: number[] };
+    courtPriceMap: { [courtId: number]: number };
   };
   Success: {
     bookings: Booking[];
@@ -39,6 +40,7 @@ export type BookStackParamList = {
     status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
     bookingId: string;
     isPast: boolean;
+    price?: number;
   };
 };
 
@@ -51,6 +53,7 @@ export type BookingsStackParamList = {
     status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
     bookingId: string;
     isPast: boolean;
+    price?: number;
   };
   Reschedule: {
     bookingId: string;

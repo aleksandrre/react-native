@@ -15,6 +15,7 @@ type RouteParams = {
         status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
         bookingId: string;
         isPast: boolean;
+        price?: number;
     };
 };
 
@@ -25,12 +26,14 @@ export const BookingDetailsScreen: React.FC = () => {
     const route = useRoute<BookingDetailsRouteProp>();
     const { t } = useTranslation();
 
-    const { courtNumber, rawDate, time, status, bookingId, isPast } = route.params;
+    const { courtNumber, rawDate, time, status, bookingId, isPast, price } = route.params;
     const dateLocale = useDateLocale();
     const date = format(parseISO(rawDate), 'EEE, d MMM yyyy', { locale: dateLocale });
 
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+    const [showRescheduleSuccessModal, setShowRescheduleSuccessModal] = useState(false);
 
     const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking();
 
@@ -48,10 +51,21 @@ export const BookingDetailsScreen: React.FC = () => {
     };
 
     const handleRescheduleBooking = () => {
-        navigation.navigate('Reschedule', {
-            bookingId,
-            oldBooking: { courtNumber, rawDate, time },
+        setShowRescheduleModal(true);
+    };
+
+    const handleConfirmReschedule = () => {
+        setShowRescheduleModal(false);
+        cancelBooking({ bookingId, price }, {
+            onSuccess: () => setShowRescheduleSuccessModal(true),
+            onError: () => Alert.alert(t('common.error'), t('bookingDetails.cancelError')),
         });
+    };
+
+    const handleRescheduleSuccessClose = () => {
+        setShowRescheduleSuccessModal(false);
+        navigation.goBack();
+        navigation.navigate('Book' as never);
     };
 
     const handleCancelBooking = () => {
@@ -60,7 +74,7 @@ export const BookingDetailsScreen: React.FC = () => {
 
     const handleConfirmCancel = () => {
         setShowCancelModal(false);
-        cancelBooking(bookingId, {
+        cancelBooking({ bookingId, price }, {
             onSuccess: () => setShowSuccessModal(true),
             onError: () => Alert.alert(t('common.error'), t('bookingDetails.cancelError')),
         });
@@ -128,6 +142,7 @@ export const BookingDetailsScreen: React.FC = () => {
                                 style={{ marginBottom: 10 }}
                                 title={t('bookingDetails.rescheduleBooking')}
                                 onPress={handleRescheduleBooking}
+                                disabled={isCancelling}
                                 variant="secondary"
                             />
                             <CustomButton
@@ -152,9 +167,26 @@ export const BookingDetailsScreen: React.FC = () => {
 
             <InfoModal
                 visible={showSuccessModal}
-                title={t('bookingDetails.cancelSuccess', { date, time, courtNumber })}
+                title={t('bookingDetails.cancelSuccess', { date, time, courtNumber, credits: price ?? 0 })}
                 primaryButtonText={t('common.ok')}
                 onPrimaryPress={handleSuccessModalClose}
+                singleButton={true}
+            />
+
+            <InfoModal
+                visible={showRescheduleModal}
+                title={t('bookingDetails.rescheduleConfirm')}
+                primaryButtonText={t('bookingDetails.yesCancelBooking')}
+                secondaryButtonText={t('bookingDetails.noKeepBooking')}
+                onPrimaryPress={handleConfirmReschedule}
+                onSecondaryPress={() => setShowRescheduleModal(false)}
+            />
+
+            <InfoModal
+                visible={showRescheduleSuccessModal}
+                title={t('bookingDetails.rescheduleSuccess', { date, time, courtNumber, credits: price ?? 0 })}
+                primaryButtonText={t('common.ok')}
+                onPrimaryPress={handleRescheduleSuccessClose}
                 singleButton={true}
             />
         </PageLayout>

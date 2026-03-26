@@ -6,6 +6,7 @@ const ka = {
     save: 'შენახვა',
     ok: 'კარგი',
     error: 'შეცდომა',
+    retry: 'თავიდან ცდა',
   },
   tabs: {
     book: 'ჯავშნა',
@@ -60,6 +61,7 @@ const ka = {
     past: 'გასული',
     noUpcoming: 'თქვენ არ გაქვთ მომავალი ჯავშნები. დაჯავშნეთ კორტი ახლავე და ისარგებლეთ პადელით!',
     makeNewBooking: 'ახალი ჯავშნის გაკეთება',
+    loadError: 'ჯავშნების ჩატვირთვა ვერ მოხერხდა',
   },
   bookingDetails: {
     bookingConfirmed: 'თქვენი ჯავშანი დადასტურებულია:',
@@ -73,9 +75,12 @@ const ka = {
     rescheduleBooking: 'ჯავშნის გადატანა',
     cancelBooking: 'ჯავშნის გაუქმება',
     cancelConfirm: 'დარწმუნებული ხართ, რომ გსურთ ჯავშნის გაუქმება?',
+    rescheduleConfirm: 'გსურთ ამ ჯავშნის გაუქმება ახალი ჯავშნის გასაკეთებლად?',
     yesCancelBooking: 'დიახ',
     noKeepBooking: 'არა',
-    cancelSuccess: 'თქვენი ჯავშანი {{date}}-ს {{time}}-ზე, კორტ {{courtNumber}}-ზე გაუქმებულია. თქვენ დაგერიცხათ  1 კრედიტი.',
+    cancelSuccess: 'თქვენი ჯავშანი {{date}}-ს {{time}}-ზე, კორტ {{courtNumber}}-ზე გაუქმებულია. თქვენ დაგერიცხათ {{credits}} კრედიტი.',
+    rescheduleSuccess: 'თქვენი ჯავშანი {{date}}-ს {{time}}-ზე, კორტ {{courtNumber}}-ზე გაუქმებულია. დაგერიცხათ {{credits}} კრედიტი. გთხოვთ გააკეთოთ ახალი ჯავშანი.',
+    cancelError: 'ჯავშნის გაუქმება ვერ მოხერხდა. სცადეთ ხელახლა.',
   },
   courtSelection: {
     title: 'კორტის არჩევა',
@@ -105,6 +110,7 @@ const ka = {
     bookWithCredits: 'კრედიტებით დაჯავშნა',
     payAndBook: 'გადახდა და ჯავშნა',
     bookWithCreditsAndCard: 'კრედიტებით და ბარათით დაჯავშნა',
+    bookingFailed: 'ჯავშნის შექმნა ვერ მოხერხდა. სცადეთ ხელახლა.',
     errors: {
       cardholderNameRequired: 'ბარათის მფლობელის სახელი სავალდებულოა',
       cardNumberRequired: 'ბარათის ნომერი სავალდებულოა',

@@ -35,6 +35,7 @@ export const BookingsScreen: React.FC = () => {
       status,
       bookingId: booking.id ?? '',
       isPast: false,
+      price: booking.price,
     });
   };
 
@@ -50,6 +51,7 @@ export const BookingsScreen: React.FC = () => {
       status,
       bookingId: booking.id ?? '',
       isPast: true,
+      price: booking.price,
     });
   };
 
