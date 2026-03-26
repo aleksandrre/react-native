@@ -277,12 +277,12 @@ const styles = StyleSheet.create({
         marginBottom: 0,
     },
     applyButton: {
-        width: 57,
         height: 34,
         borderRadius: 5,
         borderWidth: 1,
         borderColor: colors.lightGray,
         padding: 0,
+        paddingHorizontal: 9,
         margin: 0
     },
     paymentSection: {
