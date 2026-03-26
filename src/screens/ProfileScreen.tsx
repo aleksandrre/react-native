@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking, Image, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Linking, Image, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal } from '../components';
+import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal, Text } from '../components';
 import { colors, typography } from '../theme';
 import profile from '../../assets/profile.png';
 import pencil from '../../assets/pencil.svg';

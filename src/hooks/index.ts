@@ -1,3 +1,4 @@
+export * from './useTypography';
 export * from './useLogin';
 export * from './useRegister';
 export * from './useDateLocale';

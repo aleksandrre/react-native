@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Modal, Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useDateLocale, useAvailableCourts } from '../hooks';
-import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector } from '../components';
+import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector, Text } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
 import { useLanguageStore } from '../store/languageStore';

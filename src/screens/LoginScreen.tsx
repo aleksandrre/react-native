@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Alert, ScrollView } from 'react-native';
+import { View, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useLogin } from '../hooks';
-import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout } from '../components';
+import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout, Text } from '../components';
 import { colors, typography } from '../theme';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 

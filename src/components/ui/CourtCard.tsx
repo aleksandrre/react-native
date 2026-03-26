@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { Text } from './Text';
 import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';

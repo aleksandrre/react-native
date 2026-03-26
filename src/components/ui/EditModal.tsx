@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import { Modal, View, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
+import { Text } from './Text';
 import { BlurView } from 'expo-blur';
 import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';

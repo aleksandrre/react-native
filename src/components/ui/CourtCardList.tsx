@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet, ViewStyle } from 'react-native';
+import { Text } from './Text';
 import { CourtCard } from './CourtCard';
 import { Booking } from '../../types';
 import { colors, typography } from '../../theme';

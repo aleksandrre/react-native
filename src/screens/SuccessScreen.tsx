@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { PageLayout, ScreenWrapper, CustomButton, CourtCardList } from '../components';
+import { PageLayout, ScreenWrapper, CustomButton, CourtCardList, Text } from '../components';
 import { ImageHeader } from '../components/ui/ImageHeader';
 import { colors, typography } from '../theme';
 import { useDateLocale } from '../hooks';

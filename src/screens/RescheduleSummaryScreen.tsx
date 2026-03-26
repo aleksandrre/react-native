@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { PageLayout, ScreenWrapper, Header, CustomButton, ReservationTimer, CourtCard } from '../components';
+import { PageLayout, ScreenWrapper, Header, CustomButton, ReservationTimer, CourtCard, Text } from '../components';
 import { colors, typography } from '../theme';
 import { useRescheduleBooking, useReservationTimer } from '../hooks';
 

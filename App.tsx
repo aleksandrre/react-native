@@ -77,6 +77,11 @@ export default function App() {
     SpaceGrotesk_500Medium,
     SpaceGrotesk_600SemiBold,
     SpaceGrotesk_700Bold,
+    FiraGO_300Light: require('./assets/fonts/FiraGO-Light.ttf'),
+    FiraGO_400Regular: require('./assets/fonts/FiraGO-Book.ttf'),
+    FiraGO_500Medium: require('./assets/fonts/FiraGO-Medium.ttf'),
+    FiraGO_600SemiBold: require('./assets/fonts/FiraGO-SemiBold.ttf'),
+    FiraGO_700Bold: require('./assets/fonts/FiraGO-Bold.ttf'),
   });
 
   if (!fontsLoaded) {

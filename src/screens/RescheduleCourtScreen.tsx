@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useAvailableCourts, useDateLocale } from '../hooks';
-import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector } from '../components';
+import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector, Text } from '../components';
 import { colors, typography } from '../theme';
 
 type RouteParams = {
@@ -41,21 +41,19 @@ export const RescheduleCourtScreen: React.FC = () => {
     const bookingId = route.params?.bookingId;
     const oldBooking = route.params?.oldBooking;
 
-    const [selectedCourts, setSelectedCourts] = useState<{ [timeSlot: string]: string | null }>({});
+    const [selectedCourts, setSelectedCourts] = useState<{ [timeSlot: string]: string[] }>({});
     const [selectedCourtIds, setSelectedCourtIds] = useState<{ [timeSlot: string]: number }>({});
 
     const { courtsBySlot, isLoading } = useAvailableCourts(selectedDate, selectedSlots);
 
     const handleCourtPress = (timeSlot: string, courtId: number, courtTitle: string) => {
-        const isAlreadySelected = selectedCourts[timeSlot] === courtTitle;
+        const currentSelection = selectedCourts[timeSlot] ?? [];
+        const isAlreadySelected = currentSelection.includes(courtTitle);
 
-        setSelectedCourts((prev) => {
-            if (isAlreadySelected) {
-                const { [timeSlot]: _, ...rest } = prev;
-                return rest;
-            }
-            return { ...prev, [timeSlot]: courtTitle };
-        });
+        setSelectedCourts((prev) => ({
+            ...prev,
+            [timeSlot]: isAlreadySelected ? [] : [courtTitle],
+        }));
 
         setSelectedCourtIds((prev) => {
             if (isAlreadySelected) {
@@ -71,7 +69,7 @@ export const RescheduleCourtScreen: React.FC = () => {
         if (!slot || !selectedCourtIds[slot]) return;
 
         const newDateForApi = formatDateForApi(selectedDate);
-        const courtTitle = selectedCourts[slot] ?? '';
+        const courtTitle = (selectedCourts[slot] ?? [])[0] ?? '';
 
         navigation.navigate('RescheduleSummary', {
             bookingId,

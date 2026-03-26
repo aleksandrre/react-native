@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useCreateBooking, useReservationTimer } from '../hooks';
-import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList, ReservationTimer } from '../components';
+import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList, ReservationTimer, Text } from '../components';
 import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
 import { Booking } from '../types';

@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Text } from './Text';
 import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 import { Court } from '../../types';

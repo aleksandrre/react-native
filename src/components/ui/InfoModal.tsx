@@ -1,5 +1,6 @@
 import React from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Modal, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text } from './Text';
 import { BlurView } from 'expo-blur';
 import { colors, typography } from '../../theme';
 

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { PageLayout, ScreenWrapper, Header, CustomButton, InfoModal } from '../components';
+import { PageLayout, ScreenWrapper, Header, CustomButton, InfoModal, Text } from '../components';
 import { colors, typography } from '../theme';
 import { useCancelBooking, useDateLocale } from '../hooks';
 

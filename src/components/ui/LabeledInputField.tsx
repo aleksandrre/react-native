@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInputProps } from 'react-native';
+import { View, StyleSheet, TextInputProps } from 'react-native';
+import { Text } from './Text';
 import { InputField } from './InputField';
 import { colors, typography } from '../../theme';
 

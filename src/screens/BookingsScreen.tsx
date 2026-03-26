@@ -1,7 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ScrollView, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { CourtCardList, PageLayout, ScreenWrapper, ImageHeader, CustomButton } from '../components';
+import { CourtCardList, PageLayout, ScreenWrapper, ImageHeader, CustomButton, Text } from '../components';
 import { Booking } from '../types';
 import { colors, typography } from '../theme';
 import cover from '../../assets/cover.png';
