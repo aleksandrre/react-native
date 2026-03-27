@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useCreateBooking, useReservationTimer } from '../hooks';
+import { useCreateBooking, useReservationTimer, useValidateCoupon } from '../hooks';
 import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList, ReservationTimer, Text } from '../components';
 import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
@@ -35,6 +35,8 @@ export const SummaryScreen: React.FC = () => {
     const route = useRoute<SummaryRouteProp>();
     const { t } = useTranslation();
     const [promoCode, setPromoCode] = useState('');
+    const [couponMessage, setCouponMessage] = useState<{ text: string; isError: boolean } | null>(null);
+    const [discountedPrice, setDiscountedPrice] = useState<number | null>(null);
 
     const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
     const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
@@ -54,13 +56,15 @@ export const SummaryScreen: React.FC = () => {
     const totalPrice = selectedSlots
         .flatMap((slot) => selectedCourtIds[slot] ?? [])
         .reduce((sum, courtId) => sum + (courtPriceMap[courtId] ?? 0), 0);
-    const requiredCredits = totalPrice;
 
     const { isAuthenticated, user, refreshCredits } = useAuthStore();
     const userCredits = user?.credits ?? 0;
     const { mutate: createBookings, isPending: isCreatingBooking } = useCreateBooking();
+    const { mutate: validateCoupon, isPending: isValidatingCoupon } = useValidateCoupon();
     const { formatted: reservationTime, isExpired } = useReservationTimer(5 * 60);
     const hasLockedSlotsRef = useRef(false);
+    const hasUnlockedSlotsRef = useRef(false);
+    const navigatingForwardRef = useRef(false);
 
     const buildBookingRequest = (useCredit: boolean) => ({
         use_credit: useCredit,
@@ -98,8 +102,54 @@ export const SummaryScreen: React.FC = () => {
         });
     }, [isAuthenticated, selectedSlots, selectedCourtIds, selectedDate]);
 
+    const unlockAllSlots = useCallback(() => {
+        if (hasUnlockedSlotsRef.current) return;
+        hasUnlockedSlotsRef.current = true;
+        bookingApi.unlockSlots().catch(() => {});
+    }, []);
+
+    // Unlock when screen is removed from stack (back press or Book tab reset)
+    useEffect(() => {
+        const unsubBeforeRemove = navigation.addListener('beforeRemove', () => {
+            if (!navigatingForwardRef.current) {
+                unlockAllSlots();
+            }
+        });
+
+        return () => {
+            unsubBeforeRemove();
+        };
+    }, [navigation, unlockAllSlots]);
+
+    const effectivePrice = discountedPrice ?? totalPrice;
+    const effectiveCredits = effectivePrice;
+
     const handleApplyCode = () => {
-        console.log('Applying promo code:', promoCode);
+        if (!promoCode.trim()) return;
+        setCouponMessage(null);
+
+        const couponBookings = selectedSlots.flatMap((slot) => {
+            const courtIds = selectedCourtIds[slot] ?? [];
+            return courtIds.map((courtId) => ({
+                court_id: courtId,
+                time: slot,
+            }));
+        });
+
+        validateCoupon({ coupon_code: promoCode.trim(), bookings: couponBookings }, {
+            onSuccess: (data) => {
+                if (data.success && data.total != null) {
+                    setDiscountedPrice(data.total);
+                    setCouponMessage({ text: t('summary.couponApplied'), isError: false });
+                } else {
+                    setDiscountedPrice(null);
+                    setCouponMessage({ text: data.message ?? t('summary.couponInvalid'), isError: true });
+                }
+            },
+            onError: () => {
+                setCouponMessage({ text: t('summary.couponError'), isError: true });
+            },
+        });
     };
 
     const submitBookings = (useCredit: boolean) => {
@@ -122,6 +172,7 @@ export const SummaryScreen: React.FC = () => {
                 if (useCredit) {
                     refreshCredits();
                 }
+                navigatingForwardRef.current = true;
                 const bookingIds = data?.booking_ids ?? [];
                 const bookingId = bookingIds[0] != null ? String(bookingIds[0]) : undefined;
                 navigation.navigate('Success', {
@@ -166,15 +217,25 @@ export const SummaryScreen: React.FC = () => {
                                 <InputField
                                     placeholder={t('summary.enterHere')}
                                     value={promoCode}
-                                    onChangeText={setPromoCode}
+                                    onChangeText={(text) => {
+                                        setPromoCode(text);
+                                        if (couponMessage) setCouponMessage(null);
+                                        if (discountedPrice !== null) setDiscountedPrice(null);
+                                    }}
                                     style={styles.promoInput}
                                 />
                                 <CustomButton
                                     title={t('summary.apply')}
                                     onPress={handleApplyCode}
+                                    disabled={isValidatingCoupon || !promoCode.trim()}
                                     style={styles.applyButton}
                                 />
                             </View>
+                            {couponMessage && (
+                                <Text style={couponMessage.isError ? styles.couponErrorText : styles.couponSuccessText}>
+                                    {couponMessage.text}
+                                </Text>
+                            )}
                         </View>
                     )}
 
@@ -191,8 +252,13 @@ export const SummaryScreen: React.FC = () => {
                         </>
                     ) : (
                         <>
+                            {discountedPrice !== null && (
+                                <Text style={styles.originalPriceText}>
+                                    {t('summary.originalPrice')} {`₾${totalPrice}`}
+                                </Text>
+                            )}
                             <Text style={styles.priceText}>
-                                {t('summary.price')} {`₾${totalPrice}`} / {requiredCredits} {t('summary.credit')}
+                                {t('summary.price')} {`₾${effectivePrice}`} / {effectiveCredits} {t('summary.credit')}
                             </Text>
                             {userCredits > 0 && (
                                 <Text style={styles.creditsText}>
@@ -207,7 +273,7 @@ export const SummaryScreen: React.FC = () => {
                             {userCredits > 0 && (
                                 <CustomButton
                                     title={
-                                        userCredits >= requiredCredits
+                                        userCredits >= effectiveCredits
                                             ? t('summary.bookWithCredits')
                                             : t('summary.bookWithCreditsAndCard')
                                     }
@@ -392,5 +458,24 @@ const styles = StyleSheet.create({
     },
     PayAndBookCourtsBTN: {
         marginTop: 10
-    }
+    },
+    couponSuccessText: {
+        fontSize: 13,
+        fontFamily: typography.fontFamily,
+        color: '#4CAF50',
+        marginTop: 6,
+    },
+    couponErrorText: {
+        fontSize: 13,
+        fontFamily: typography.fontFamily,
+        color: '#FF4444',
+        marginTop: 6,
+    },
+    originalPriceText: {
+        fontSize: 14,
+        fontFamily: typography.fontFamily,
+        color: colors.lightGray,
+        textDecorationLine: 'line-through',
+        marginBottom: 2,
+    },
 });

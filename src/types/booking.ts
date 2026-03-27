@@ -49,6 +49,27 @@ export interface ApiBookingsResponse {
   past: ApiBooking[];
 }
 
+export interface CouponBookingItem {
+  court_id: number;
+  time: string;
+}
+
+export interface ValidateCouponRequest {
+  coupon_code: string;
+  bookings: CouponBookingItem[];
+}
+
+export interface CouponValidationResponse {
+  success: boolean;
+  code?: string;
+  discount_type?: string;
+  amount?: number;
+  subtotal?: number;
+  discount?: number;
+  total?: number;
+  message?: string;
+}
+
 export interface LockSlotRequest {
   court_id: number;
   date: string;

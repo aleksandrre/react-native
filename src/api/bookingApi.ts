@@ -6,6 +6,8 @@ import {
   ApiBookingsResponse,
   LockSlotRequest,
   LockSlotResponse,
+  ValidateCouponRequest,
+  CouponValidationResponse,
 } from '../types';
 
 export const bookingApi = {
@@ -40,6 +42,18 @@ export const bookingApi = {
 
   cancelBooking: async (bookingId: string): Promise<void> => {
     await privateApi.post(`/bookings/${bookingId}/cancel`);
+  },
+
+  unlockSlots: async (): Promise<void> => {
+    await privateApi.post('/unlock-slots');
+  },
+
+  validateCoupon: async (data: ValidateCouponRequest): Promise<CouponValidationResponse> => {
+    const response = await privateApi.post<CouponValidationResponse>(
+      '/validate-coupon',
+      data
+    );
+    return response.data;
   },
 
   rescheduleBooking: async (
