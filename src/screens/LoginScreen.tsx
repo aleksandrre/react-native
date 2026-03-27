@@ -100,8 +100,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamilyBold,
   },
   buttonsContainer: {
-    marginTop: 'auto',
-    paddingTop: 20,
+    paddingBottom: 20,
   },
   loginButton: {
     marginBottom: 10,
