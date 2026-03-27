@@ -220,14 +220,14 @@ export const SummaryScreen: React.FC = () => {
                                     onChangeText={(text) => {
                                         setPromoCode(text);
                                         if (couponMessage) setCouponMessage(null);
-                                        if (discountedPrice !== null) setDiscountedPrice(null);
                                     }}
                                     style={styles.promoInput}
+                                    editable={discountedPrice === null}
                                 />
                                 <CustomButton
                                     title={t('summary.apply')}
                                     onPress={handleApplyCode}
-                                    disabled={isValidatingCoupon || !promoCode.trim()}
+                                    disabled={isValidatingCoupon || !promoCode.trim() || discountedPrice !== null}
                                     style={styles.applyButton}
                                 />
                             </View>
