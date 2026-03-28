@@ -114,8 +114,10 @@ const en = {
     loginToBook: 'Log In to Book',
     bookWithCredits: 'Book with Credits',
     payAndBook: 'Pay and Book Courts',
+    confirmFreeBooking: 'Confirm booking',
     bookWithCreditsAndCard: 'Book with Credits & Card',
     bookingFailed: 'Failed to create booking. Please try again.',
+    paymentRedirectFailed: 'Could not open the payment page. Please try again.',
     errors: {
       cardholderNameRequired: 'Cardholder name is required',
       cardNumberRequired: 'Card number is required',

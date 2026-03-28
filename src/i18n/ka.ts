@@ -113,9 +113,11 @@ const ka = {
     yourCredits: 'თქვენი კრედიტები:',
     loginToBook: 'შედით ჯავშნისთვის',
     bookWithCredits: 'კრედიტებით დაჯავშნა',
-    payAndBook: 'გადახდა და ჯავშნა',
+    payAndBook: 'გადახდა და დაჯავშნა',
+    confirmFreeBooking: 'ჯავშნის დადასტურება',
     bookWithCreditsAndCard: 'კრედიტებით და ბარათით დაჯავშნა',
     bookingFailed: 'ჯავშნის შექმნა ვერ მოხერხდა. სცადეთ ხელახლა.',
+    paymentRedirectFailed: 'გადახდის გვერდის გახსნა ვერ მოხერხდა. სცადეთ ხელახლა.',
     errors: {
       cardholderNameRequired: 'ბარათის მფლობელის სახელი სავალდებულოა',
       cardNumberRequired: 'ბარათის ნომერი სავალდებულოა',
@@ -135,7 +137,7 @@ const ka = {
     bookingId: 'ჯავშნის ID:',
     addToCalendar: 'კალენდარში დამატება',
     viewMyBookings: 'ჩემი ჯავშნების ნახვა',
-    bookAgain: 'თავიდან ჯავშნა',
+    bookAgain: 'თავიდან დაჯავშნა',
   },
   reschedule: {
     continueToCourt: 'გაგრძელება',

@@ -3,6 +3,8 @@ import {
   Court,
   CreateBookingRequest,
   CreateBookingResponse,
+  InitiatePaymentRequest,
+  InitiatePaymentResponse,
   ApiBookingsResponse,
   LockSlotRequest,
   LockSlotResponse,
@@ -46,6 +48,11 @@ export const bookingApi = {
 
   unlockSlots: async (): Promise<void> => {
     await privateApi.post('/unlock-slots');
+  },
+
+  initiatePayment: async (data: InitiatePaymentRequest): Promise<InitiatePaymentResponse> => {
+    const response = await privateApi.post<InitiatePaymentResponse>('/initiate-payment', data);
+    return response.data;
   },
 
   validateCoupon: async (data: ValidateCouponRequest): Promise<CouponValidationResponse> => {

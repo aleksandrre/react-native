@@ -20,7 +20,7 @@ export interface BookingItem {
 }
 
 export interface CreateBookingRequest {
-  use_credit: boolean;
+  coupon_code?: string;
   bookings: BookingItem[];
 }
 
@@ -29,6 +29,19 @@ export interface CreateBookingResponse {
   booking_ids?: number[];
   booking_id?: number;
   [key: string]: unknown;
+}
+
+export interface InitiatePaymentRequest {
+  name: string;
+  email: string;
+  phone: string;
+  coupon_code?: string;
+  use_partial_credits?: boolean;
+  bookings: BookingItem[];
+}
+
+export interface InitiatePaymentResponse {
+  redirect_url: string;
 }
 
 export interface ApiBooking {

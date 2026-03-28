@@ -6,6 +6,7 @@ export * from './useDateLocale';
 export * from './useAvailableSlots';
 export * from './useAvailableCourts';
 export * from './useCreateBooking';
+export * from './useInitiatePayment';
 export * from './useBookings';
 export * from './useUpdateProfile';
 export * from './useReservationTimer';

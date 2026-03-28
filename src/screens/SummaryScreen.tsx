@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
-import { useCreateBooking, useReservationTimer, useValidateCoupon } from '../hooks';
+import { useCreateBooking, useInitiatePayment, useReservationTimer, useValidateCoupon } from '../hooks';
 import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList, ReservationTimer, Text } from '../components';
 import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
@@ -60,23 +60,26 @@ export const SummaryScreen: React.FC = () => {
     const { isAuthenticated, user, refreshCredits } = useAuthStore();
     const userCredits = user?.credits ?? 0;
     const { mutate: createBookings, isPending: isCreatingBooking } = useCreateBooking();
+    const { mutate: initiatePayment, isPending: isInitiatingPayment } = useInitiatePayment();
     const { mutate: validateCoupon, isPending: isValidatingCoupon } = useValidateCoupon();
+
+    const isPaymentPending = isCreatingBooking || isInitiatingPayment;
     const { formatted: reservationTime, isExpired } = useReservationTimer(5 * 60);
     const hasLockedSlotsRef = useRef(false);
     const hasUnlockedSlotsRef = useRef(false);
     const navigatingForwardRef = useRef(false);
 
-    const buildBookingRequest = (useCredit: boolean) => ({
-        use_credit: useCredit,
-        bookings: selectedSlots.flatMap((slot) => {
+    const buildBookingItems = () =>
+        selectedSlots.flatMap((slot) => {
             const courtIds = selectedCourtIds[slot] ?? [];
             return courtIds.map((courtId) => ({
                 court_id: courtId,
                 date: formatDateForApi(selectedDate),
                 time: slot,
             }));
-        }),
-    });
+        });
+
+    const appliedCouponCode = discountedPrice !== null ? promoCode.trim() : undefined;
 
     useEffect(() => {
         if (!isAuthenticated) return;
@@ -122,7 +125,7 @@ export const SummaryScreen: React.FC = () => {
     }, [navigation, unlockAllSlots]);
 
     const effectivePrice = discountedPrice ?? totalPrice;
-    const effectiveCredits = effectivePrice;
+    const isFreeCheckout = effectivePrice <= 0;
 
     const handleApplyCode = () => {
         if (!promoCode.trim()) return;
@@ -152,45 +155,67 @@ export const SummaryScreen: React.FC = () => {
         });
     };
 
-    const submitBookings = (useCredit: boolean) => {
-        if (isExpired) {
-            return;
-        }
+    const handleBookWithCredits = () => {
+        if (isExpired) return;
 
-        const request = buildBookingRequest(useCredit);
-        console.log('[SummaryScreen] booking request:', JSON.stringify(request));
-
-        if (request.bookings.length === 0) {
-            console.warn('[SummaryScreen] No court IDs found in selectedCourtIds:', selectedCourtIds);
+        const bookingItems = buildBookingItems();
+        if (bookingItems.length === 0) {
             Alert.alert(t('common.error'), 'Could not find court IDs. Please go back and re-select courts.');
             return;
         }
 
-        createBookings(request, {
+        createBookings({ coupon_code: appliedCouponCode, bookings: bookingItems }, {
             onSuccess: (data) => {
-                console.log('[SummaryScreen] createBookings success:', data);
-                if (useCredit) {
-                    refreshCredits();
-                }
+                refreshCredits();
                 navigatingForwardRef.current = true;
                 const bookingIds = data?.booking_ids ?? [];
-                const bookingId = bookingIds[0] != null ? String(bookingIds[0]) : undefined;
                 navigation.navigate('Success', {
                     bookings,
-                    bookingId: bookingId ?? '',
+                    bookingId: bookingIds[0] != null ? String(bookingIds[0]) : '',
                     bookingIds: bookingIds.map(String),
                     isSingleBooking: bookings.length === 1,
                 });
             },
-            onError: (error) => {
-                console.error('[SummaryScreen] createBookings error:', error);
+            onError: () => {
                 Alert.alert(t('common.error'), t('summary.bookingFailed'));
             },
         });
     };
 
-    const handleBookWithCredits = () => submitBookings(true);
-    const handlePayAndBook = () => submitBookings(false);
+    const handleInitiatePayment = (usePartialCredits: boolean) => {
+        if (isExpired) return;
+
+        const bookingItems = buildBookingItems();
+        if (bookingItems.length === 0) {
+            Alert.alert(t('common.error'), 'Could not find court IDs. Please go back and re-select courts.');
+            return;
+        }
+
+        initiatePayment(
+            {
+                name: user?.display_name ?? '',
+                email: user?.email ?? '',
+                phone: user?.phone ?? '',
+                coupon_code: appliedCouponCode,
+                use_partial_credits: usePartialCredits || undefined,
+                bookings: bookingItems,
+            },
+            {
+                onSuccess: ({ redirect_url }) => {
+                    navigatingForwardRef.current = true;
+                    Linking.openURL(redirect_url).catch(() => {
+                        Alert.alert(t('common.error'), t('summary.paymentRedirectFailed'));
+                    });
+                },
+                onError: () => {
+                    Alert.alert(t('common.error'), t('summary.bookingFailed'));
+                },
+            }
+        );
+    };
+
+    const handlePayAndBook = () => handleInitiatePayment(false);
+    const handlePayWithPartialCredits = () => handleInitiatePayment(true);
 
     const handleLoginToBook = () => {
         navigation.getParent()?.navigate('Auth', { screen: 'Login', params: { fromApp: true } });
@@ -258,7 +283,7 @@ export const SummaryScreen: React.FC = () => {
                                 </Text>
                             )}
                             <Text style={styles.priceText}>
-                                {t('summary.price')} {`₾${effectivePrice}`} / {effectiveCredits} {t('summary.credit')}
+                                {t('summary.price')} {`₾${effectivePrice}`}
                             </Text>
                             {userCredits > 0 && (
                                 <Text style={styles.creditsText}>
@@ -270,24 +295,40 @@ export const SummaryScreen: React.FC = () => {
                                 <Text style={styles.errorText}>{t('summary.reservationExpired')}</Text>
                             )}
 
-                            {userCredits > 0 && (
+                            {isFreeCheckout ? (
                                 <CustomButton
-                                    title={
-                                        userCredits >= effectiveCredits
-                                            ? t('summary.bookWithCredits')
-                                            : t('summary.bookWithCreditsAndCard')
-                                    }
+                                    title={t('summary.confirmFreeBooking')}
                                     onPress={handleBookWithCredits}
-                                    disabled={isCreatingBooking || isExpired}
-                                    variant="secondary"
+                                    disabled={isPaymentPending || isExpired}
                                 />
+                            ) : (
+                                <>
+                                    {userCredits >= effectivePrice && (
+                                        <CustomButton
+                                            title={t('summary.bookWithCredits')}
+                                            onPress={handleBookWithCredits}
+                                            disabled={isPaymentPending || isExpired}
+                                            variant="secondary"
+                                        />
+                                    )}
+
+                                    {userCredits > 0 && userCredits < effectivePrice && (
+                                        <CustomButton
+                                            title={t('summary.bookWithCreditsAndCard')}
+                                            onPress={handlePayWithPartialCredits}
+                                            disabled={isPaymentPending || isExpired}
+                                            variant="secondary"
+                                        />
+                                    )}
+
+                                    <CustomButton
+                                        title={t('summary.payAndBook')}
+                                        onPress={handlePayAndBook}
+                                        disabled={isPaymentPending || isExpired}
+                                        style={styles.PayAndBookCourtsBTN}
+                                    />
+                                </>
                             )}
-                            <CustomButton
-                                title={t('summary.payAndBook')}
-                                onPress={handlePayAndBook}
-                                disabled={isCreatingBooking || isExpired}
-                                style={styles.PayAndBookCourtsBTN}
-                            />
                         </>
                     )}
                 </View>
