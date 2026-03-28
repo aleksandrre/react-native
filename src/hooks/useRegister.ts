@@ -13,8 +13,16 @@ export const useRegister = () => {
 
   return useMutation({
     mutationFn: (data: RegisterRequest) => authApi.register(data),
-    onSuccess: async (data) => {
-      await login(data.token, data.user);
+    onSuccess: async (data, variables) => {
+      const user = data.user ?? {
+        id: 0,
+        username: variables.username,
+        email: variables.email,
+        display_name: variables.username,
+        credits: 0,
+        phone: variables.phone,
+      };
+      await login(data.token, user);
     },
     onError: (error: any) => {
       Alert.alert(t('common.error'), getApiError(error));
