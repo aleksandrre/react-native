@@ -31,13 +31,13 @@ export const LabeledInputField: React.FC<LabeledInputFieldProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 12,
+    marginBottom: 8,
   },
   label: {
     paddingLeft: 9,
     color: colors.white,
     fontSize: 14,
-    marginBottom: 12,
+    marginBottom: 6,
     lineHeight:18,
     fontFamily: typography.fontFamily,
   },
@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
-    marginTop: 4,
+    alignItems: 'center',
+    marginTop: 3,
     paddingLeft:9
   },
   errorIcon: {

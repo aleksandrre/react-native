@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, StyleSheet, Alert, ScrollView, Linking } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ScrollView, Linking } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useRegister } from '../hooks';
+import { useApiError } from '../hooks/useApiError';
 import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout, Checkbox, Text } from '../components';
 import { colors, typography } from '../theme';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
@@ -37,7 +38,10 @@ export const RegisterScreen: React.FC = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [termsError, setTermsError] = useState('');
+  const [apiError, setApiError] = useState('');
   const registerMutation = useRegister();
+  const { getApiError } = useApiError();
 
   const [usernameError, setUsernameError] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -94,42 +98,37 @@ export const RegisterScreen: React.FC = () => {
   };
 
   const handleRegister = () => {
-    if (!username || !email || !phone || !password || !confirmPassword) {
-      Alert.alert(t('common.error'), t('register.fillAll'));
-      return;
-    }
+    let hasError = false;
 
-    if (!isValidLatinDisplayName(username)) {
-      setUsernameError(t('register.usernameLatinError'));
-      return;
-    }
+    if (!username) { setUsernameError(t('common.required')); hasError = true; }
+    else if (!isValidLatinDisplayName(username)) { setUsernameError(t('register.usernameLatinError')); hasError = true; }
+    else { setUsernameError(''); }
 
-    if (!isValidEmail(email)) {
-      setEmailError(t('register.emailError'));
-      return;
-    }
+    if (!email) { setEmailError(t('common.required')); hasError = true; }
+    else if (!isValidEmail(email)) { setEmailError(t('register.emailError')); hasError = true; }
+    else { setEmailError(''); }
 
-    if (!isValidPhone(phone)) {
-      setPhoneError(t('register.phoneError'));
-      return;
-    }
+    if (!phone) { setPhoneError(t('common.required')); hasError = true; }
+    else if (!isValidPhone(phone)) { setPhoneError(t('register.phoneError')); hasError = true; }
+    else { setPhoneError(''); }
 
-    if (!isValidPassword(password)) {
-      setPasswordError(t('register.passwordError'));
-      return;
-    }
+    if (!password) { setPasswordError(t('common.required')); hasError = true; }
+    else if (!isValidPassword(password)) { setPasswordError(t('register.passwordError')); hasError = true; }
+    else { setPasswordError(''); }
 
-    if (password !== confirmPassword) {
-      setConfirmPasswordError(t('register.confirmPasswordError'));
-      return;
-    }
+    if (!confirmPassword) { setConfirmPasswordError(t('common.required')); hasError = true; }
+    else if (password !== confirmPassword) { setConfirmPasswordError(t('register.confirmPasswordError')); hasError = true; }
+    else { setConfirmPasswordError(''); }
 
-    if (!agreedToTerms) {
-      Alert.alert(t('common.error'), t('register.agreeTermsError'));
-      return;
-    }
+    if (!agreedToTerms) { setTermsError(t('register.agreeTermsError')); hasError = true; }
+    else { setTermsError(''); }
 
-    registerMutation.mutate({ username, email, password, phone });
+    if (hasError) return;
+
+    setApiError('');
+    registerMutation.mutate({ username, email, password, phone }, {
+      onError: (error: any) => setApiError(getApiError(error)),
+    });
   };
 
   return (
@@ -191,7 +190,7 @@ export const RegisterScreen: React.FC = () => {
           <View style={styles.termsContainer}>
             <Checkbox
               checked={agreedToTerms}
-              onToggle={() => setAgreedToTerms(!agreedToTerms)}
+              onToggle={() => { setAgreedToTerms(!agreedToTerms); if (termsError) setTermsError(''); }}
               label={
                 <Text style={styles.termsText}>
                   {t('register.agreeTermsPrefix')}
@@ -205,7 +204,10 @@ export const RegisterScreen: React.FC = () => {
                 </Text>
               }
             />
+            {!!termsError && <Text style={styles.termsErrorText}>⚠ {termsError}</Text>}
           </View>
+
+          {!!apiError && <Text style={styles.apiError}>⚠ {apiError}</Text>}
 
           <CustomButton
             title={t('register.signUpButton')}
@@ -255,6 +257,22 @@ const styles = StyleSheet.create({
   linkText: {
     color: colors.lightPurple,
     fontFamily: typography.fontFamily,
+  },
+  termsErrorText: {
+    color: colors.lightPurple,
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: typography.fontFamily,
+    marginTop: 6,
+    paddingLeft: 9,
+  },
+  apiError: {
+    color: colors.lightPurple,
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: typography.fontFamily,
+    paddingLeft: 9,
+    marginBottom: 8,
   },
   
   linkContainer: {

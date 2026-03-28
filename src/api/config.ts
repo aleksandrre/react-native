@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // export const API_BASE_URL = 'http://dev.local:10004/wp-json/turtle-booking/v1';
-export const API_BASE_URL = 'http://192.168.0.106:10004/wp-json/turtle-booking/v1';
+export const API_BASE_URL = 'http://192.168.0.104:10004/wp-json/turtle-booking/v1';
 // export const API_BASE_URL = 'https://ca0e-46-49-71-80.ngrok-free.app/wp-json/turtle-booking/v1';
 // Module-level ცვლადები — circular dependency-ს გარეშე
 let _token: string | null = null;

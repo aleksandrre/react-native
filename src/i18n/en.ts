@@ -7,6 +7,7 @@ const en = {
     ok: 'Ok',
     error: 'Error',
     retry: 'Retry',
+    required: 'This field is required',
   },
   tabs: {
     book: 'Book',
