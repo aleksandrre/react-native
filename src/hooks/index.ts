@@ -1,4 +1,5 @@
 export * from './useTypography';
+export * from './useApiError';
 export * from './useValidateCoupon';
 export * from './useLogin';
 export * from './useRegister';

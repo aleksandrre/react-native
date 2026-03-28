@@ -4,9 +4,11 @@ import { Alert } from 'react-native';
 import { authApi } from '../api/authApi';
 import { useAuthStore } from '../store/authStore';
 import { LoginRequest } from '../types';
+import { useApiError } from './useApiError';
 
 export const useLogin = () => {
   const { t } = useTranslation();
+  const { getApiError } = useApiError();
   const login = useAuthStore((state) => state.login);
 
   return useMutation({
@@ -15,7 +17,7 @@ export const useLogin = () => {
       await login(data.token, data.user);
     },
     onError: (error: any) => {
-      Alert.alert(t('common.error'), error.response?.data?.message || 'ავტორიზაცია ვერ მოხერხდა');
+      Alert.alert(t('common.error'), getApiError(error));
     },
   });
 };
