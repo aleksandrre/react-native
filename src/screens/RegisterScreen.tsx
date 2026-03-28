@@ -8,6 +8,12 @@ import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout, Che
 import { colors, typography } from '../theme';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 import { useLanguageStore } from '../store/languageStore';
+import {
+  isValidLatinDisplayName,
+  isValidEmail,
+  isValidPhone,
+  isValidPassword,
+} from '../utils/validation';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>;
 type RegisterScreenRouteProp = RouteProp<AuthStackParamList, 'Register'>;
@@ -33,48 +39,58 @@ export const RegisterScreen: React.FC = () => {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const registerMutation = useRegister();
 
+  const [usernameError, setUsernameError] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [phoneError, setPhoneError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
-  const validateEmail = (emailValue: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (emailValue.length === 0) {
-      setEmailError('');
-    } else if (!emailRegex.test(emailValue)) {
-      setEmailError(t('register.emailError'));
+  const handleUsernameChange = (text: string) => {
+    setUsername(text);
+    if (text.length > 0) {
+      setUsernameError(isValidLatinDisplayName(text) ? '' : t('register.usernameLatinError'));
+    } else {
+      setUsernameError('');
+    }
+  };
+
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    if (text.length > 0) {
+      setEmailError(isValidEmail(text) ? '' : t('register.emailError'));
     } else {
       setEmailError('');
     }
   };
 
-  const validatePassword = (pwd: string) => {
-    if (pwd.length > 0 && pwd.length < 6) {
-      setPasswordError(t('register.passwordError'));
+  const handlePhoneChange = (text: string) => {
+    setPhone(text);
+    if (text.length > 0) {
+      setPhoneError(isValidPhone(text) ? '' : t('register.phoneError'));
     } else {
-      setPasswordError('');
-    }
-  };
-
-  const validateConfirmPassword = (confirmPwd: string) => {
-    if (confirmPwd.length > 0 && confirmPwd !== password) {
-      setConfirmPasswordError(t('register.confirmPasswordError'));
-    } else {
-      setConfirmPasswordError('');
+      setPhoneError('');
     }
   };
 
   const handlePasswordChange = (text: string) => {
     setPassword(text);
-    validatePassword(text);
-    if (confirmPassword) {
-      validateConfirmPassword(confirmPassword);
+    if (text.length > 0) {
+      setPasswordError(isValidPassword(text) ? '' : t('register.passwordError'));
+    } else {
+      setPasswordError('');
+    }
+    if (confirmPassword.length > 0) {
+      setConfirmPasswordError(text === confirmPassword ? '' : t('register.confirmPasswordError'));
     }
   };
 
   const handleConfirmPasswordChange = (text: string) => {
     setConfirmPassword(text);
-    validateConfirmPassword(text);
+    if (text.length > 0) {
+      setConfirmPasswordError(text === password ? '' : t('register.confirmPasswordError'));
+    } else {
+      setConfirmPasswordError('');
+    }
   };
 
   const handleRegister = () => {
@@ -83,13 +99,22 @@ export const RegisterScreen: React.FC = () => {
       return;
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!isValidLatinDisplayName(username)) {
+      setUsernameError(t('register.usernameLatinError'));
+      return;
+    }
+
+    if (!isValidEmail(email)) {
       setEmailError(t('register.emailError'));
       return;
     }
 
-    if (password.length < 6) {
+    if (!isValidPhone(phone)) {
+      setPhoneError(t('register.phoneError'));
+      return;
+    }
+
+    if (!isValidPassword(password)) {
       setPasswordError(t('register.passwordError'));
       return;
     }
@@ -121,18 +146,16 @@ export const RegisterScreen: React.FC = () => {
             label={t('register.usernameLabel')}
             placeholder={t('register.usernamePlaceholder')}
             value={username}
-            onChangeText={setUsername}
-            autoCapitalize="none"
+            onChangeText={handleUsernameChange}
+            autoCapitalize="words"
+            error={usernameError}
           />
 
           <LabeledInputField
             label={t('register.emailLabel')}
             placeholder={t('register.emailPlaceholder')}
             value={email}
-            onChangeText={(text) => {
-              setEmail(text);
-              validateEmail(text);
-            }}
+            onChangeText={handleEmailChange}
             keyboardType="email-address"
             autoCapitalize="none"
             error={emailError}
@@ -142,8 +165,9 @@ export const RegisterScreen: React.FC = () => {
             label={t('register.phoneLabel')}
             placeholder={t('register.phonePlaceholder')}
             value={phone}
-            onChangeText={setPhone}
+            onChangeText={handlePhoneChange}
             keyboardType="phone-pad"
+            error={phoneError}
           />
 
           <LabeledInputField
