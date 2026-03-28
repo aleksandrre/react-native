@@ -14,7 +14,8 @@ const ka = {
     profile: 'პროფილი',
   },
   onboarding: {
-    description: 'დაჯავშნე კორტები და მართე შენი ჯავშნები რამდენიმე მოხებით',
+    description: 'Book Courts and Manage Your Bookings With Just a Few Taps',
+    
   },
   login: {
     title: 'კეთილი იყოს დაბრუნება! შედი:',
