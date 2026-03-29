@@ -1,5 +1,6 @@
 import React from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Modal, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text } from './Text';
 import { BlurView } from 'expo-blur';
 import { colors, typography } from '../../theme';
 
@@ -31,7 +32,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({
             animationType="fade"
             onRequestClose={onSecondaryPress || onPrimaryPress}
         >
-            <BlurView intensity={10} tint="" style={styles.overlay}>
+            <BlurView intensity={10} style={styles.overlay}>
                 <View style={styles.modalContainer}>
                     <Text style={styles.title}>{title}</Text>
                     {message && <Text style={styles.message}>{message}</Text>}
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     modalContainer: {
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
         borderRadius: 16,
         padding: 24,
         width: '100%',

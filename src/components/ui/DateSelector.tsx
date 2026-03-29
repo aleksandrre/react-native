@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
@@ -9,6 +8,7 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
+import { Text } from './Text';
 import { Ionicons } from '@expo/vector-icons';
 import {
   format,
@@ -18,11 +18,13 @@ import {
   isBefore,
   getMonth,
 } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { useDateLocale } from '../../hooks';
 import { colors, typography } from '../../theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DAY_WIDTH = Math.floor((SCREEN_WIDTH - 60) / 7);
-const DAYS_TO_SHOW = 60;
+const DAYS_TO_SHOW = 15;
 const EDGE_BLOCK_WIDTH = 25;
 const MONTH_LABEL_HEIGHT = 20;
 
@@ -35,6 +37,8 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
   onDateSelect,
   selectedDate: propSelectedDate,
 }) => {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
   const today = useMemo(() => startOfDay(new Date()), []);
   const [selectedDate, setSelectedDate] = useState<Date>(
     propSelectedDate || today
@@ -46,7 +50,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
   // Generate dates array once
   const dates = useMemo(() => {
     const result: Date[] = [];
-    for (let i = -30; i < DAYS_TO_SHOW - 30; i++) {
+    for (let i = -7; i < DAYS_TO_SHOW - 7; i++) {
       result.push(addDays(today, i));
     }
     return result;
@@ -103,10 +107,10 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
   const stickyMonthLabel = useMemo(() => {
     const firstIdx = Math.max(0, Math.floor(scrollX / DAY_WIDTH));
     if (firstIdx < dates.length && !monthStartFlags[firstIdx]) {
-      return format(dates[firstIdx], 'MMM');
+      return format(dates[firstIdx], 'MMM', { locale: dateLocale });
     }
     return null;
-  }, [scrollX, dates, monthStartFlags]);
+  }, [scrollX, dates, monthStartFlags, dateLocale]);
 
   const scrollByDays = (days: number) => {
     const currentSnap = Math.round(scrollX / DAY_WIDTH) * DAY_WIDTH;
@@ -124,7 +128,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Select date</Text>
+      <Text style={styles.title}>{t('dateSelector.title')}</Text>
 
       <View style={styles.datePickerContainer}>
         {/* Scrollable content — month labels & boundaries are inline */}
@@ -146,7 +150,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
             const isSelected = isSameDay(date, selectedDate);
             const isToday = isSameDay(date, today);
             const isPast = isBefore(date, today);
-            const dayOfWeek = format(date, 'EEEEE');
+            const dayOfWeek = format(date, 'EEE', { locale: dateLocale });
             const dayNumber = format(date, 'd');
             const isNewMonth = monthStartFlags[index];
             const showBoundary = isNewMonth && index !== 0;
@@ -160,7 +164,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
                 <View style={styles.monthLabelCell}>
                   {isNewMonth && (
                     <Text style={styles.monthText}>
-                      {format(date, 'MMM')}
+                      {format(date, 'MMM', { locale: dateLocale })}
                     </Text>
                   )}
                 </View>
@@ -243,7 +247,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     lineHeight:23,
-    fontFamily: typography.fontFamilySemiBold,
+    fontFamily: typography.fontFamilyBold,
     color: colors.white,
     marginBottom: 10,
   },
@@ -268,7 +272,7 @@ const styles = StyleSheet.create({
   monthText: {
     fontSize: 8,
     lineHeight:10,
-    fontFamily: typography.fontFamilyMedium,
+    fontFamily: typography.fontFamily,
     color: colors.white,
   },
   monthBoundaryLine: {
@@ -288,8 +292,9 @@ const styles = StyleSheet.create({
   },
   dayOfWeek: {
     fontSize: 8,
-    lineHeight:10,
-    color: colors.lightGray,
+    lineHeight: 10,
+    color: colors.white,
+    fontFamily: typography.fontFamily,
     marginBottom: 8,
   },
   dateCircle: {
@@ -305,18 +310,19 @@ const styles = StyleSheet.create({
     borderColor: '#414141',
   },
   dateCircleSelected: {
+    borderRadius: 20,
     backgroundColor: colors.primary,
     borderWidth: 0,
   },
   dateNumber: {
     fontSize: 14,
     lineHeight:18,
-    fontFamily: typography.fontFamilyMedium,
-    color: colors.lightGray,
+    fontFamily: typography.fontFamily,
+    color: colors.white,
   },
   dateNumberSelected: {
     color: colors.white,
-    fontFamily: typography.fontFamilySemiBold,
+    fontFamily: typography.fontFamilyBold,
   },
   pastText: {
     opacity: 0.35,

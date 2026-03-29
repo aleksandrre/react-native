@@ -1,34 +1,25 @@
 import React from 'react';
-import { Text as RNText, TextProps as RNTextProps, StyleSheet } from 'react-native';
-import { typography } from '../../theme';
+import { Text as RNText, TextProps as RNTextProps } from 'react-native';
+import { useTypography } from '../../hooks';
 
 interface TextProps extends RNTextProps {
   weight?: 'light' | 'regular' | 'medium' | 'semiBold' | 'bold';
 }
 
-export const Text: React.FC<TextProps> = ({ 
-  style, 
+export const Text: React.FC<TextProps> = ({
+  style,
   weight = 'regular',
-  ...props 
+  ...props
 }) => {
-  const fontFamily = 
-    weight === 'light' ? typography.fontFamilyLight :
-    weight === 'medium' ? typography.fontFamilyMedium :
-    weight === 'semiBold' ? typography.fontFamilySemiBold :
-    weight === 'bold' ? typography.fontFamilyBold :
-    typography.fontFamily;
+  const typo = useTypography();
 
-  return (
-    <RNText 
-      style={[styles.text, { fontFamily }, style]} 
-      {...props} 
-    />
-  );
+  const fontFamily =
+    weight === 'light' ? typo.fontFamilyLight :
+    weight === 'medium' ? typo.fontFamilyMedium :
+    weight === 'semiBold' ? typo.fontFamilySemiBold :
+    weight === 'bold' ? typo.fontFamilyBold :
+    typo.fontFamily;
+
+  // fontFamily is LAST so it always overrides any fontFamily in style prop
+  return <RNText style={[style, { fontFamily }]} {...props} />;
 };
-
-const styles = StyleSheet.create({
-  text: {
-    fontFamily: typography.fontFamily,
-  },
-});
-

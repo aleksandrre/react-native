@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Modal, Image } from 'react-native';
+import { BlurView } from 'expo-blur';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
-import { PageLayout, ScreenWrapper, CustomButton, Header } from '../components';
+import type { Locale } from 'date-fns';
+import { useTranslation } from 'react-i18next';
+import { useDateLocale, useAvailableCourts } from '../hooks';
+import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector, Text } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
+import { useLanguageStore } from '../store/languageStore';
 
 type RouteParams = {
   CourtSelection: {
@@ -18,10 +23,12 @@ type RouteParams = {
 type CourtSelectionRouteProp = RouteProp<RouteParams, 'CourtSelection'>;
 
 interface CourtSelection {
-  [timeSlot: string]: string | null; // courtId or null
+  [timeSlot: string]: string[];
 }
 
-const COURTS = ['Court 1', 'Court 2', 'Court 3', 'Court 4', 'Court 5', 'Court 6', 'Court 7', 'Court 8'];
+interface CourtIdSelection {
+  [timeSlot: string]: number[];
+}
 
 const getOrdinalSuffix = (day: number): string => {
   if (day > 3 && day < 21) return 'th';
@@ -33,9 +40,11 @@ const getOrdinalSuffix = (day: number): string => {
   }
 };
 
-const formatSelectedDate = (date: Date): string => {
+const formatSelectedDate = (date: Date, locale: Locale, language: 'en' | 'ka'): string => {
   const day = date.getDate();
-  const monthYear = format(date, 'MMM yyyy');
+  const monthYear = format(date, 'MMM yyyy', { locale });
+  // Georgian dates typically do not use ordinal suffixes (st/nd/th).
+  if (language === 'ka') return `${day} ${monthYear}`;
   return `${day}${getOrdinalSuffix(day)} ${monthYear}`;
 };
 
@@ -44,123 +53,148 @@ type CourtSelectionNavigationProp = NativeStackNavigationProp<BookStackParamList
 export const CourtSelectionScreen: React.FC = () => {
   const navigation = useNavigation<CourtSelectionNavigationProp>();
   const route = useRoute<CourtSelectionRouteProp>();
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
+  const { language } = useLanguageStore();
 
-  // Safe fallbacks to prevent TypeError
   const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
   const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
 
   const [selectedCourts, setSelectedCourts] = useState<CourtSelection>({});
+  const [selectedCourtIds, setSelectedCourtIds] = useState<CourtIdSelection>({});
+  const [isImageModalVisible, setIsImageModalVisible] = useState(false);
 
-  const handleCourtPress = (timeSlot: string, courtId: string) => {
+  const { courtsBySlot, isLoading: courtsLoading } = useAvailableCourts(selectedDate, selectedSlots);
+
+  const MAX_COURTS = 3;
+
+  const totalSelectedCourts = Object.values(selectedCourts).reduce(
+    (sum, courts) => sum + courts.length,
+    0
+  );
+
+  const handleCourtPress = (timeSlot: string, courtId: number, courtTitle: string) => {
+    const currentForSlot = selectedCourts[timeSlot] ?? [];
+    const isAlreadySelected = currentForSlot.includes(courtTitle);
+
+    if (!isAlreadySelected && totalSelectedCourts >= MAX_COURTS) return;
+
     setSelectedCourts((prev) => {
-      const currentSelection = prev[timeSlot];
-      if (currentSelection === courtId) {
-        // Deselect
-        const { [timeSlot]: _, ...rest } = prev;
-        return rest;
+      const current = prev[timeSlot] ?? [];
+      if (isAlreadySelected) {
+        const updated = current.filter((c) => c !== courtTitle);
+        if (updated.length === 0) {
+          const { [timeSlot]: _, ...rest } = prev;
+          return rest;
+        }
+        return { ...prev, [timeSlot]: updated };
       }
-      // Select new court
-      return { ...prev, [timeSlot]: courtId };
+      return { ...prev, [timeSlot]: [...current, courtTitle] };
+    });
+
+    setSelectedCourtIds((prev) => {
+      const current = prev[timeSlot] ?? [];
+      if (isAlreadySelected) {
+        const updated = current.filter((id) => id !== courtId);
+        if (updated.length === 0) {
+          const { [timeSlot]: _, ...rest } = prev;
+          return rest;
+        }
+        return { ...prev, [timeSlot]: updated };
+      }
+      return { ...prev, [timeSlot]: [...current, courtId] };
     });
   };
 
   const handleContinue = () => {
-    const allSelected = selectedSlots.every((slot) => selectedCourts[slot]);
-    if (!allSelected) return;
+    if (totalSelectedCourts === 0) return;
+
+    const courtPriceMap: { [courtId: number]: number } = {};
+    Object.values(courtsBySlot).forEach((courts) => {
+      courts.forEach((court) => {
+        courtPriceMap[court.id] = parseFloat(court.price) || 0;
+      });
+    });
 
     navigation.navigate('Summary', {
-      selectedDate,
+      selectedDate: selectedDate.toISOString(),
       selectedSlots,
       selectedCourts,
+      selectedCourtIds,
+      courtPriceMap,
     });
   };
 
-  const allSelected = selectedSlots.every((slot) => selectedCourts[slot]);
+  const allSelected = totalSelectedCourts > 0;
 
   return (
     <PageLayout>
-      <Header title="Go Back" />
+      <Header title={t('common.goBack')} />
       <ScreenWrapper>
-        {/* Header with Go Back */}
-
-
-        {/* Title */}
         <View style={styles.titleContainer}>
-          <Text style={styles.title}>Select courts </Text>
-          <Text style={styles.viewCourts}>(view courts)</Text>
+          <Text style={styles.title}>{t('courtSelection.title')} </Text>
+          <TouchableOpacity onPress={() => setIsImageModalVisible(true)}>
+            <Text style={styles.viewCourts}>{t('courtSelection.viewCourts')}</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Warning */}
-        <View style={styles.warningContainer}>
-          <Ionicons name="warning" size={12} color="#FFC107" style={styles.warningIcon} />
-          <Text style={styles.warningText}>
-            <Text style={styles.warningBold}>Max. 3 sessions in a booking:</Text>
-            {' '}please deselect a session to choose a different one
-          </Text>
-        </View>
+        {totalSelectedCourts >= MAX_COURTS && (
+          <View style={styles.warningContainer}>
+            <Ionicons name="warning" size={12} color="#FFC107" style={styles.warningIcon} />
+            <Text style={styles.warningText}>
+              <Text style={styles.warningBold}>{t('courtSelection.warningBold')}</Text>
+              {t('courtSelection.warningText')}
+            </Text>
+          </View>
+        )}
 
-        {/* Selected Date */}
         <Text style={styles.selectedDate}>
-          Selected date: <Text style={styles.selectedDateValue}>{formatSelectedDate(selectedDate)}</Text>
+          {t('courtSelection.selectedDate')}{" "}
+          <Text style={styles.selectedDateValue}>
+            {formatSelectedDate(selectedDate, dateLocale, language)}
+          </Text>
         </Text>
 
-        {/* Courts Grid */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
-        >
-          {selectedSlots.map((timeSlot) => (
-            <View key={timeSlot} style={styles.timeColumn}>
-              {/* Time Header */}
-              <View style={styles.timeHeader}>
-                <Text style={styles.timeText}>{timeSlot}</Text>
-                <View style={styles.timeDivider} />
-              </View>
+        <CourtSelector
+          selectedSlots={selectedSlots}
+          selectedCourts={selectedCourts}
+          onCourtSelect={handleCourtPress}
+          courtsBySlot={courtsBySlot}
+          isLoading={courtsLoading}
+          maxReached={totalSelectedCourts >= MAX_COURTS}
+        />
 
-              {/* Courts */}
-              {COURTS.map((court) => {
-                const courtId = `${timeSlot}-${court}`;
-                const isSelected = selectedCourts[timeSlot] === courtId;
-                const isDisabled = Math.random() > 0.6; // Mock availability
-
-                return (
-                  <TouchableOpacity
-                    key={court}
-                    style={[
-                      styles.courtButton,
-                      isSelected && styles.courtButtonSelected,
-                      isDisabled && styles.courtButtonDisabled,
-                    ]}
-                    onPress={() => handleCourtPress(timeSlot, courtId)}
-                    disabled={isDisabled}
-                    activeOpacity={0.7}
-                  >
-                    <Text
-                      style={[
-                        styles.courtText,
-                        isSelected && styles.courtTextSelected,
-                        isDisabled && styles.courtTextDisabled,
-                      ]}
-                    >
-                      {court}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          ))}
-        </ScrollView>
-
-        {/* Continue Button */}
         <View style={styles.buttonContainer}>
           <CustomButton
-            title="Continue to summary"
+            title={t('courtSelection.continueToSummary')}
             onPress={handleContinue}
             disabled={!allSelected}
           />
         </View>
       </ScreenWrapper>
+
+      <Modal
+        visible={isImageModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsImageModalVisible(false)}
+      >
+        <BlurView intensity={10} style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setIsImageModalVisible(false)}
+            >
+              <Ionicons name="close" size={30} color={colors.dark} />
+            </TouchableOpacity>
+            <Image
+              source={require('../../assets/corts.png')}
+              style={styles.courtsImage}
+              resizeMode="contain"
+            />
+          </View>
+        </BlurView>
+      </Modal>
     </PageLayout>
   );
 };
@@ -183,15 +217,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 22,
-    lineHeight: 28,
-    fontFamily: typography.fontFamilySemiBold,
+    fontSize: 18,
+    lineHeight: 23,
+    fontFamily: typography.fontFamilyBold,
     color: colors.white,
   },
   viewCourts: {
-    fontSize: 22,
-    lineHeight: 28,
-    fontFamily: typography.fontFamilyMedium,
+    fontSize: 18,
+    lineHeight: 23,
+    fontFamily: typography.fontFamily,
     color: colors.lightPurple,
     textDecorationLine: 'underline',
   },
@@ -199,13 +233,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     backgroundColor: 'rgba(255, 193, 7, 0.1)',
-    borderLeftWidth: 3,
     borderLeftColor: '#FFC107',
     marginTop: 10,
     marginBottom: 10,
   },
   warningIcon: {
-    marginRight: 8,
+    marginRight: 4,
     marginTop: 2,
   },
   warningText: {
@@ -218,19 +251,18 @@ const styles = StyleSheet.create({
   warningBold: {
     fontSize: 12,
     lineHeight: 15,
-    fontFamily: typography.fontFamilySemiBold,
+    fontFamily: typography.fontFamilyBold,
   },
   selectedDate: {
     fontSize: 14,
     lineHeight: 18,
-    fontFamily: typography.fontFamily,
-    color: colors.lightGray,
+    fontFamily: typography.fontFamilyBold,
+    color: colors.white,
     marginBottom: 10,
   },
   selectedDateValue: {
-    fontFamily: typography.fontFamilySemiBold,
-    color: colors.white,
-
+    fontFamily: typography.fontFamily,
+    color: colors.lightGray,
   },
   scrollContent: {
     width: '100%',
@@ -286,5 +318,29 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginBottom: 0,
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 22,
+  },
+  modalContent: {
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.88)',
+    borderRadius: 16,
+    paddingTop: 40,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    position: 'relative',
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 14,
+    zIndex: 10,
+  },
+  courtsImage: {
+    width: '100%',
+    height: 280,
+  },
 });
-

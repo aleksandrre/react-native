@@ -1,77 +1,68 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
-import { CourtCardList, PageLayout, ScreenWrapper, ImageHeader, CustomButton } from '../components';
+import { StyleSheet, View, ScrollView, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import { CourtCardList, PageLayout, ScreenWrapper, ImageHeader, CustomButton, Text } from '../components';
 import { Booking } from '../types';
 import { colors, typography } from '../theme';
 import cover from '../../assets/cover.png';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation, NavigationProp, useFocusEffect } from '@react-navigation/native';
 import { BookingsStackParamList } from '../navigation/MainNavigator';
+import { useAuthStore } from '../store/authStore';
+import { useBookings } from '../hooks';
 
 export const BookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<BookingsStackParamList>>();
+  const { t } = useTranslation();
+  const { isAuthenticated } = useAuthStore();
 
-  // Mock data - სანამ API არ გვაქვს
-  const upcomingBookings: Booking[] = [
-    {
-      courtNumber: '3',
-      date: 'Fri, 26 Dec 2025',
-      time: '12:00',
-    },
-    {
-      courtNumber: '1',
-      date: 'Tue, 4 Jan 2026',
-      time: '20:00',
-    },
-  ];
+  const { upcoming: upcomingBookings, past: pastBookings, isLoading, isError, refetch } = useBookings(isAuthenticated);
 
-  const pastBookings: Booking[] = [
-    {
-      courtNumber: '8',
-      date: 'Thu, 1 Oct 2025',
-      time: '21:00',
-    },
-    {
-      courtNumber: '3',
-      date: 'Fri, 17 Dec 2025',
-      time: '10:00',
-    },
-  ];
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isAuthenticated) refetch();
+    }, [isAuthenticated])
+  );
 
-  const handleUpcomingBookingPress = (booking: Booking) => {
-    // Generate mock booking ID
-    const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
+  const handleUpcomingBookingPress = (booking: Booking & { id?: string }) => {
+    let status: 'Confirmed' | 'Cancelled' | 'Rescheduled' = 'Confirmed';
+    if (booking.cancelled) status = 'Cancelled';
+    else if (booking.rescheduled) status = 'Rescheduled';
+
     navigation.navigate('BookingDetails', {
       courtNumber: booking.courtNumber,
-      date: booking.date,
+      rawDate: booking.rawDate,
       time: booking.time,
-      status: 'Confirmed',
-      bookingId: bookingId,
+      status,
+      bookingId: booking.id ?? '',
       isPast: false,
+      price: booking.price,
     });
   };
 
-  const handlePastBookingPress = (booking: Booking) => {
-    // Generate mock booking ID
-    const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
+  const handlePastBookingPress = (booking: Booking & { id?: string }) => {
+    let status: 'Completed' | 'Cancelled' | 'Rescheduled' = 'Completed';
+    if (booking.cancelled) status = 'Cancelled';
+    else if (booking.rescheduled) status = 'Rescheduled';
+
     navigation.navigate('BookingDetails', {
       courtNumber: booking.courtNumber,
-      date: booking.date,
+      rawDate: booking.rawDate,
       time: booking.time,
-      status: 'Completed',
-      bookingId: bookingId,
+      status,
+      bookingId: booking.id ?? '',
       isPast: true,
+      price: booking.price,
     });
   };
 
   const handleMakeNewBooking = () => {
-    // Navigate to Book screen
     navigation.navigate('Book' as never);
   };
 
   return (
     <PageLayout>
       <ImageHeader
-        title="Bookings"
+        title={t('bookings.title')}
         imageSource={cover}
       />
       <ScreenWrapper>
@@ -79,65 +70,98 @@ export const BookingsScreen: React.FC = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {/* Upcoming Section */}
-          <Text style={styles.sectionTitle}>Upcoming</Text>
 
-          {upcomingBookings.length > 0 ? (
-            <CourtCardList title="" bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
-          ) : (
+          {!isAuthenticated ? (
+            <>
+              <Text style={styles.sectionTitle}>{t('bookings.becomeMember')}</Text>
+              <Text style={styles.emptyText}>{t('bookings.pleaseLogIn')}</Text>
+              <CustomButton
+                style={{ marginBottom: 10 }}
+                title={t('bookings.logIn')}
+                onPress={() => navigation.getParent()?.navigate('Auth', { screen: 'Login', params: { fromApp: true } })}
+              />
+              <CustomButton
+                title={t('bookings.register')}
+                variant="secondary"
+                onPress={() => navigation.getParent()?.navigate('Auth', { screen: 'Register', params: { fromApp: true } })}
+              />
+            </>
+          ) : isLoading ? (
+            <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
+          ) : isError ? (
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
-                You have no upcoming bookings. Reserve a court now and enjoy some Padel!
-              </Text>
+              <Text style={styles.emptyText}>{t('bookings.loadError')}</Text>
+              <CustomButton title={t('common.retry')} onPress={() => refetch()} />
             </View>
+          ) : (
+            <>
+              {upcomingBookings.length > 0 ? (
+                <CourtCardList
+                  title={t('bookings.upcoming')}
+                  bookings={upcomingBookings}
+                  onBookingPress={handleUpcomingBookingPress}
+                />
+              ) : (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>{t('bookings.noUpcoming')}</Text>
+                </View>
+              )}
+
+              <View style={styles.buttonContainer}>
+                <CustomButton title={t('bookings.makeNewBooking')} onPress={handleMakeNewBooking} />
+              </View>
+
+              {pastBookings.length > 0 && (
+                <>
+                  <Text style={styles.sectionTitle}>{t('bookings.past')}</Text>
+                  <CourtCardList title="" bookings={pastBookings} onBookingPress={handlePastBookingPress} />
+                </>
+              )}
+            </>
           )}
 
-          {/* Make a new booking button */}
-          <View style={styles.buttonContainer}>
-            <CustomButton
-              title="Make a new booking"
-              onPress={handleMakeNewBooking}
-            />
-          </View>
-
-          {/* Past Section */}
-          <Text style={styles.sectionTitle}>Past</Text>
-
-          {pastBookings.length > 0 && (
-            <CourtCardList title="" bookings={pastBookings} onBookingPress={handlePastBookingPress} />
-          )}
         </ScrollView>
+
       </ScreenWrapper>
     </PageLayout>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 10,
+  },
   scrollContent: {
     paddingBottom: 20,
   },
   sectionTitle: {
     fontSize: 18,
-    lineHeight: 22,
+    lineHeight: 23,
     fontFamily: typography.fontFamilySemiBold,
     color: colors.white,
-    marginBottom: 16,
-    marginTop: 8,
+    marginBottom: 10,
   },
   emptyContainer: {
-    paddingVertical: 40,
-    paddingHorizontal: 20,
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 18,
     lineHeight: 24,
     fontFamily: typography.fontFamily,
-    color: colors.lightGray,
-    textAlign: 'center',
+    color: colors.white,
+    textAlign: 'left',
+    marginBottom: 10,
+  },
+  fixedButtonContainer: {
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
   },
   buttonContainer: {
-    marginTop: 16,
-    marginBottom: 24,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  loader: {
+    marginTop: 40,
   },
 });
-

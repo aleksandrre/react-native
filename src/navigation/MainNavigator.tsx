@@ -7,6 +7,9 @@ import { SummaryScreen } from '../screens/SummaryScreen';
 import { SuccessScreen } from '../screens/SuccessScreen';
 import { BookingsScreen } from '../screens/BookingsScreen';
 import { BookingDetailsScreen } from '../screens/BookingDetailsScreen';
+import { RescheduleScreen } from '../screens/RescheduleScreen';
+import { RescheduleCourtScreen } from '../screens/RescheduleCourtScreen';
+import { RescheduleSummaryScreen } from '../screens/RescheduleSummaryScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { BottomTabBar } from '../components/navigation';
 import { Booking } from '../types';
@@ -14,26 +17,30 @@ import { Booking } from '../types';
 export type BookStackParamList = {
   BookHome: undefined;
   CourtSelection: {
-    selectedDate: Date;
+    selectedDate: string;
     selectedSlots: string[];
   };
   Summary: {
-    selectedDate: Date;
+    selectedDate: string;
     selectedSlots: string[];
-    selectedCourts: { [timeSlot: string]: string | null };
+    selectedCourts: { [timeSlot: string]: string[] };
+    selectedCourtIds: { [timeSlot: string]: number[] };
+    courtPriceMap: { [courtId: number]: number };
   };
   Success: {
     bookings: Booking[];
-    bookingId: string;
+    bookingId?: string;
+    bookingIds?: string[];
     isSingleBooking?: boolean;
   };
   BookingDetails: {
     courtNumber: string;
-    date: string;
+    rawDate: string;
     time: string;
-    status: 'Confirmed' | 'Failed' | 'Completed';
+    status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
     bookingId: string;
     isPast: boolean;
+    price?: number;
   };
 };
 
@@ -41,11 +48,42 @@ export type BookingsStackParamList = {
   BookingsHome: undefined;
   BookingDetails: {
     courtNumber: string;
-    date: string;
+    rawDate: string;
     time: string;
-    status: 'Confirmed' | 'Failed' | 'Completed';
+    status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
     bookingId: string;
     isPast: boolean;
+    price?: number;
+  };
+  Reschedule: {
+    bookingId: string;
+    oldBooking: { courtNumber: string; rawDate: string; time: string };
+  };
+  RescheduleCourt: {
+    selectedDate: string;
+    selectedSlots: string[];
+    bookingId: string;
+    oldBooking: { courtNumber: string; rawDate: string; time: string };
+  };
+  RescheduleSummary: {
+    bookingId: string;
+    oldBooking: {
+      courtNumber: string;
+      rawDate: string;
+      time: string;
+    };
+    newBooking: {
+      courtNumber: string;
+      rawDate: string;
+      time: string;
+    };
+    newCourtId: number;
+    newDateForApi: string;
+  };
+  Success: {
+    bookings: Booking[];
+    bookingId: string;
+    isSingleBooking?: boolean;
   };
 };
 
@@ -84,6 +122,10 @@ const BookingsStackNavigator: React.FC = () => {
     >
       <BookingsStack.Screen name="BookingsHome" component={BookingsScreen} />
       <BookingsStack.Screen name="BookingDetails" component={BookingDetailsScreen} />
+      <BookingsStack.Screen name="Reschedule" component={RescheduleScreen} />
+      <BookingsStack.Screen name="RescheduleCourt" component={RescheduleCourtScreen} />
+      <BookingsStack.Screen name="RescheduleSummary" component={RescheduleSummaryScreen} />
+      <BookingsStack.Screen name="Success" component={SuccessScreen} />
     </BookingsStack.Navigator>
   );
 };
@@ -92,10 +134,10 @@ export const MainNavigator: React.FC = () => {
   return (
     <Tab.Navigator
       tabBar={(props) => <BottomTabBar {...props} />}
-      detachInactiveScreens={false}
+      //detachInactiveScreens={false}
       screenOptions={{
         headerShown: false,
-        freezeOnBlur: false,
+        //freezeOnBlur: false,
       }}
     >
       <Tab.Screen name="Book" component={BookStackNavigator} />

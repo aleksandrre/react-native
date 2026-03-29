@@ -1,3 +1,4 @@
+import './src/i18n';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
@@ -12,17 +13,22 @@ import {
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
 import { useAuthStore } from './src/store/authStore';
+import { useLanguageStore } from './src/store/languageStore';
 import { MainNavigator, AuthNavigator } from './src/navigation';
 import { colors } from './src/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const queryClient = new QueryClient();
+const Stack = createNativeStackNavigator();
 
 function AppContent() {
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { initLanguage } = useLanguageStore();
 
   useEffect(() => {
-    checkAuth();
+    // პარალელურად ვიტვირთავთ token+user და language
+    Promise.all([checkAuth(), initLanguage()]);
   }, []);
 
   if (isLoading) {
@@ -34,13 +40,33 @@ function AppContent() {
   }
 
   return (
-    <NavigationContainer>
-      {!isAuthenticated ? (
-        <MainNavigator />
-      ) : (
-        <AuthNavigator />
-      )}
-    </NavigationContainer>
+    // <NavigationContainer>
+    //   <Stack.Navigator screenOptions={{ headerShown: false }}>
+    //     {/* ავტორიზაციის გვერდები */}
+    //     {!isAuthenticated && (
+    //       <Stack.Screen name="Auth" component={AuthNavigator} />
+    //     )}
+
+    //     {/* მთავარი აპლიკაცია */}
+    //     <Stack.Screen name="Main" component={MainNavigator} />
+    //   </Stack.Navigator>
+    // </NavigationContainer>
+    
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {isAuthenticated ? (
+            // თუ შესულია - მხოლოდ მთავარი აპლიკაცია
+            <Stack.Screen name="Main" component={MainNavigator} />
+          ) : (
+            // თუ არ არის შესული - ჯერ ავტორიზაცია, მერე მთავარი (სტუმრისთვის)
+            <>
+              <Stack.Screen name="Auth" component={AuthNavigator} />
+              <Stack.Screen name="Main" component={MainNavigator} />
+            </>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+
   );
 }
 
@@ -51,6 +77,11 @@ export default function App() {
     SpaceGrotesk_500Medium,
     SpaceGrotesk_600SemiBold,
     SpaceGrotesk_700Bold,
+    FiraGO_300Light: require('./assets/fonts/FiraGO-Light.ttf'),
+    FiraGO_400Regular: require('./assets/fonts/FiraGO-Book.ttf'),
+    FiraGO_500Medium: require('./assets/fonts/FiraGO-Medium.ttf'),
+    FiraGO_600SemiBold: require('./assets/fonts/FiraGO-SemiBold.ttf'),
+    FiraGO_700Bold: require('./assets/fonts/FiraGO-Bold.ttf'),
   });
 
   if (!fontsLoaded) {
@@ -64,6 +95,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <SafeAreaProvider>
+        <StatusBar style="light" backgroundColor={colors.dark} />
         <AppContent />
       </SafeAreaProvider>
     </QueryClientProvider>

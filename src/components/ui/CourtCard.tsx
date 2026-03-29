@@ -1,30 +1,38 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ImageBackground, TouchableOpacity } from 'react-native';
+import { Text } from './Text';
+import { format, parseISO } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
+import { useDateLocale } from '../../hooks';
 import courtLogo from '../../../assets/court_logo.png';
 
 interface CourtCardProps {
   courtNumber: string;
-  date: string;
+  rawDate: string; // ISO "YYYY-MM-DD"
   time: string;
   onPress?: () => void;
+  cancelled?: boolean;
 }
 
-export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, onPress }) => {
+export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, rawDate, time, onPress, cancelled }) => {
+  const { t } = useTranslation();
+  const dateLocale = useDateLocale();
+  const formattedDate = format(parseISO(rawDate), 'EEE, d MMM yyyy', { locale: dateLocale });
   const CardContent = (
-    <View style={styles.container}>
+    <View style={[styles.container]}>
       <ImageBackground
         source={courtLogo}
-        style={styles.courtSection}
-        imageStyle={styles.courtImage}
+        style={[styles.courtSection]}
+        imageStyle={[styles.courtImage]}
       >
-        <Text style={styles.courtLabel}>court</Text>
-        <Text style={styles.courtNumber}>{courtNumber}</Text>
+        <Text style={[styles.courtLabel]}>{t('courtCard.court')}</Text>
+        <Text style={[styles.courtNumber]}>{courtNumber}</Text>
       </ImageBackground>
 
       <View style={styles.dateTimeSection}>
-        <Text style={styles.dateText}>{date}</Text>
-        <Text style={styles.timeText}>{time}</Text>
+        <Text style={[styles.dateText, cancelled && styles.textStrikethrough]}>{formattedDate}</Text>
+        <Text style={[styles.timeText, cancelled && styles.textStrikethrough]}>{time}</Text>
       </View>
     </View>
   );
@@ -43,7 +51,9 @@ export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, date, time, o
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#1E1E1E',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: 'rgba(96, 35, 90, 0.9)',
     borderRadius: 5,
     overflow: 'hidden',
     alignItems: 'center',
@@ -67,8 +77,7 @@ const styles = StyleSheet.create({
   courtNumber: {
     color: colors.white,
     fontSize: 40,
-    lineHeight: 37,
-    fontWeight: 'bold',
+    lineHeight:40,
     fontFamily: typography.fontFamilyBold,
   },
   dateTimeSection: {
@@ -78,15 +87,22 @@ const styles = StyleSheet.create({
   },
   dateText: {
     color: colors.white,
-    fontSize: 14,
+    fontSize: 19,
+    lineHeight:24,
     marginBottom: 10,
-    fontFamily: typography.fontFamily,
+    fontFamily: typography.fontFamilyBold,
   },
   timeText: {
     color: colors.white,
-    fontSize: 16,
+    fontSize: 18,
+    lineHeight:24,
     fontWeight: 'bold',
-    fontFamily: typography.fontFamilyBold,
+    fontFamily: typography.fontFamily,
+  },
+
+  textStrikethrough: {
+    textDecorationLine: 'line-through',
+    color: '#A4A4A4',
   },
 });
 

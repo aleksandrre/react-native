@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   TouchableOpacity,
-  Text,
   StyleSheet,
   ActivityIndicator,
   TouchableOpacityProps,
 } from 'react-native';
+import { Text } from './Text';
 import { colors, typography } from '../../theme';
 
 interface CustomButtonProps extends TouchableOpacityProps {
@@ -54,9 +54,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 23,
     alignItems: 'center',
+    justifyContent:"center",
     borderWidth: 1.5,
-    marginTop: 10,
-    marginBottom: 10,
   },
   primary: {
     borderColor: colors.white,
@@ -72,7 +71,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    fontFamily: typography.fontFamily,
+    fontFamily: typography.fontFamilyBold,
   },
 });
 

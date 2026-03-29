@@ -1,318 +1,331 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
-import { format } from 'date-fns';
-import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList } from '../components';
+import { useTranslation } from 'react-i18next';
+import { useCreateBooking, useInitiatePayment, useReservationTimer, useValidateCoupon } from '../hooks';
+import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList, ReservationTimer, Text } from '../components';
 import { InputField } from '../components/ui/InputField';
 import { colors, typography } from '../theme';
 import { Booking } from '../types';
 import { BookStackParamList } from '../navigation/MainNavigator';
+import { useAuthStore } from '../store/authStore';
+import { bookingApi } from '../api/bookingApi';
 
 type RouteParams = {
     Summary: {
         selectedDate: Date;
         selectedSlots: string[];
-        selectedCourts: { [timeSlot: string]: string | null };
+        selectedCourts: { [timeSlot: string]: string[] };
+        selectedCourtIds: { [timeSlot: string]: number[] };
+        courtPriceMap: { [courtId: number]: number };
     };
 };
 
 type SummaryRouteProp = RouteProp<RouteParams, 'Summary'>;
 
-const getOrdinalSuffix = (day: number): string => {
-    if (day > 3 && day < 21) return 'th';
-    switch (day % 10) {
-        case 1: return 'st';
-        case 2: return 'nd';
-        case 3: return 'rd';
-        default: return 'th';
-    }
-};
-
-const formatDateForCard = (date: Date): string => {
-    const dayName = format(date, 'EEE');
-    const day = date.getDate();
-    const monthYear = format(date, 'MMM yyyy');
-    return `${dayName}, ${day} ${monthYear}`;
-};
-
-const extractCourtNumber = (courtId: string): string => {
-    // courtId format: "10:00-Court 3" -> extract "3"
-    const match = courtId.match(/Court\s*(\d+)/i);
-    return match ? match[1] : '1';
+const formatDateForApi = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 };
 
 export const SummaryScreen: React.FC = () => {
     const navigation = useNavigation<NavigationProp<BookStackParamList>>();
     const route = useRoute<SummaryRouteProp>();
+    const { t } = useTranslation();
     const [promoCode, setPromoCode] = useState('');
-    const [cardholderName, setCardholderName] = useState('');
-    const [cardNumber, setCardNumber] = useState('');
-    const [expiryDate, setExpiryDate] = useState('');
-    const [cvcNumber, setCvcNumber] = useState('');
-    const [cvcError, setCvcError] = useState(false);
-    const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
+    const [couponMessage, setCouponMessage] = useState<{ text: string; isError: boolean } | null>(null);
+    const [discountedPrice, setDiscountedPrice] = useState<number | null>(null);
 
     const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
     const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
     const selectedCourts = route.params?.selectedCourts || {};
+    const selectedCourtIds = route.params?.selectedCourtIds || {};
+    const courtPriceMap = route.params?.courtPriceMap || {};
 
-    // Build booking list from selected courts
-    const bookings: Booking[] = selectedSlots
-        .filter((slot) => selectedCourts[slot])
-        .map((slot) => {
-            const courtId = selectedCourts[slot] as string;
-            return {
-                courtNumber: extractCourtNumber(courtId),
-                date: formatDateForCard(selectedDate),
+    const bookings: Booking[] = selectedSlots.flatMap((slot) => {
+        const courts = selectedCourts[slot] ?? [];
+        return courts.map((courtNumber) => ({
+            courtNumber,
+            rawDate: formatDateForApi(selectedDate),
+            time: slot,
+        }));
+    });
+
+    const totalPrice = selectedSlots
+        .flatMap((slot) => selectedCourtIds[slot] ?? [])
+        .reduce((sum, courtId) => sum + (courtPriceMap[courtId] ?? 0), 0);
+
+    const { isAuthenticated, user, refreshCredits } = useAuthStore();
+    const userCredits = user?.credits ?? 0;
+    const { mutate: createBookings, isPending: isCreatingBooking } = useCreateBooking();
+    const { mutate: initiatePayment, isPending: isInitiatingPayment } = useInitiatePayment();
+    const { mutate: validateCoupon, isPending: isValidatingCoupon } = useValidateCoupon();
+
+    const isPaymentPending = isCreatingBooking || isInitiatingPayment;
+    const { formatted: reservationTime, isExpired } = useReservationTimer(5 * 60);
+    const hasLockedSlotsRef = useRef(false);
+    const hasUnlockedSlotsRef = useRef(false);
+    const navigatingForwardRef = useRef(false);
+
+    const buildBookingItems = () =>
+        selectedSlots.flatMap((slot) => {
+            const courtIds = selectedCourtIds[slot] ?? [];
+            return courtIds.map((courtId) => ({
+                court_id: courtId,
+                date: formatDateForApi(selectedDate),
                 time: slot,
-            };
+            }));
         });
 
-    const pricePerSession = 40;
-    const totalPrice = bookings.length * pricePerSession;
-    const userCredits: number = 3;
-    const requiredCredits = bookings.length;
-    const isLoggedIn = true;
+    const appliedCouponCode = discountedPrice !== null ? promoCode.trim() : undefined;
+
+    useEffect(() => {
+        if (!isAuthenticated) return;
+        if (hasLockedSlotsRef.current) return;
+
+        hasLockedSlotsRef.current = true;
+
+        const dateForApi = formatDateForApi(selectedDate);
+
+        selectedSlots.forEach((slot) => {
+            const courtIds = selectedCourtIds[slot] ?? [];
+            courtIds.forEach((courtId) => {
+                bookingApi
+                    .lockSlot({
+                        court_id: courtId,
+                        date: dateForApi,
+                        time: slot,
+                    })
+                    .catch((error) => {
+                        console.error('[SummaryScreen] lockSlot error', error);
+                    });
+            });
+        });
+    }, [isAuthenticated, selectedSlots, selectedCourtIds, selectedDate]);
+
+    const unlockAllSlots = useCallback(() => {
+        if (hasUnlockedSlotsRef.current) return;
+        hasUnlockedSlotsRef.current = true;
+        bookingApi.unlockSlots().catch(() => {});
+    }, []);
+
+    // Unlock when screen is removed from stack (back press or Book tab reset)
+    useEffect(() => {
+        const unsubBeforeRemove = navigation.addListener('beforeRemove', () => {
+            if (!navigatingForwardRef.current) {
+                unlockAllSlots();
+            }
+        });
+
+        return () => {
+            unsubBeforeRemove();
+        };
+    }, [navigation, unlockAllSlots]);
+
+    const effectivePrice = discountedPrice ?? totalPrice;
+    const isFreeCheckout = effectivePrice <= 0;
 
     const handleApplyCode = () => {
-        console.log('Applying promo code:', promoCode);
-        // TODO: Apply promo code logic
-    };
+        if (!promoCode.trim()) return;
+        setCouponMessage(null);
 
-    const handleCvcChange = (text: string) => {
-        setCvcNumber(text);
-        if (text.length > 0 && text.length !== 3) {
-            setCvcError(true);
-        } else {
-            setCvcError(false);
-        }
-    };
+        const couponBookings = selectedSlots.flatMap((slot) => {
+            const courtIds = selectedCourtIds[slot] ?? [];
+            return courtIds.map((courtId) => ({
+                court_id: courtId,
+                time: slot,
+            }));
+        });
 
-    const handleExpiryDateChange = (text: string) => {
-        // Remove all non-digit characters
-        const cleaned = text.replace(/\D/g, '');
-
-        // Format as MM/YY
-        if (cleaned.length >= 2) {
-            setExpiryDate(cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4));
-        } else {
-            setExpiryDate(cleaned);
-        }
-    };
-
-    const validateForm = (): boolean => {
-        const errors: { [key: string]: string } = {};
-
-        if (!cardholderName.trim()) {
-            errors.cardholderName = 'Cardholder name is required';
-        }
-
-        if (!cardNumber.trim()) {
-            errors.cardNumber = 'Card number is required';
-        }
-
-        if (!expiryDate.trim()) {
-            errors.expiryDate = 'Expiry date is required';
-        } else if (expiryDate.length < 5) {
-            errors.expiryDate = 'Invalid expiry date format (MM/YY)';
-        }
-
-        if (!cvcNumber.trim()) {
-            errors.cvcNumber = 'CVC number is required';
-        } else if (cvcNumber.length !== 3) {
-            errors.cvcNumber = 'CVC must be 3 digits';
-        }
-
-        setValidationErrors(errors);
-        return Object.keys(errors).length === 0;
+        validateCoupon({ coupon_code: promoCode.trim(), bookings: couponBookings }, {
+            onSuccess: (data) => {
+                if (data.success && data.total != null) {
+                    setDiscountedPrice(data.total);
+                    setCouponMessage({ text: t('summary.couponApplied'), isError: false });
+                } else {
+                    setDiscountedPrice(null);
+                    setCouponMessage({ text: data.message ?? t('summary.couponInvalid'), isError: true });
+                }
+            },
+            onError: () => {
+                setCouponMessage({ text: t('summary.couponError'), isError: true });
+            },
+        });
     };
 
     const handleBookWithCredits = () => {
-        if (!validateForm()) {
+        if (isExpired) return;
+
+        const bookingItems = buildBookingItems();
+        if (bookingItems.length === 0) {
+            Alert.alert(t('common.error'), 'Could not find court IDs. Please go back and re-select courts.');
             return;
         }
-        console.log('Booking with credits:', { bookings, requiredCredits });
-        // Generate random booking ID
-        const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
-        navigation.navigate('Success', { bookings, bookingId });
+
+        createBookings({ coupon_code: appliedCouponCode, bookings: bookingItems }, {
+            onSuccess: (data) => {
+                refreshCredits();
+                navigatingForwardRef.current = true;
+                const bookingIds = data?.booking_ids ?? [];
+                navigation.navigate('Success', {
+                    bookings,
+                    bookingId: bookingIds[0] != null ? String(bookingIds[0]) : '',
+                    bookingIds: bookingIds.map(String),
+                    isSingleBooking: bookings.length === 1,
+                });
+            },
+            onError: () => {
+                Alert.alert(t('common.error'), t('summary.bookingFailed'));
+            },
+        });
     };
 
-    const handlePayAndBook = () => {
-        if (!validateForm()) {
+    const handleInitiatePayment = (usePartialCredits: boolean) => {
+        if (isExpired) return;
+
+        const bookingItems = buildBookingItems();
+        if (bookingItems.length === 0) {
+            Alert.alert(t('common.error'), 'Could not find court IDs. Please go back and re-select courts.');
             return;
         }
-        console.log('Pay and book:', { bookings, totalPrice });
-        // Generate random booking ID
-        const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
-        navigation.navigate('Success', { bookings, bookingId });
+
+        initiatePayment(
+            {
+                name: user?.display_name ?? '',
+                email: user?.email ?? '',
+                phone: user?.phone ?? '',
+                coupon_code: appliedCouponCode,
+                use_partial_credits: usePartialCredits || undefined,
+                bookings: bookingItems,
+            },
+            {
+                onSuccess: ({ redirect_url }) => {
+                    navigatingForwardRef.current = true;
+                    Linking.openURL(redirect_url).catch(() => {
+                        Alert.alert(t('common.error'), t('summary.paymentRedirectFailed'));
+                    });
+                },
+                onError: () => {
+                    Alert.alert(t('common.error'), t('summary.bookingFailed'));
+                },
+            }
+        );
     };
+
+    const handlePayAndBook = () => handleInitiatePayment(false);
+    const handlePayWithPartialCredits = () => handleInitiatePayment(true);
 
     const handleLoginToBook = () => {
-        console.log('Navigate to login');
-        // TODO: Navigate to login screen
-    };
-
-    const handleCancel = () => {
-        navigation.goBack();
+        navigation.getParent()?.navigate('Auth', { screen: 'Login', params: { fromApp: true } });
     };
 
     return (
         <PageLayout>
-            <Header title="Go Back" />
+            <Header title={t('common.goBack')} />
             <ScreenWrapper>
-                {/* Reservation Timer */}
-                <View style={styles.reservationBanner}>
-                    <Text style={styles.reservationText}>⏱️ Your sessions are reserved for 4:59</Text>
-                </View>
+                {isAuthenticated && !isExpired && (
+                    <ReservationTimer formattedTime={reservationTime} />
+                )}
 
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={styles.scrollContent}
                 >
-                    {/* Court Card List */}
-                    <CourtCardList title="Summary" bookings={bookings} />
+                    <CourtCardList title={t('summary.title')} bookings={bookings} />
 
-                    {/* Apply Code Section */}
-                    <View style={styles.applyCodeSection}>
-                        <Text style={styles.applyCodeTitle}>Apply Code</Text>
-                        <View style={styles.applyCodeRow}>
-                            <InputField
-                                placeholder="Enter here"
-                                value={promoCode}
-                                onChangeText={setPromoCode}
-                                style={styles.promoInput}
-                            />
-                            <CustomButton
-                                title="Apply"
-                                onPress={handleApplyCode}
-                                style={styles.applyButton}
-                            />
-                        </View>
-                    </View>
-
-                    {/* Payment Details Section */}
-                    <View style={styles.paymentSection}>
-                        <Text style={styles.paymentTitle}>Payment details</Text>
-
-                        <Text style={styles.fieldLabel}>Cardholder Name</Text>
-                        <InputField
-                            placeholder="Giorgi Padelia"
-                            value={cardholderName}
-                            onChangeText={setCardholderName}
-                            style={styles.paymentInput}
-                        />
-                        {validationErrors.cardholderName && (
-                            <Text style={styles.errorText}>{validationErrors.cardholderName}</Text>
-                        )}
-
-                        <Text style={styles.fieldLabel}>Card Number</Text>
-                        <InputField
-                            placeholder="xxxx xxxx xxxx xxxx"
-                            value={cardNumber}
-                            onChangeText={setCardNumber}
-                            keyboardType="numeric"
-                            maxLength={19}
-                            style={styles.paymentInput}
-                        />
-                        {validationErrors.cardNumber && (
-                            <Text style={styles.errorText}>{validationErrors.cardNumber}</Text>
-                        )}
-
-                        <Text style={styles.fieldLabel}>Expiry Date</Text>
-                        <InputField
-                            placeholder="MM/YY"
-                            value={expiryDate}
-                            onChangeText={handleExpiryDateChange}
-                            keyboardType="numeric"
-                            maxLength={5}
-                            style={styles.paymentInput}
-                        />
-                        {validationErrors.expiryDate && (
-                            <Text style={styles.errorText}>{validationErrors.expiryDate}</Text>
-                        )}
-
-                        <Text style={styles.fieldLabel}>CVC Number</Text>
-                        <InputField
-                            placeholder="***"
-                            value={cvcNumber}
-                            onChangeText={handleCvcChange}
-                            keyboardType="numeric"
-                            maxLength={3}
-                            secureTextEntry
-                            style={styles.paymentInput}
-                        />
-                        {validationErrors.cvcNumber && (
-                            <Text style={styles.errorText}>{validationErrors.cvcNumber}</Text>
-                        )}
-                        {cvcError && !validationErrors.cvcNumber && (
-                            <View style={styles.warningContainer}>
-                                <Text style={styles.warningText}>⚠️ Please enter 3 digits</Text>
+                    {isAuthenticated && (
+                        <View style={styles.applyCodeSection}>
+                            <Text style={styles.applyCodeTitle}>{t('summary.applyCode')}</Text>
+                            <View style={styles.applyCodeRow}>
+                                <InputField
+                                    placeholder={t('summary.enterHere')}
+                                    value={promoCode}
+                                    onChangeText={(text) => {
+                                        setPromoCode(text);
+                                        if (couponMessage) setCouponMessage(null);
+                                    }}
+                                    style={styles.promoInput}
+                                    editable={discountedPrice === null}
+                                />
+                                <CustomButton
+                                    title={t('summary.apply')}
+                                    onPress={handleApplyCode}
+                                    disabled={isValidatingCoupon || !promoCode.trim() || discountedPrice !== null}
+                                    style={styles.applyButton}
+                                />
                             </View>
-                        )}
-                    </View>
-
+                            {couponMessage && (
+                                <Text style={couponMessage.isError ? styles.couponErrorText : styles.couponSuccessText}>
+                                    {couponMessage.text}
+                                </Text>
+                            )}
+                        </View>
+                    )}
 
                 </ScrollView>
 
-                {/* Buttons */}
                 <View style={styles.buttonContainer}>
-                    {!isLoggedIn ? (
-                        // Not logged in: Show simple price and login button
+                    {!isAuthenticated ? (
                         <>
-                            <Text style={styles.priceText}>Price: {`₾${totalPrice}`}</Text>
+                            <Text style={styles.priceText}>{t('summary.price')} {`₾${totalPrice}`}</Text>
                             <CustomButton
-                                title="Log in to book"
+                                title={t('summary.loginToBook')}
                                 onPress={handleLoginToBook}
                             />
                         </>
                     ) : (
-                        // Logged in: Show full price/credits info and conditional buttons
                         <>
-                            {/* Price and Credits Info */}
-                            {userCredits > 0 ? (
-                                <>
-                                    <Text style={styles.priceText}>
-                                        Price: {`₾${totalPrice}`} / {requiredCredits} credit
-                                    </Text>
-                                    <Text style={styles.creditsText}>
-                                        Your credits: {userCredits}
-                                    </Text>
-                                </>
-                            ) : (
-                                <Text style={styles.priceText}>Price: {`₾${totalPrice}`}</Text>
+                            {discountedPrice !== null && (
+                                <Text style={styles.originalPriceText}>
+                                    {t('summary.originalPrice')} {`₾${totalPrice}`}
+                                </Text>
+                            )}
+                            <Text style={styles.priceText}>
+                                {t('summary.price')} {`₾${effectivePrice}`}
+                            </Text>
+                            {userCredits > 0 && (
+                                <Text style={styles.creditsText}>
+                                    {t('summary.yourCredits')} {userCredits}
+                                </Text>
                             )}
 
-                            {/* Conditional Buttons */}
-                            {userCredits === 0 ? (
-                                // No credits: Show only Pay button
+                            {isExpired && (
+                                <Text style={styles.errorText}>{t('summary.reservationExpired')}</Text>
+                            )}
+
+                            {isFreeCheckout ? (
                                 <CustomButton
-                                    title="Pay and book court"
-                                    onPress={handlePayAndBook}
+                                    title={t('summary.confirmFreeBooking')}
+                                    onPress={handleBookWithCredits}
+                                    disabled={isPaymentPending || isExpired}
                                 />
-                            ) : userCredits >= requiredCredits ? (
-                                // Enough credits: Show both buttons
-                                <>
-                                    <CustomButton
-                                        title="Book with credits"
-                                        onPress={handleBookWithCredits}
-                                        variant="secondary"
-                                    />
-                                    <CustomButton
-                                        title="Pay and book courts"
-                                        onPress={handlePayAndBook}
-                                    />
-                                </>
                             ) : (
-                                // Not enough credits: Show both buttons with different text
                                 <>
+                                    {userCredits >= effectivePrice && (
+                                        <CustomButton
+                                            title={t('summary.bookWithCredits')}
+                                            onPress={handleBookWithCredits}
+                                            disabled={isPaymentPending || isExpired}
+                                            variant="secondary"
+                                        />
+                                    )}
+
+                                    {userCredits > 0 && userCredits < effectivePrice && (
+                                        <CustomButton
+                                            title={t('summary.bookWithCreditsAndCard')}
+                                            onPress={handlePayWithPartialCredits}
+                                            disabled={isPaymentPending || isExpired}
+                                            variant="secondary"
+                                        />
+                                    )}
+
                                     <CustomButton
-                                        title="Book with credits & card"
-                                        onPress={handleBookWithCredits}
-                                        variant="secondary"
-                                    />
-                                    <CustomButton
-                                        title="Pay and book courts"
+                                        title={t('summary.payAndBook')}
                                         onPress={handlePayAndBook}
+                                        disabled={isPaymentPending || isExpired}
+                                        style={styles.PayAndBookCourtsBTN}
                                     />
                                 </>
                             )}
@@ -326,7 +339,7 @@ export const SummaryScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
     reservationBanner: {
-        backgroundColor: '#60235acb',
+        backgroundColor: colors.primary,
         borderRadius: 15,
         paddingVertical: 5,
         paddingHorizontal: 8,
@@ -337,7 +350,7 @@ const styles = StyleSheet.create({
     reservationText: {
         fontSize: 14,
         lineHeight: 18,
-        fontFamily: typography.fontFamilySemiBold,
+        fontFamily: typography.fontFamily,
         color: colors.white,
     },
     scrollContent: {
@@ -357,7 +370,7 @@ const styles = StyleSheet.create({
     },
     applyCodeTitle: {
         fontSize: 14,
-        fontFamily: typography.fontFamilySemiBold,
+        fontFamily: typography.fontFamily,
         color: colors.white,
         marginBottom: 12,
     },
@@ -371,17 +384,20 @@ const styles = StyleSheet.create({
         marginBottom: 0,
     },
     applyButton: {
-        width: 57,
         height: 34,
-        paddingVertical: 8,
         borderRadius: 5,
+        borderWidth: 1,
+        borderColor: colors.lightGray,
+        padding: 0,
+        paddingHorizontal: 9,
+        margin: 0
     },
     paymentSection: {
     },
     paymentTitle: {
-        fontSize: 16,
+        fontSize: 18,
         lineHeight: 20,
-        fontFamily: typography.fontFamilySemiBold,
+        fontFamily: typography.fontFamilyBold,
         color: colors.white,
         marginBottom: 16,
     },
@@ -464,20 +480,43 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         padding: 10,
+        paddingBottom: 0,
         marginBottom: 0,
     },
     priceText: {
-        fontSize: 16,
-        lineHeight: 20,
-        fontFamily: typography.fontFamilySemiBold,
+        fontSize: 18,
+        lineHeight: 23,
+        fontFamily: typography.fontFamilyBold,
         color: colors.white,
-        marginBottom: 8,
+        marginBottom: 10,
     },
     creditsText: {
-        fontSize: 14,
-        lineHeight: 18,
-        fontFamily: typography.fontFamily,
+        fontSize: 18,
+        lineHeight: 23,
+        fontFamily: typography.fontFamilyBold,
         color: colors.white,
-        marginBottom: 16,
+        marginBottom: 10,
+    },
+    PayAndBookCourtsBTN: {
+        marginTop: 10
+    },
+    couponSuccessText: {
+        fontSize: 13,
+        fontFamily: typography.fontFamily,
+        color: '#4CAF50',
+        marginTop: 6,
+    },
+    couponErrorText: {
+        fontSize: 13,
+        fontFamily: typography.fontFamily,
+        color: '#FF4444',
+        marginTop: 6,
+    },
+    originalPriceText: {
+        fontSize: 14,
+        fontFamily: typography.fontFamily,
+        color: colors.lightGray,
+        textDecorationLine: 'line-through',
+        marginBottom: 2,
     },
 });

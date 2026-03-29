@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, ImageBackground, View } from 'react-native';
+import { StyleSheet, ImageBackground, View } from 'react-native';
+import { Text } from './Text';
 import { colors, typography } from '../../theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 interface ImageHeaderProps {
@@ -20,6 +21,8 @@ export const ImageHeader: React.FC<ImageHeaderProps> = ({ title, imageSource }) 
       ]}
       resizeMode="cover" // სურათი სრულად შეავსებს 141px-ს
     >
+      <View style={styles.overlay} />
+
       <View >
         <Text style={styles.title}>{title}</Text>
       </View>
@@ -33,13 +36,18 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
-
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.4)', // 0.4 შეგიძლია შეცვალო 0.3–0.6 შორის
+  },
+  
   title: {
     fontSize: 40,
     lineHeight: 70,
     color: colors.white,
     textAlign: 'center',
-    fontFamily: typography.fontFamily,
+    fontFamily: typography.fontFamilyBold,
+    
   },
 });
 

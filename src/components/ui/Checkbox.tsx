@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     width: 15,
     height: 15,
     borderWidth: 1,
-    borderColor: colors.white,
+    borderColor: colors.borderColor,
     borderRadius: 2,
     marginRight: 10,
     alignItems: 'center',
@@ -36,15 +36,18 @@ const styles = StyleSheet.create({
   },
   checkboxChecked: {
     backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    borderColor: colors.white,
   },
   checkmark: {
-    width: 6,
-    height: 10,
+    width: 5,            // სიგანე
+    height: 9,
     borderColor: colors.white,
     borderBottomWidth: 2,
     borderRightWidth: 2,
-    transform: [{ rotate: '45deg' }],
+    transform: [
+      { rotate: '45deg' },
+      { translateY: -1 } // მათემატიკური კორექცია: ტიკს 1 პიქსელით მაღლა სწევს, რადგან დახრა მას ვიზუალურად დაბლა აგდებს
+  ],
   },
   labelContainer: {
     flex: 1,

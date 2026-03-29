@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTranslation } from 'react-i18next';
 import { PageLayout, ScreenWrapper, DateSelector, ImageHeader, TimeSlotSelector, CustomButton } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors } from '../theme';
@@ -14,24 +15,24 @@ type BookScreenNavigationProp = NativeStackNavigationProp<
 
 export const BookScreen: React.FC = () => {
   const navigation = useNavigation<BookScreenNavigationProp>();
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
-    console.log('Selected date:', date);
+    setSelectedSlots([]);
   };
 
   const handleSlotsSelect = (slots: string[]) => {
     setSelectedSlots(slots);
-    console.log('Selected slots:', slots);
   };
 
   const handleContinue = () => {
     if (selectedSlots.length === 0) return;
     
     navigation.navigate('CourtSelection', {
-      selectedDate,
+      selectedDate: selectedDate.toISOString(),
       selectedSlots,
     });
   };
@@ -39,21 +40,25 @@ export const BookScreen: React.FC = () => {
   return (
     <PageLayout>
       <ImageHeader
-        title="KUS TBA PADEL"
+        title={t('book.title')}
         imageSource={book}
       />
       <ScreenWrapper>
-        <DateSelector
-          selectedDate={selectedDate}
-          onDateSelect={handleDateSelect}
-        />
-        <TimeSlotSelector
-          onSlotsSelect={handleSlotsSelect}
-          maxSelections={3}
-        />
+        <View style={styles.content}>
+          <DateSelector
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+          />
+          <TimeSlotSelector
+            selectedDate={selectedDate}
+            onSlotsSelect={handleSlotsSelect}
+            maxSelections={3}
+          />
+        </View>
+
         <View style={styles.buttonContainer}>
           <CustomButton
-            title="Continue"
+            title={t('common.continue')}
             onPress={handleContinue}
             disabled={selectedSlots.length === 0}
           />
@@ -64,11 +69,10 @@ export const BookScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+  },
   buttonContainer: {
-    marginTop: 20,
+    marginBottom: 0,
   },
 });
-
-
-
-
