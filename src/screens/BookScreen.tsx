@@ -21,6 +21,7 @@ export const BookScreen: React.FC = () => {
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
+    setSelectedSlots([]);
   };
 
   const handleSlotsSelect = (slots: string[]) => {
@@ -31,7 +32,7 @@ export const BookScreen: React.FC = () => {
     if (selectedSlots.length === 0) return;
     
     navigation.navigate('CourtSelection', {
-      selectedDate,
+      selectedDate: selectedDate.toISOString(),
       selectedSlots,
     });
   };
@@ -43,14 +44,18 @@ export const BookScreen: React.FC = () => {
         imageSource={book}
       />
       <ScreenWrapper>
-        <DateSelector
-          selectedDate={selectedDate}
-          onDateSelect={handleDateSelect}
-        />
-        <TimeSlotSelector
-          onSlotsSelect={handleSlotsSelect}
-          maxSelections={3}
-        />
+        <View style={styles.content}>
+          <DateSelector
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+          />
+          <TimeSlotSelector
+            selectedDate={selectedDate}
+            onSlotsSelect={handleSlotsSelect}
+            maxSelections={3}
+          />
+        </View>
+
         <View style={styles.buttonContainer}>
           <CustomButton
             title={t('common.continue')}
@@ -64,7 +69,10 @@ export const BookScreen: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  content: {
+    flex: 1,
+  },
   buttonContainer: {
-    marginTop: 20,
+    marginBottom: 0,
   },
 });

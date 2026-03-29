@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle } from 'react-native';
+import { View, StyleSheet, ViewStyle } from 'react-native';
+import { Text } from './Text';
 import { CourtCard } from './CourtCard';
 import { Booking } from '../../types';
 import { colors, typography } from '../../theme';
@@ -20,7 +21,7 @@ export const CourtCardList: React.FC<CourtCardListProps> = ({ title, bookings, s
           <CourtCard
             key={index}
             courtNumber={booking.courtNumber}
-            date={booking.date}
+            rawDate={booking.rawDate}
             time={booking.time}
             cancelled={booking.cancelled || booking.rescheduled}
             onPress={onBookingPress ? () => onBookingPress(booking, index) : undefined}

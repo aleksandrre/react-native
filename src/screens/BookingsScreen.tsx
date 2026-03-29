@@ -1,91 +1,57 @@
 import React from 'react';
-import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { StyleSheet, View, ScrollView, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { CourtCardList, PageLayout, ScreenWrapper, ImageHeader, CustomButton } from '../components';
+import { CourtCardList, PageLayout, ScreenWrapper, ImageHeader, CustomButton, Text } from '../components';
 import { Booking } from '../types';
 import { colors, typography } from '../theme';
 import cover from '../../assets/cover.png';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation, NavigationProp, useFocusEffect } from '@react-navigation/native';
 import { BookingsStackParamList } from '../navigation/MainNavigator';
 import { useAuthStore } from '../store/authStore';
+import { useBookings } from '../hooks';
 
 export const BookingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<BookingsStackParamList>>();
   const { t } = useTranslation();
-  
-  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
-  const upcomingBookings: Booking[] = [
-    {
-      courtNumber: '5',
-      date: 'Wed, 15 Oct 2026',
-      time: '18:00',
-      cancelled: true,
-      rescheduled: false,
-    },
-    {
-      courtNumber: '2',
-      date: 'Sat, 25 Oct 2026',
-      time: '14:00',
-      cancelled: false,
-      rescheduled: false,
-    },
-  ];
+  const { upcoming: upcomingBookings, past: pastBookings, isLoading, isError, refetch } = useBookings(isAuthenticated);
 
-  const pastBookings: Booking[] = [
-    {
-      courtNumber: '8',
-      date: 'Thu, 1 Oct 2025',
-      time: '21:00',
-      cancelled: true,
-      rescheduled: false,
-    },
-    {
-      courtNumber: '3',
-      date: 'Fri, 17 Dec 2025',
-      time: '10:00',
-      cancelled: false,
-      rescheduled: false,
-    },
-  ];
+  useFocusEffect(
+    React.useCallback(() => {
+      if (isAuthenticated) refetch();
+    }, [isAuthenticated])
+  );
 
-  const handleUpcomingBookingPress = (booking: Booking) => {
-    const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
-
+  const handleUpcomingBookingPress = (booking: Booking & { id?: string }) => {
     let status: 'Confirmed' | 'Cancelled' | 'Rescheduled' = 'Confirmed';
-    if (booking.cancelled) {
-      status = 'Cancelled';
-    } else if (booking.rescheduled) {
-      status = 'Rescheduled';
-    }
+    if (booking.cancelled) status = 'Cancelled';
+    else if (booking.rescheduled) status = 'Rescheduled';
 
     navigation.navigate('BookingDetails', {
       courtNumber: booking.courtNumber,
-      date: booking.date,
+      rawDate: booking.rawDate,
       time: booking.time,
-      status: status,
-      bookingId: bookingId,
+      status,
+      bookingId: booking.id ?? '',
       isPast: false,
+      price: booking.price,
     });
   };
 
-  const handlePastBookingPress = (booking: Booking) => {
-    const bookingId = Math.floor(Math.random() * 900000 + 100000).toString();
-
+  const handlePastBookingPress = (booking: Booking & { id?: string }) => {
     let status: 'Completed' | 'Cancelled' | 'Rescheduled' = 'Completed';
-    if (booking.cancelled) {
-      status = 'Cancelled';
-    } else if (booking.rescheduled) {
-      status = 'Rescheduled';
-    }
+    if (booking.cancelled) status = 'Cancelled';
+    else if (booking.rescheduled) status = 'Rescheduled';
 
     navigation.navigate('BookingDetails', {
       courtNumber: booking.courtNumber,
-      date: booking.date,
+      rawDate: booking.rawDate,
       time: booking.time,
-      status: status,
-      bookingId: bookingId,
+      status,
+      bookingId: booking.id ?? '',
       isPast: true,
+      price: booking.price,
     });
   };
 
@@ -108,46 +74,42 @@ export const BookingsScreen: React.FC = () => {
           {!isAuthenticated ? (
             <>
               <Text style={styles.sectionTitle}>{t('bookings.becomeMember')}</Text>
-              <Text style={styles.emptyText}>
-                {t('bookings.pleaseLogIn')}
-              </Text>
-
+              <Text style={styles.emptyText}>{t('bookings.pleaseLogIn')}</Text>
               <CustomButton
                 style={{ marginBottom: 10 }}
                 title={t('bookings.logIn')}
-                onPress={() => {
-                  navigation.getParent()?.navigate('Auth', { screen: 'Login' });
-                }}
+                onPress={() => navigation.getParent()?.navigate('Auth', { screen: 'Login', params: { fromApp: true } })}
               />
-
               <CustomButton
                 title={t('bookings.register')}
                 variant="secondary"
-                onPress={() => {
-                  navigation.getParent()?.navigate('Auth', { screen: 'Register' });
-                }}
+                onPress={() => navigation.getParent()?.navigate('Auth', { screen: 'Register', params: { fromApp: true } })}
               />
             </>
+          ) : isLoading ? (
+            <ActivityIndicator size="large" color={colors.primary} style={styles.loader} />
+          ) : isError ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>{t('bookings.loadError')}</Text>
+              <CustomButton title={t('common.retry')} onPress={() => refetch()} />
+            </View>
           ) : (
             <>
               {upcomingBookings.length > 0 ? (
-                <CourtCardList title={t('bookings.upcoming')} bookings={upcomingBookings} onBookingPress={handleUpcomingBookingPress} />
+                <CourtCardList
+                  title={t('bookings.upcoming')}
+                  bookings={upcomingBookings}
+                  onBookingPress={handleUpcomingBookingPress}
+                />
               ) : (
                 <View style={styles.emptyContainer}>
-                  <Text style={styles.emptyText}>
-                    {t('bookings.noUpcoming')}
-                  </Text>
+                  <Text style={styles.emptyText}>{t('bookings.noUpcoming')}</Text>
                 </View>
               )}
 
-              {pastBookings.length > 0 && (
-                <View style={styles.buttonContainer}>
-                  <CustomButton
-                    title={t('bookings.makeNewBooking')}
-                    onPress={handleMakeNewBooking}
-                  />
-                </View>
-              )}
+              <View style={styles.buttonContainer}>
+                <CustomButton title={t('bookings.makeNewBooking')} onPress={handleMakeNewBooking} />
+              </View>
 
               {pastBookings.length > 0 && (
                 <>
@@ -156,20 +118,10 @@ export const BookingsScreen: React.FC = () => {
                 </>
               )}
             </>
-          )
-
-          }
+          )}
 
         </ScrollView>
 
-        {pastBookings.length === 0 && (
-          <View style={styles.fixedButtonContainer}>
-            <CustomButton
-              title={t('bookings.makeNewBooking')}
-              onPress={handleMakeNewBooking}
-            />
-          </View>
-        )}
       </ScreenWrapper>
     </PageLayout>
   );
@@ -208,5 +160,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: 10,
     marginBottom: 10,
-  }
+  },
+  loader: {
+    marginTop: 40,
+  },
 });

@@ -13,18 +13,22 @@ import {
   SpaceGrotesk_700Bold,
 } from '@expo-google-fonts/space-grotesk';
 import { useAuthStore } from './src/store/authStore';
+import { useLanguageStore } from './src/store/languageStore';
 import { MainNavigator, AuthNavigator } from './src/navigation';
 import { colors } from './src/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const queryClient = new QueryClient();
+const Stack = createNativeStackNavigator();
 
 function AppContent() {
   const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { initLanguage } = useLanguageStore();
 
   useEffect(() => {
-    checkAuth();
+    // პარალელურად ვიტვირთავთ token+user და language
+    Promise.all([checkAuth(), initLanguage()]);
   }, []);
 
   if (isLoading) {
@@ -34,7 +38,6 @@ function AppContent() {
       </View>
     );
   }
-  const Stack = createNativeStackNavigator();
 
   return (
     // <NavigationContainer>
@@ -74,6 +77,11 @@ export default function App() {
     SpaceGrotesk_500Medium,
     SpaceGrotesk_600SemiBold,
     SpaceGrotesk_700Bold,
+    FiraGO_300Light: require('./assets/fonts/FiraGO-Light.ttf'),
+    FiraGO_400Regular: require('./assets/fonts/FiraGO-Book.ttf'),
+    FiraGO_500Medium: require('./assets/fonts/FiraGO-Medium.ttf'),
+    FiraGO_600SemiBold: require('./assets/fonts/FiraGO-SemiBold.ttf'),
+    FiraGO_700Bold: require('./assets/fonts/FiraGO-Bold.ttf'),
   });
 
   if (!fontsLoaded) {

@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { PageLayout, ScreenWrapper, Header, CustomButton, InfoModal } from '../components';
+import { PageLayout, ScreenWrapper, Header, CustomButton, InfoModal, Text } from '../components';
 import { colors, typography } from '../theme';
+import { useCancelBooking, useDateLocale } from '../hooks';
 
 type RouteParams = {
     BookingDetails: {
         courtNumber: string;
-        date: string;
+        rawDate: string;
         time: string;
         status: 'Confirmed' | 'Failed' | 'Completed' | 'Cancelled' | 'Rescheduled';
         bookingId: string;
         isPast: boolean;
+        price?: number;
     };
 };
 
@@ -23,10 +26,16 @@ export const BookingDetailsScreen: React.FC = () => {
     const route = useRoute<BookingDetailsRouteProp>();
     const { t } = useTranslation();
 
-    const { courtNumber, date, time, status, bookingId, isPast } = route.params;
+    const { courtNumber, rawDate, time, status, bookingId, isPast, price } = route.params;
+    const dateLocale = useDateLocale();
+    const date = format(parseISO(rawDate), 'EEE, d MMM yyyy', { locale: dateLocale });
 
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showRescheduleModal, setShowRescheduleModal] = useState(false);
+    const [showRescheduleSuccessModal, setShowRescheduleSuccessModal] = useState(false);
+
+    const { mutate: cancelBooking, isPending: isCancelling } = useCancelBooking();
 
     const isCancelledOrRescheduled = status === 'Cancelled' || status === 'Rescheduled';
     const subtitleText = isPast || isCancelledOrRescheduled
@@ -42,7 +51,21 @@ export const BookingDetailsScreen: React.FC = () => {
     };
 
     const handleRescheduleBooking = () => {
-        navigation.navigate('Reschedule', { bookingId });
+        setShowRescheduleModal(true);
+    };
+
+    const handleConfirmReschedule = () => {
+        setShowRescheduleModal(false);
+        cancelBooking({ bookingId, price }, {
+            onSuccess: () => setShowRescheduleSuccessModal(true),
+            onError: () => Alert.alert(t('common.error'), t('bookingDetails.cancelError')),
+        });
+    };
+
+    const handleRescheduleSuccessClose = () => {
+        setShowRescheduleSuccessModal(false);
+        navigation.goBack();
+        navigation.navigate('Book' as never);
     };
 
     const handleCancelBooking = () => {
@@ -51,7 +74,10 @@ export const BookingDetailsScreen: React.FC = () => {
 
     const handleConfirmCancel = () => {
         setShowCancelModal(false);
-        setShowSuccessModal(true);
+        cancelBooking({ bookingId, price }, {
+            onSuccess: () => setShowSuccessModal(true),
+            onError: () => Alert.alert(t('common.error'), t('bookingDetails.cancelError')),
+        });
     };
 
     const handleCancelModalClose = () => {
@@ -89,7 +115,7 @@ export const BookingDetailsScreen: React.FC = () => {
                         </View>
 
                         <Text style={styles.statusText}>{t('bookingDetails.status')} {status}</Text>
-                        <Text style={styles.bookingId}>{t('bookingDetails.bookingId')} {`{${bookingId}}`}</Text>
+                        <Text style={styles.bookingId}>{t('bookingDetails.bookingId')} {`${bookingId}`}</Text>
                     </View>
                 </ScrollView>
 
@@ -116,11 +142,13 @@ export const BookingDetailsScreen: React.FC = () => {
                                 style={{ marginBottom: 10 }}
                                 title={t('bookingDetails.rescheduleBooking')}
                                 onPress={handleRescheduleBooking}
+                                disabled={isCancelling}
                                 variant="secondary"
                             />
                             <CustomButton
                                 title={t('bookingDetails.cancelBooking')}
                                 onPress={handleCancelBooking}
+                                disabled={isCancelling}
                                 variant="secondary"
                             />
                         </>
@@ -139,9 +167,26 @@ export const BookingDetailsScreen: React.FC = () => {
 
             <InfoModal
                 visible={showSuccessModal}
-                title={t('bookingDetails.cancelSuccess', { date, time, courtNumber })}
+                title={t('bookingDetails.cancelSuccess', { date, time, courtNumber, credits: price ?? 0 })}
                 primaryButtonText={t('common.ok')}
                 onPrimaryPress={handleSuccessModalClose}
+                singleButton={true}
+            />
+
+            <InfoModal
+                visible={showRescheduleModal}
+                title={t('bookingDetails.rescheduleConfirm')}
+                primaryButtonText={t('bookingDetails.yesCancelBooking')}
+                secondaryButtonText={t('bookingDetails.noKeepBooking')}
+                onPrimaryPress={handleConfirmReschedule}
+                onSecondaryPress={() => setShowRescheduleModal(false)}
+            />
+
+            <InfoModal
+                visible={showRescheduleSuccessModal}
+                title={t('bookingDetails.rescheduleSuccess', { date, time, courtNumber, credits: price ?? 0 })}
+                primaryButtonText={t('common.ok')}
+                onPrimaryPress={handleRescheduleSuccessClose}
                 singleButton={true}
             />
         </PageLayout>

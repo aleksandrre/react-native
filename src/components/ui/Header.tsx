@@ -1,9 +1,10 @@
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { Text } from './Text';
 import { colors, typography } from '../../theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native'; // დავამატეთ ეს
+import { useNavigation } from '@react-navigation/native';
 interface HeaderProps {
   title: string;
   subtitle?: string;
@@ -26,12 +27,13 @@ export const Header: React.FC<HeaderProps> = ({ title, variant = 'left' }) => {
     }
   };
   return (
-    <View style={[
-      styles.container,
-      {
-        height: 63 + insets.top,
-      }
-    ]}>
+    <View
+      style={[
+        styles.container,
+        { height: 50 + insets.top },
+        { paddingBottom: Platform.OS === 'android' ? 5 : 10 },
+      ]}
+    >
       <TouchableOpacity
         onPress={handlePress}
         activeOpacity={0.6}

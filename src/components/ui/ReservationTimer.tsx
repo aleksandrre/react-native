@@ -1,13 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { Text } from './Text';
 import { useTranslation } from 'react-i18next';
 import { colors, typography } from '../../theme';
 
-export const ReservationTimer: React.FC = () => {
+interface ReservationTimerProps {
+    formattedTime: string;
+}
+
+export const ReservationTimer: React.FC<ReservationTimerProps> = ({ formattedTime }) => {
     const { t } = useTranslation();
     return (
         <View style={styles.reservationBanner}>
-            <Text style={styles.reservationText}>{t('summary.reservationTimer')}</Text>
+            <Text style={styles.reservationText}>
+                {t('summary.reservationTimer', { time: formattedTime })}
+            </Text>
         </View>
     );
 };
@@ -16,9 +23,9 @@ const styles = StyleSheet.create({
     reservationBanner: {
         backgroundColor: '#60235acb',
         borderRadius: 15,
-        alignSelf: 'center', // Changed from margin: auto to alignSelf: center for better React Native support
+        alignSelf: 'center',
         paddingVertical: 5,
-        paddingHorizontal: 16, // Increased padding
+        paddingHorizontal: 16,
         alignItems: 'center',
         marginBottom: 20,
     },

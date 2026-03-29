@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
@@ -9,6 +8,7 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
+import { Text } from './Text';
 import { Ionicons } from '@expo/vector-icons';
 import {
   format,
@@ -24,7 +24,7 @@ import { colors, typography } from '../../theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DAY_WIDTH = Math.floor((SCREEN_WIDTH - 60) / 7);
-const DAYS_TO_SHOW = 60;
+const DAYS_TO_SHOW = 15;
 const EDGE_BLOCK_WIDTH = 25;
 const MONTH_LABEL_HEIGHT = 20;
 
@@ -50,7 +50,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
   // Generate dates array once
   const dates = useMemo(() => {
     const result: Date[] = [];
-    for (let i = -30; i < DAYS_TO_SHOW - 30; i++) {
+    for (let i = -7; i < DAYS_TO_SHOW - 7; i++) {
       result.push(addDays(today, i));
     }
     return result;
@@ -150,7 +150,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
             const isSelected = isSameDay(date, selectedDate);
             const isToday = isSameDay(date, today);
             const isPast = isBefore(date, today);
-            const dayOfWeek = format(date, 'EEEEE', { locale: dateLocale });
+            const dayOfWeek = format(date, 'EEE', { locale: dateLocale });
             const dayNumber = format(date, 'd');
             const isNewMonth = monthStartFlags[index];
             const showBoundary = isNewMonth && index !== 0;
@@ -292,9 +292,9 @@ const styles = StyleSheet.create({
   },
   dayOfWeek: {
     fontSize: 8,
-    lineHeight:10,
+    lineHeight: 10,
     color: colors.white,
-    fontFamily:typography.fontFamily,
+    fontFamily: typography.fontFamily,
     marginBottom: 8,
   },
   dateCircle: {
@@ -310,6 +310,7 @@ const styles = StyleSheet.create({
     borderColor: '#414141',
   },
   dateCircleSelected: {
+    borderRadius: 20,
     backgroundColor: colors.primary,
     borderWidth: 0,
   },

@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { format, parseISO } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { PageLayout, ScreenWrapper, CustomButton, CourtCardList } from '../components';
+import { PageLayout, ScreenWrapper, CustomButton, CourtCardList, Text } from '../components';
 import { ImageHeader } from '../components/ui/ImageHeader';
 import { colors, typography } from '../theme';
+import { useDateLocale } from '../hooks';
 import { Booking } from '../types';
 import { BookStackParamList } from '../navigation/MainNavigator';
 
@@ -17,9 +19,15 @@ export const SuccessScreen: React.FC = () => {
     const { t } = useTranslation();
 
     const bookings = route.params?.bookings || [];
-    const bookingId = route.params?.bookingId || '002938';
+    const bookingId = route.params?.bookingId;
+    const bookingIds = route.params?.bookingIds || [];
     const isSingleBooking = route.params?.isSingleBooking || false;
-
+    const dateLocale = useDateLocale();
+    const singleDate = bookings[0]?.rawDate
+        ? format(parseISO(bookings[0].rawDate), 'EEE, d MMM yyyy', { locale: dateLocale })
+        : '';
+    console.log(route, 'route.params');
+    
     const handleBookAgain = () => {
         const parentNav = navigation.getParent();
         if (parentNav) {
@@ -28,9 +36,11 @@ export const SuccessScreen: React.FC = () => {
     };
 
     const handleBookingPress = (booking: Booking, index: number) => {
+        const idForIndex = bookingIds[index] ?? bookingId;
         navigation.push('Success', {
             bookings: [booking],
-            bookingId: bookingId,
+            bookingId: idForIndex ? String(idForIndex) : '',
+            bookingIds: idForIndex ? [String(idForIndex)] : [],
             isSingleBooking: true,
         });
     };
@@ -67,7 +77,7 @@ export const SuccessScreen: React.FC = () => {
                                     <Text style={styles.singleBookingOn}>{t('success.at')}</Text>
                                     <Text style={styles.singleBookingText}>{`${bookings[0].time}`}</Text>
                                     <Text style={styles.singleBookingOn}>{t('success.on')}</Text>
-                                    <Text style={styles.singleBookingText}>{`${bookings[0].date}`}</Text>
+                                    <Text style={styles.singleBookingText}>{singleDate}</Text>
                                 </View>
                             </>
                         ) : (
@@ -82,7 +92,10 @@ export const SuccessScreen: React.FC = () => {
                             </>
                         )}
 
-                        <Text style={styles.bookingId}>{t('success.bookingId')} {`{${bookingId}}`}</Text>
+                        <Text style={styles.bookingId}>
+                            {t('success.bookingId')}{' '}
+                            {bookingIds.length > 0 ? `\u00a0${bookingIds.join(', ')}\u00a0` : bookingId ? `\u00a0${bookingId}\u00a0` : ''}
+                        </Text>
                     </View>
                 </ScrollView>
 

@@ -1,57 +1,50 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { useLogin } from '../hooks';
-import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout } from '../components';
+import { useApiError } from '../hooks/useApiError';
+import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout, Text } from '../components';
 import { colors, typography } from '../theme';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
+type LoginScreenRouteProp = RouteProp<AuthStackParamList, 'Login'>;
 
 export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
+  const route = useRoute<LoginScreenRouteProp>();
   const { t } = useTranslation();
-  const [email, setEmail] = useState('');
+  const fromApp = route.params?.fromApp ?? false;
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [apiError, setApiError] = useState('');
   const loginMutation = useLogin();
-
-  const validateEmail = (emailValue: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (emailValue.length > 0 && !emailRegex.test(emailValue)) {
-      setEmailError(t('login.emailError'));
-    } else {
-      setEmailError('');
-    }
-  };
-
-  const handleEmailChange = (text: string) => {
-    setEmail(text);
-    validateEmail(text);
-  };
+  const { getApiError } = useApiError();
 
   const handleLogin = () => {
-    if (!email || !password) {
-      Alert.alert(t('common.error'), t('login.fillAll'));
-      return;
-    }
+    let hasError = false;
+    if (!username) { setUsernameError(t('common.required')); hasError = true; } else { setUsernameError(''); }
+    if (!password) { setPasswordError(t('common.required')); hasError = true; } else { setPasswordError(''); }
+    if (hasError) return;
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setEmailError(t('login.emailError'));
-      return;
-    }
-
-    loginMutation.mutate({ email, password });
+    setApiError('');
+    loginMutation.mutate({ username, password }, {
+      onError: (error: any) => setApiError(getApiError(error)),
+    });
   };
 
   return (
     <PageLayout style={styles.mainContainer}>
-      <Header title={t('common.skipForNow')} variant="right" />
+      <Header
+        title={fromApp ? t('common.goBack') : t('common.skipForNow')}
+        variant={fromApp ? 'left' : 'right'}
+      />
       <ScreenWrapper>
-        <ScrollView 
+        <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
@@ -61,20 +54,21 @@ export const LoginScreen: React.FC = () => {
             <LabeledInputField
               label={t('login.email')}
               placeholder={t('login.emailPlaceholder')}
-              value={email}
-              onChangeText={handleEmailChange}
-              keyboardType="email-address"
+              value={username}
+              onChangeText={(v) => { setUsername(v); if (usernameError) setUsernameError(''); }}
               autoCapitalize="none"
-              error={emailError}
+              error={usernameError}
             />
 
             <LabeledInputField
               label={t('login.password')}
               placeholder={t('login.passwordPlaceholder')}
               value={password}
-              onChangeText={setPassword}
+              onChangeText={(v) => { setPassword(v); if (passwordError) setPasswordError(''); if (apiError) setApiError(''); }}
               secureTextEntry
+              error={passwordError}
             />
+            {!!apiError && <Text style={styles.apiError}>⚠ {apiError}</Text>}
           </View>
 
           <View style={styles.buttonsContainer}>
@@ -84,13 +78,13 @@ export const LoginScreen: React.FC = () => {
               isLoading={loginMutation.isPending}
               style={styles.loginButton}
             />
-
             <CustomButton
               title={t('login.signUp')}
-              onPress={() => navigation.navigate('Register')}
+              onPress={() => navigation.navigate('Register', { fromApp })}
               variant="secondary"
               style={styles.signUpButton}
             />
+
           </View>
         </ScrollView>
       </ScreenWrapper>
@@ -118,8 +112,15 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamilyBold,
   },
   buttonsContainer: {
-    marginTop: 'auto',
-    paddingTop: 20,
+    paddingBottom: 40,
+  },
+  apiError: {
+    color: colors.lightPurple,
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: typography.fontFamily,
+    paddingLeft: 9,
+    marginBottom: 8,
   },
   loginButton: {
     marginBottom: 10,

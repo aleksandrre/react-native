@@ -1,67 +1,51 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Linking, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Linking, Image, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal } from '../components';
+import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal, Text } from '../components';
 import { colors, typography } from '../theme';
 import profile from '../../assets/profile.png';
 import pencil from '../../assets/pencil.svg';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../store/authStore';
 import { useLanguageStore } from '../store/languageStore';
+import { useUpdateProfile } from '../hooks';
 
 export const ProfileScreen: React.FC = () => {
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
 
-  const [name, setName] = useState('Name Surname');
-  const [email, setEmail] = useState('name@mail.com');
-  const [phone, setPhone] = useState('+xx xxx xxx xxx');
-  const { isAuthenticated, isLoading, checkAuth } = useAuthStore();
+  const { isAuthenticated, user, logout } = useAuthStore();
+  const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile();
 
   const [editModalVisible, setEditModalVisible] = useState(false);
-  const [otpModalVisible, setOtpModalVisible] = useState(false);
   const [editType, setEditType] = useState<'name' | 'email' | 'phone'>('name');
   const [tempValue, setTempValue] = useState('');
-  const [pendingEmail, setPendingEmail] = useState('');
-  const [pendingPhone, setPendingPhone] = useState('');
 
   const navigation = useNavigation<any>();
 
   const handleEdit = (type: 'name' | 'email' | 'phone') => {
     setEditType(type);
-    if (type === 'name') {
-      setTempValue(name);
-    } else if (type === 'email') {
-      setTempValue(email);
-    } else if (type === 'phone') {
-      setTempValue(phone);
-    }
+    if (type === 'name') setTempValue(user?.display_name ?? '');
+    else if (type === 'email') setTempValue(user?.email ?? '');
+    else setTempValue(user?.phone ?? '');
     setEditModalVisible(true);
   };
 
   const handleSaveEdit = (value: string) => {
-    if (editType === 'name') {
-      setName(value);
-      setEditModalVisible(false);
-    } else if (editType === 'email') {
-      setPendingEmail(value);
-      setEditModalVisible(false);
-      setOtpModalVisible(true);
-    } else if (editType === 'phone') {
-      setPendingPhone(value);
-      setEditModalVisible(false);
-      setOtpModalVisible(true);
-    }
+    const payload = {
+      display_name: editType === 'name' ? value : (user?.display_name ?? ''),
+      email: editType === 'email' ? value : (user?.email ?? ''),
+      phone: editType === 'phone' ? value : (user?.phone ?? ''),
+    };
+
+    updateProfile(payload, {
+      onSuccess: () => setEditModalVisible(false),
+      onError: () => Alert.alert(t('common.error'), t('profile.updateFailed')),
+    });
   };
 
-  const handleSaveOTP = (otp: string) => {
-    console.log('OTP:', otp);
-    if (editType === 'email') {
-      setEmail(pendingEmail);
-    } else if (editType === 'phone') {
-      setPhone(pendingPhone);
-    }
-    setOtpModalVisible(false);
+  const handleLogout = () => {
+    logout();
   };
 
   const getEditTitle = () => {
@@ -87,9 +71,9 @@ export const ProfileScreen: React.FC = () => {
       <ScreenWrapper>
         {isAuthenticated ? (
           <View style={styles.section}>
-            <InfoRow label={t('profile.name')} value={name} onEdit={() => handleEdit('name')} />
-            <InfoRow label={t('profile.email')} value={email} onEdit={() => handleEdit('email')} />
-            <InfoRow label={t('profile.phone')} value={phone} onEdit={() => handleEdit('phone')} />
+            <InfoRow label={t('profile.name')} value={user?.display_name ?? '—'} onEdit={() => handleEdit('name')} />
+            <InfoRow label={t('profile.email')} value={user?.email ?? '—'} onEdit={() => handleEdit('email')} />
+            <InfoRow label={t('profile.phone')} value={user?.phone ?? '—'} onEdit={() => handleEdit('phone')} />
             <View style={styles.infoRow}>
               <Text style={styles.infoText}>{t('profile.language')}</Text>
               <View style={styles.langPickerRow}>
@@ -103,15 +87,15 @@ export const ProfileScreen: React.FC = () => {
                   style={[styles.langOption, language === 'ka' && styles.langOptionActive]}
                   onPress={() => setLanguage('ka')}
                 >
-                  <Text style={[styles.langOptionText, language === 'ka' && styles.langOptionTextActive]}>KA</Text>
+                  <Text style={[styles.langOptionText, language === 'ka' && styles.langOptionTextActive]}>ქა</Text>
                 </TouchableOpacity>
               </View>
             </View>
-            <Text style={[styles.infoText]}>{t('profile.credits')} <Text style={styles.infoValue}>{'{x}'}</Text></Text>
+            <Text style={styles.infoText}>{t('profile.credits')} <Text style={styles.infoValue}>{user?.credits ?? 0}</Text></Text>
 
-            <CustomButton
-              title={t('profile.logOut')}
-            />
+            <TouchableOpacity  onPress={handleLogout}>
+              <Text style={styles.logoutLinkText}>{t('profile.logOut')}</Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <View>
@@ -123,7 +107,7 @@ export const ProfileScreen: React.FC = () => {
               variant="primary"
               style={styles.signUpBtn}
               onPress={() => {
-                navigation.getParent()?.navigate('Auth', { screen: 'Register' });
+                navigation.getParent()?.navigate('Auth', { screen: 'Register', params: { fromApp: true } });
               }}
             />
 
@@ -132,7 +116,7 @@ export const ProfileScreen: React.FC = () => {
               variant="secondary"
               style={styles.signInBtn}
               onPress={() => {
-                navigation.getParent()?.navigate('Auth', { screen: 'Login' });
+                navigation.getParent()?.navigate('Auth', { screen: 'Login', params: { fromApp: true } });
               }}
             />
 
@@ -149,7 +133,7 @@ export const ProfileScreen: React.FC = () => {
                   style={[styles.langOption, language === 'ka' && styles.langOptionActive]}
                   onPress={() => setLanguage('ka')}
                 >
-                  <Text style={[styles.langOptionText, language === 'ka' && styles.langOptionTextActive]}>KA</Text>
+                  <Text style={[styles.langOptionText, language === 'ka' && styles.langOptionTextActive]}>ქა</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -158,16 +142,27 @@ export const ProfileScreen: React.FC = () => {
 
         <View style={styles.contactSection}>
           <Text style={styles.contactTitle}>{t('profile.contactUs')}</Text>
-          <Text style={styles.contactText}>Phone/WhatsApp:
-            <Text style={styles.link} onPress={() => Linking.openURL('tel:+995599xxxxxx')}> +995 599 xxx xxx</Text>
-          </Text>
-          <Text style={styles.contactText}>Email:
-            <Text style={styles.link} onPress={() => Linking.openURL('mailto:kustbapadel@gmail.com')}> kustbapadel@gmail.com</Text>
-          </Text>
+          <View style={styles.contactRow}>
+            <Text style={styles.contactLabel}>Phone/WhatsApp:</Text>
+            <Text style={styles.linkText} onPress={() => Linking.openURL('tel:+995585889977')}>
+              +995 585 88 99 77
+            </Text>
+          </View>
+          <View style={styles.contactRow}>
+            <Text style={styles.contactLabel}>Email:</Text>
+            <Text style={styles.linkText} onPress={() => Linking.openURL('mailto:kustbapadel@gmail.com')}>
+              kustbapadel@gmail.com
+            </Text>
+          </View>
 
           <View style={styles.footer}>
-            <Text style={styles.footerText}>{t('profile.builtBy')}</Text>
-            <Text style={styles.footerLink} onPress={() => Linking.openURL('https://conceptdigital.com')}>Conceptdigital.com</Text>
+            <Text style={styles.footerText}>{t('profile.builtByPrefix')}</Text>
+            <Text style={styles.footerLine}>
+              <Text style={styles.footerLink} onPress={() => Linking.openURL('https://conceptdigital.com')}>
+                {t('profile.builtByLinkText')}
+              </Text>
+              <Text style={styles.footerText}>{t('profile.builtBySuffix')}</Text>
+            </Text>
           </View>
         </View>
       </ScreenWrapper>
@@ -179,16 +174,7 @@ export const ProfileScreen: React.FC = () => {
         initialValue={tempValue}
         onClose={() => setEditModalVisible(false)}
         onSave={handleSaveEdit}
-      />
-
-      <EditModal
-        visible={otpModalVisible}
-        title={getEditTitle()}
-        placeholder="XXXX"
-        mode="otp"
-        message={t('profile.otpMessage', { contact: editType === 'email' ? pendingEmail : pendingPhone })}
-        onClose={() => setOtpModalVisible(false)}
-        onSave={handleSaveOTP}
+        isSaving={isSaving}
       />
     </PageLayout>
   );
@@ -276,8 +262,25 @@ const styles = StyleSheet.create({
   },
   contactTitle: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily:typography.fontFamilyBold ,textAlign:"center"},
   contactText: { color: colors.white, fontSize: 16, lineHeight: 20,fontFamily:typography.fontFamily},
-  link: { textDecorationLine: 'underline', fontSize: 16, lineHeight: 20,fontFamily:typography.fontFamily },
+  contactRow: { flexDirection: 'row', alignItems: 'center' },
+  contactLabel: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamily, marginRight: 6 },
+  linkText: {
+    color: colors.white,
+    fontSize: 16,
+    lineHeight: 16,
+    fontFamily: typography.fontFamily,
+    textDecorationLine: 'underline',
+  },
+  
+  logoutLinkText: {
+    color: colors.white,
+    fontSize: 16,
+    lineHeight: 34,
+    fontFamily: typography.fontFamily,
+    textDecorationLine: 'underline',
+  },
   footer: { marginTop: 7, alignItems: 'center' },
+  footerLine: { fontSize: 14, lineHeight: 18, fontFamily: typography.fontFamily },
   footerText: { color: colors.white, fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
   footerLink: { color: colors.lightPurple, textDecorationLine: 'underline', fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
 });

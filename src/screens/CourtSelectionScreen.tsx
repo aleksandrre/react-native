@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Image } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, Modal, Image } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -7,10 +7,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { format } from 'date-fns';
 import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { useDateLocale } from '../hooks';
-import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector } from '../components';
+import { useDateLocale, useAvailableCourts } from '../hooks';
+import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector, Text } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
+import { useLanguageStore } from '../store/languageStore';
 
 type RouteParams = {
   CourtSelection: {
@@ -22,7 +23,11 @@ type RouteParams = {
 type CourtSelectionRouteProp = RouteProp<RouteParams, 'CourtSelection'>;
 
 interface CourtSelection {
-  [timeSlot: string]: string | null;
+  [timeSlot: string]: string[];
+}
+
+interface CourtIdSelection {
+  [timeSlot: string]: number[];
 }
 
 const getOrdinalSuffix = (day: number): string => {
@@ -35,9 +40,11 @@ const getOrdinalSuffix = (day: number): string => {
   }
 };
 
-const formatSelectedDate = (date: Date, locale: Locale): string => {
+const formatSelectedDate = (date: Date, locale: Locale, language: 'en' | 'ka'): string => {
   const day = date.getDate();
   const monthYear = format(date, 'MMM yyyy', { locale });
+  // Georgian dates typically do not use ordinal suffixes (st/nd/th).
+  if (language === 'ka') return `${day} ${monthYear}`;
   return `${day}${getOrdinalSuffix(day)} ${monthYear}`;
 };
 
@@ -48,36 +55,77 @@ export const CourtSelectionScreen: React.FC = () => {
   const route = useRoute<CourtSelectionRouteProp>();
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
+  const { language } = useLanguageStore();
 
   const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
   const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
 
   const [selectedCourts, setSelectedCourts] = useState<CourtSelection>({});
+  const [selectedCourtIds, setSelectedCourtIds] = useState<CourtIdSelection>({});
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
 
-  const handleCourtPress = (timeSlot: string, courtId: string) => {
+  const { courtsBySlot, isLoading: courtsLoading } = useAvailableCourts(selectedDate, selectedSlots);
+
+  const MAX_COURTS = 3;
+
+  const totalSelectedCourts = Object.values(selectedCourts).reduce(
+    (sum, courts) => sum + courts.length,
+    0
+  );
+
+  const handleCourtPress = (timeSlot: string, courtId: number, courtTitle: string) => {
+    const currentForSlot = selectedCourts[timeSlot] ?? [];
+    const isAlreadySelected = currentForSlot.includes(courtTitle);
+
+    if (!isAlreadySelected && totalSelectedCourts >= MAX_COURTS) return;
+
     setSelectedCourts((prev) => {
-      const currentSelection = prev[timeSlot];
-      if (currentSelection === courtId) {
-        const { [timeSlot]: _, ...rest } = prev;
-        return rest;
+      const current = prev[timeSlot] ?? [];
+      if (isAlreadySelected) {
+        const updated = current.filter((c) => c !== courtTitle);
+        if (updated.length === 0) {
+          const { [timeSlot]: _, ...rest } = prev;
+          return rest;
+        }
+        return { ...prev, [timeSlot]: updated };
       }
-      return { ...prev, [timeSlot]: courtId };
+      return { ...prev, [timeSlot]: [...current, courtTitle] };
+    });
+
+    setSelectedCourtIds((prev) => {
+      const current = prev[timeSlot] ?? [];
+      if (isAlreadySelected) {
+        const updated = current.filter((id) => id !== courtId);
+        if (updated.length === 0) {
+          const { [timeSlot]: _, ...rest } = prev;
+          return rest;
+        }
+        return { ...prev, [timeSlot]: updated };
+      }
+      return { ...prev, [timeSlot]: [...current, courtId] };
     });
   };
 
   const handleContinue = () => {
-    const allSelected = selectedSlots.every((slot) => selectedCourts[slot]);
-    if (!allSelected) return;
+    if (totalSelectedCourts === 0) return;
+
+    const courtPriceMap: { [courtId: number]: number } = {};
+    Object.values(courtsBySlot).forEach((courts) => {
+      courts.forEach((court) => {
+        courtPriceMap[court.id] = parseFloat(court.price) || 0;
+      });
+    });
 
     navigation.navigate('Summary', {
-      selectedDate,
+      selectedDate: selectedDate.toISOString(),
       selectedSlots,
       selectedCourts,
+      selectedCourtIds,
+      courtPriceMap,
     });
   };
 
-  const allSelected = selectedSlots.every((slot) => selectedCourts[slot]);
+  const allSelected = totalSelectedCourts > 0;
 
   return (
     <PageLayout>
@@ -90,22 +138,30 @@ export const CourtSelectionScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.warningContainer}>
-          <Ionicons name="warning" size={12} color="#FFC107" style={styles.warningIcon} />
-          <Text style={styles.warningText}>
-            <Text style={styles.warningBold}>{t('courtSelection.warningBold')}</Text>
-            {t('courtSelection.warningText')}
-          </Text>
-        </View>
+        {totalSelectedCourts >= MAX_COURTS && (
+          <View style={styles.warningContainer}>
+            <Ionicons name="warning" size={12} color="#FFC107" style={styles.warningIcon} />
+            <Text style={styles.warningText}>
+              <Text style={styles.warningBold}>{t('courtSelection.warningBold')}</Text>
+              {t('courtSelection.warningText')}
+            </Text>
+          </View>
+        )}
 
         <Text style={styles.selectedDate}>
-          {t('courtSelection.selectedDate')} <Text style={styles.selectedDateValue}>{formatSelectedDate(selectedDate, dateLocale)}</Text>
+          {t('courtSelection.selectedDate')}{" "}
+          <Text style={styles.selectedDateValue}>
+            {formatSelectedDate(selectedDate, dateLocale, language)}
+          </Text>
         </Text>
 
         <CourtSelector
           selectedSlots={selectedSlots}
           selectedCourts={selectedCourts}
           onCourtSelect={handleCourtPress}
+          courtsBySlot={courtsBySlot}
+          isLoading={courtsLoading}
+          maxReached={totalSelectedCourts >= MAX_COURTS}
         />
 
         <View style={styles.buttonContainer}>

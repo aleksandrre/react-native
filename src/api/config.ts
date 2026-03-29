@@ -1,45 +1,47 @@
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
 
-const BASE_URL = 'https://api.example.com'; // შეცვალე შენი API URL-ით
+export const API_BASE_URL = 'https://kustbapadel.ge/wp-json/turtle-booking/v1';
 
-// publicApi: Login, Register და საჯარო მონაცემებისთვის
+let _token: string | null = null;
+let _onUnauthorized: (() => void) | null = null;
+
+export const setAuthToken = (token: string | null) => {
+  _token = token;
+};
+
+export const setOnUnauthorized = (cb: () => void) => {
+  _onUnauthorized = cb;
+};
+
 export const publicApi = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// privateApi: პროფილი, კალათა და სხვა დაცული რესურსებისთვის
 export const privateApi = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// ავტომატურად დაამატებს ტოკენს privateApi-ს რექვესტებს
 privateApi.interceptors.request.use(
-  async (config) => {
-    const token = await SecureStore.getItemAsync('auth_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  (config) => {
+    if (_token) {
+      config.headers.Authorization = `Bearer ${_token}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// რესფონსის ინტერსეპტორი - 401 შეცდომის შემთხვევაში
 privateApi.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  (error) => {
     if (error.response?.status === 401) {
-      // ტოკენი არავალიდურია, წაშალეთ
-      await SecureStore.deleteItemAsync('auth_token');
+      _onUnauthorized?.();
     }
     return Promise.reject(error);
   }

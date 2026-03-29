@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, ImageBackground, View } from 'react-native';
+import { StyleSheet, ImageBackground, View } from 'react-native';
+import { Text } from './Text';
 import { colors, typography } from '../../theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 interface ImageHeaderProps {
