@@ -206,7 +206,12 @@ export const RegisterScreen: React.FC = () => {
                 </Text>
               }
             />
-            {!!termsError && <Text style={styles.termsErrorText}>⚠ {termsError}</Text>}
+            {!!termsError && (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorIcon}>⚠</Text>
+                <Text style={styles.errorText}>{termsError}</Text>
+              </View>
+            )}
           </View>
 
           {!!apiError && <Text style={styles.apiError}>⚠ {apiError}</Text>}
@@ -252,7 +257,7 @@ const styles = StyleSheet.create({
   },
   termsContainer: {
     paddingLeft: 9,
-    marginTop:20,
+    marginTop:10,
     marginBottom:30,
     display: 'flex',
     justifyContent: 'center',
@@ -269,13 +274,21 @@ const styles = StyleSheet.create({
     color: colors.lightPurple,
     fontFamily: typography.fontFamily,
   },
-  termsErrorText: {
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 3,
+  },
+  errorIcon: {
+    color: '#FFD700',
+    fontSize: 14,
+    marginRight: 4,
+  },
+  errorText: {
     color: colors.lightPurple,
     fontSize: 12,
     lineHeight: 15,
     fontFamily: typography.fontFamily,
-    marginTop: 6,
-    paddingLeft: 9,
   },
   apiError: {
     color: colors.lightPurple,
