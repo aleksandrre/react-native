@@ -310,6 +310,7 @@ const styles = StyleSheet.create({
     borderColor: '#414141',
   },
   dateCircleSelected: {
+    borderRadius: 20,
     backgroundColor: colors.primary,
     borderWidth: 0,
   },
