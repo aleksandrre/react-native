@@ -78,13 +78,13 @@ export const LoginScreen: React.FC = () => {
               isLoading={loginMutation.isPending}
               style={styles.loginButton}
             />
-
             <CustomButton
               title={t('login.signUp')}
               onPress={() => navigation.navigate('Register', { fromApp })}
               variant="secondary"
               style={styles.signUpButton}
             />
+
           </View>
         </ScrollView>
       </ScreenWrapper>
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamilyBold,
   },
   buttonsContainer: {
-    paddingBottom: 20,
+    paddingBottom: 40,
   },
   apiError: {
     color: colors.lightPurple,
