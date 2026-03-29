@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, ScrollView, Linking } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
@@ -42,6 +43,7 @@ export const RegisterScreen: React.FC = () => {
   const [apiError, setApiError] = useState('');
   const registerMutation = useRegister();
   const { getApiError } = useApiError();
+  const insets = useSafeAreaInsets();
 
   const [usernameError, setUsernameError] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -138,7 +140,7 @@ export const RegisterScreen: React.FC = () => {
         variant={fromApp ? 'left' : 'right'}
       />
       <ScreenWrapper>
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           <Text style={styles.title}>{t('register.title')}</Text>
 
           <LabeledInputField
@@ -208,7 +210,9 @@ export const RegisterScreen: React.FC = () => {
           </View>
 
           {!!apiError && <Text style={styles.apiError}>⚠ {apiError}</Text>}
+        </ScrollView>
 
+        <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>
           <CustomButton
             title={t('register.signUpButton')}
             onPress={handleRegister}
@@ -221,7 +225,7 @@ export const RegisterScreen: React.FC = () => {
               <Text style={styles.footerLink}>{t('register.logInHere')}</Text>
             </Text>
           </TouchableOpacity>
-        </ScrollView>
+        </View>
       </ScreenWrapper>
     </PageLayout>
   );
@@ -230,6 +234,13 @@ export const RegisterScreen: React.FC = () => {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
+  },
+  scrollContent: {
+  },
+  footer: {
+    backgroundColor: colors.dark,
+    paddingTop: 8,
+    paddingHorizontal: 10,
   },
   title: {
     fontSize: 18,
