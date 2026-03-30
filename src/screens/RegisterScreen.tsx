@@ -194,15 +194,18 @@ export const RegisterScreen: React.FC = () => {
               checked={agreedToTerms}
               onToggle={() => { setAgreedToTerms(!agreedToTerms); if (termsError) setTermsError(''); }}
               label={
-                <Text style={styles.termsText}>
+                <Text style={styles.termsText} >
                   {t('register.agreeTermsPrefix')}
-                  <Text style={styles.linkText} onPress={openTerms}>
-                    {t('register.terms')}
+                  <Text onPress={openTerms}>
+                    <Text style={styles.linkText}>
+                      {t('register.terms')}
+                    </Text>
+                    {t('register.andSeparator')}
+                    <Text style={styles.linkText}>
+                      {t('register.privacyPolicy')}
+                    </Text>
                   </Text>
-                  {t('register.andSeparator')}
-                  <Text style={styles.linkText} onPress={openTerms}>
-                    {t('register.privacyPolicy')}
-                  </Text>
+
                 </Text>
               }
             />
@@ -257,15 +260,15 @@ const styles = StyleSheet.create({
   },
   termsContainer: {
     paddingLeft: 9,
-    marginTop:10,
-    marginBottom:30,
+    marginTop: 10,
+    marginBottom: 30,
     display: 'flex',
     justifyContent: 'center',
   },
   termsText: {
     color: colors.white,
     fontSize: 12,
-    lineHeight:15,
+    lineHeight: 15,
     flex: 1,
     flexWrap: 'wrap',
     fontFamily: typography.fontFamily,
@@ -285,7 +288,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   errorText: {
-    color: colors.lightPurple,
+    color: "red",
     fontSize: 12,
     lineHeight: 15,
     fontFamily: typography.fontFamily,
@@ -298,14 +301,14 @@ const styles = StyleSheet.create({
     paddingLeft: 9,
     marginBottom: 8,
   },
-  
+
   linkContainer: {
   },
   footerText: {
     color: colors.white,
     fontSize: 14,
-    lineHeight:18,
-    marginTop:15,
+    lineHeight: 18,
+    marginTop: 15,
     fontFamily: typography.fontFamily,
   },
   footerLink: {
