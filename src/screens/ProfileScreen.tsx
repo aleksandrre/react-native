@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, StyleSheet, TouchableOpacity, Linking, Image, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal, Text } from '../components';
@@ -14,7 +15,7 @@ export const ProfileScreen: React.FC = () => {
   const { t } = useTranslation();
   const { language, setLanguage } = useLanguageStore();
 
-  const { isAuthenticated, user, logout } = useAuthStore();
+  const { isAuthenticated, user, logout, refreshCredits } = useAuthStore();
   const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile();
 
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -22,6 +23,13 @@ export const ProfileScreen: React.FC = () => {
   const [tempValue, setTempValue] = useState('');
 
   const navigation = useNavigation<any>();
+  useFocusEffect(
+    useCallback(() => {
+      if (isAuthenticated) {
+        refreshCredits();
+      }
+    }, [isAuthenticated, refreshCredits])
+  );
 
   const handleEdit = (type: 'name' | 'email' | 'phone') => {
     setEditType(type);
@@ -93,7 +101,7 @@ export const ProfileScreen: React.FC = () => {
             </View>
             <Text style={styles.infoText}>{t('profile.credits')} <Text style={styles.infoValue}>{user?.credits ?? 0}</Text></Text>
 
-            <TouchableOpacity  onPress={handleLogout}>
+            <TouchableOpacity onPress={handleLogout}>
               <Text style={styles.logoutLinkText}>{t('profile.logOut')}</Text>
             </TouchableOpacity>
           </View>
@@ -188,14 +196,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 18,
     color: colors.white,
-    fontFamily:typography.fontFamilyBold,
+    fontFamily: typography.fontFamilyBold,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 18,
     lineHeight: 23,
     color: colors.white,
-    fontFamily:typography.fontFamily,
+    fontFamily: typography.fontFamily,
   },
   infoRow: {
     flexDirection: 'row',
@@ -206,10 +214,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 34,
     color: colors.white,
-    fontFamily:typography.fontFamily
+    fontFamily: typography.fontFamily
   },
   infoValue: {
-    fontFamily:typography.fontFamilyBold
+    fontFamily: typography.fontFamilyBold
   },
   editButton: {
     height: 34,
@@ -253,15 +261,15 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginBottom: 8,
   },
-  signInBtn:{
-    marginBottom:12
+  signInBtn: {
+    marginBottom: 12
   },
   contactSection: {
     gap: 20,
     marginTop: 12
   },
-  contactTitle: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily:typography.fontFamilyBold ,textAlign:"center"},
-  contactText: { color: colors.white, fontSize: 16, lineHeight: 20,fontFamily:typography.fontFamily},
+  contactTitle: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamilyBold, textAlign: "center" },
+  contactText: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamily },
   contactRow: { flexDirection: 'row', alignItems: 'center' },
   contactLabel: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamily, marginRight: 6 },
   linkText: {
@@ -271,7 +279,7 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily,
     textDecorationLine: 'underline',
   },
-  
+
   logoutLinkText: {
     color: colors.white,
     fontSize: 16,
@@ -281,6 +289,6 @@ const styles = StyleSheet.create({
   },
   footer: { marginTop: 7, alignItems: 'center' },
   footerLine: { fontSize: 14, lineHeight: 18, fontFamily: typography.fontFamily },
-  footerText: { color: colors.white, fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
-  footerLink: { color: colors.lightPurple, textDecorationLine: 'underline', fontSize: 14, lineHeight: 18,fontFamily:typography.fontFamily },
+  footerText: { color: colors.white, fontSize: 14, lineHeight: 18, fontFamily: typography.fontFamily },
+  footerLink: { color: colors.lightPurple, textDecorationLine: 'underline', fontSize: 14, lineHeight: 18, fontFamily: typography.fontFamily },
 });
