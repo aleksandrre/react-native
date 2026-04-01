@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, ScrollView, Alert, Linking } from 'react-native';
-import { useNavigation, useRoute, RouteProp, NavigationProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, NavigationProp,useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useCreateBooking, useInitiatePayment, useReservationTimer, useValidateCoupon } from '../hooks';
 import { PageLayout, ScreenWrapper, Header, CustomButton, CourtCardList, ReservationTimer, Text } from '../components';
@@ -58,6 +58,14 @@ export const SummaryScreen: React.FC = () => {
         .reduce((sum, courtId) => sum + (courtPriceMap[courtId] ?? 0), 0);
 
     const { isAuthenticated, user, refreshCredits } = useAuthStore();
+
+    useFocusEffect(
+        useCallback(() => {
+            if (isAuthenticated) {
+                refreshCredits();
+            }
+        }, [isAuthenticated, refreshCredits])
+    );
     const userCredits = user?.credits ?? 0;
     const { mutate: createBookings, isPending: isCreatingBooking } = useCreateBooking();
     const { mutate: initiatePayment, isPending: isInitiatingPayment } = useInitiatePayment();
