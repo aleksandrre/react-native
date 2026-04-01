@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// export const API_BASE_URL = 'https://kustbapadel.ge/wp-json/turtle-booking/v1';
-export const API_BASE_URL = 'http://192.168.0.101:10004/wp-json/turtle-booking/v1';
+export const API_BASE_URL = 'https://kustbapadel.ge/wp-json/turtle-booking/v1';
 
 let _token: string | null = null;
 let _onUnauthorized: (() => void) | null = null;
