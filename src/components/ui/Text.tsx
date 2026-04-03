@@ -20,6 +20,5 @@ export const Text: React.FC<TextProps> = ({
     weight === 'bold' ? typo.fontFamilyBold :
     typo.fontFamily;
 
-  // fontFamily is LAST so it always overrides any fontFamily in style prop
-  return <RNText style={[style, { fontFamily }]} {...props} />;
+  return <RNText style={[{ fontFamily }, style]} {...props} />;
 };
