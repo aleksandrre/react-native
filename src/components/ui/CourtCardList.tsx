@@ -38,7 +38,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
     color: colors.white,
     marginBottom: 10,
     fontFamily: typography.fontFamilyBold,
