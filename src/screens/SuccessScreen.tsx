@@ -45,9 +45,9 @@ export const SuccessScreen: React.FC = () => {
         });
     };
 
-    const handleAddToCalendar = () => {
-        console.log('Add to calendar');
-    };
+    // const handleAddToCalendar = () => {
+    //     console.log('Add to calendar');
+    // };
 
     const handleViewMyBookings = () => {
         const parentNav = navigation.getParent();
@@ -102,11 +102,11 @@ export const SuccessScreen: React.FC = () => {
                 <View style={styles.buttonContainer}>
                     {isSingleBooking ? (
                         <>
-                            <CustomButton
+                            {/* <CustomButton
                                 title={t('success.addToCalendar')}
                                 onPress={handleAddToCalendar}
                                 variant="secondary"
-                            />
+                            /> */}
                             <CustomButton
                                 title={t('success.viewMyBookings')}
                                 onPress={handleViewMyBookings}

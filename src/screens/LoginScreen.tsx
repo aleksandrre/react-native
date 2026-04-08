@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   apiError: {
-    color: colors.lightPurple,
+    color: colors.error,
     fontSize: 12,
     lineHeight: 15,
     fontFamily: typography.fontFamily,

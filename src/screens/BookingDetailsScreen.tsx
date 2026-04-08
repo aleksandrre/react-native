@@ -42,9 +42,9 @@ export const BookingDetailsScreen: React.FC = () => {
         ? t('bookingDetails.bookingWas')
         : t('bookingDetails.bookingConfirmed');
 
-    const handleAddToCalendar = () => {
-        console.log('Add to calendar');
-    };
+    // const handleAddToCalendar = () => {
+    //     console.log('Add to calendar');
+    // };
 
     const handleMakeNewBooking = () => {
         navigation.navigate('Book' as never);
@@ -127,12 +127,12 @@ export const BookingDetailsScreen: React.FC = () => {
                         />
                     ) : (
                         <>
-                            <CustomButton
+                            {/* <CustomButton
                                 style={{ marginBottom: 10 }}
                                 title={t('bookingDetails.addToCalendar')}
                                 onPress={handleAddToCalendar}
                                 variant="primary"
-                            />
+                            /> */}
                             <CustomButton
                                 style={{ marginBottom: 10 }}
                                 title={t('bookingDetails.makeNewBooking')}

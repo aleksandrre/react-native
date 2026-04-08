@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 16,
         fontFamily: typography.fontFamily,
-        color: '#FF4444',
+        color: colors.error,
         marginTop: -4,
         marginBottom: 8,
     },
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
     couponErrorText: {
         fontSize: 13,
         fontFamily: typography.fontFamily,
-        color: '#FF4444',
+        color: colors.error,
         marginTop: 6,
     },
     originalPriceText: {

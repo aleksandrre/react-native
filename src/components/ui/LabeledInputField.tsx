@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   errorText: {
-    color: colors.lightPurple,
+    color: colors.error,
     fontSize: 12,
     lineHeight: 15,
     fontFamily: typography.fontFamily,
