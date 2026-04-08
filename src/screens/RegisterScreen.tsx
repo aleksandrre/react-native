@@ -197,10 +197,7 @@ export const RegisterScreen: React.FC = () => {
                 <Text style={styles.termsText} >
                   {t('register.agreeTermsPrefix')}
                   <Text onPress={openTerms}>
-                    <Text style={styles.linkText}>
-                      {t('register.terms')}
-                    </Text>
-                    {t('register.andSeparator')}
+                    
                     <Text style={styles.linkText}>
                       {t('register.privacyPolicy')}
                     </Text>
