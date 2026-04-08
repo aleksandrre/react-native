@@ -1,8 +1,8 @@
-/** Display name: Latin letters, spaces, hyphen, apostrophe — no Georgian or other scripts. */
+/** Display name: ASCII Latin letters + digits only. */
 export const isValidLatinDisplayName = (name: string): boolean => {
   const s = name.trim();
   if (s.length === 0) return false;
-  return /^[a-zA-Z\s'-]+$/.test(s) && /[a-zA-Z]/.test(s);
+  return /^[a-zA-Z0-9]+$/.test(s);
 };
 
 /** Local part + domain in ASCII (Latin letters, digits, common email symbols only). */
