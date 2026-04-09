@@ -71,7 +71,6 @@ const styles = StyleSheet.create({
   courtLabel: {
     color: colors.white,
     fontSize: 13,
-    lineHeight: 13,
     fontFamily: typography.fontFamily,
   },
   courtNumber: {

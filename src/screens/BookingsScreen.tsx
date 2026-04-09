@@ -113,8 +113,7 @@ export const BookingsScreen: React.FC = () => {
 
               {pastBookings.length > 0 && (
                 <>
-                  <Text style={styles.sectionTitle}>{t('bookings.past')}</Text>
-                  <CourtCardList title="" bookings={pastBookings} onBookingPress={handlePastBookingPress} />
+                  <CourtCardList title={t('bookings.past')} bookings={pastBookings} onBookingPress={handlePastBookingPress}  />
                 </>
               )}
             </>
@@ -139,7 +138,6 @@ const styles = StyleSheet.create({
     lineHeight: 23,
     fontFamily: typography.fontFamilySemiBold,
     color: colors.white,
-    marginBottom: 10,
   },
   emptyContainer: {
   },
