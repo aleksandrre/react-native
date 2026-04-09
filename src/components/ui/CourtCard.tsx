@@ -71,12 +71,15 @@ const styles = StyleSheet.create({
   courtLabel: {
     color: colors.white,
     fontSize: 13,
+    
     fontFamily: typography.fontFamily,
   },
   courtNumber: {
     color: colors.white,
     fontSize: 40,
     lineHeight:40,
+    marginTop: 2,
+    marginBottom: -2,
     fontFamily: typography.fontFamilyBold,
   },
   dateTimeSection: {
