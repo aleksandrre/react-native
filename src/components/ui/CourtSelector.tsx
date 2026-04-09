@@ -46,8 +46,9 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
                         </View>
 
                         {courts.map((court) => {
-                            const isSelected = (selectedCourts[timeSlot] ?? []).includes(court.court_number);
-                            const isDisabled = maxReached && !isSelected;
+                            const isInactive = court.status === 'inactive';
+                            const isSelected = !isInactive && (selectedCourts[timeSlot] ?? []).includes(court.court_number);
+                            const isDisabled = isInactive || (maxReached && !isSelected);
                             const courtLabel = `${t('courtCard.court')} ${court.court_number}`;
 
                             return (
@@ -56,7 +57,8 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
                                     style={[
                                         styles.courtButton,
                                         isSelected && styles.courtButtonSelected,
-                                        isDisabled && styles.courtButtonDisabled,
+                                        isInactive && styles.courtButtonInactive,
+                                        !isInactive && isDisabled && styles.courtButtonDisabled,
                                     ]}
                                     onPress={() => !isDisabled && onCourtSelect(timeSlot, court.id, court.court_number)}
                                     activeOpacity={isDisabled ? 1 : 0.7}
@@ -65,7 +67,8 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
                                         style={[
                                             styles.courtText,
                                             isSelected && styles.courtTextSelected,
-                                            isDisabled && styles.courtTextDisabled,
+                                            isInactive && styles.courtTextInactive,
+                                            !isInactive && isDisabled && styles.courtTextDisabled,
                                         ]}
                                     >
                                         {courtLabel}
@@ -121,6 +124,9 @@ const styles = StyleSheet.create({
     courtButtonDisabled: {
         opacity: 0.3,
     },
+    courtButtonInactive: {
+        opacity: 1,
+    },
     courtText: {
         fontSize: 14,
         lineHeight: 18,
@@ -132,5 +138,9 @@ const styles = StyleSheet.create({
     },
     courtTextDisabled: {
         color: colors.lightGray,
+    },
+    courtTextInactive: {
+        color: colors.gray,
+        textDecorationLine: 'line-through',
     },
 });

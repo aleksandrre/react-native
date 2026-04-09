@@ -2,6 +2,8 @@ export interface Court {
   id: number;
   court_number: string;
   price: string;
+  status?: 'active' | 'inactive';
+  reason?: string;
 }
 
 export interface Booking {
