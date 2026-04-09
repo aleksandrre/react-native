@@ -1,6 +1,7 @@
 import { publicApi, privateApi } from './config';
 import {
   Court,
+  TimeSlot,
   CreateBookingRequest,
   CreateBookingResponse,
   InitiatePaymentRequest,
@@ -13,11 +14,11 @@ import {
 } from '../types';
 
 export const bookingApi = {
-  getAvailableSlots: async (date: string): Promise<string[]> => {
-    const response = await publicApi.get<string[]>('/available-slots', {
+  getAvailableSlots: async (date: string): Promise<TimeSlot[]> => {
+    const response = await publicApi.get<TimeSlot[]>('/available-slots', {
       params: { date },
     });
-    return response.data;
+    return response.data ?? [];
   },
 
   getAvailableCourts: async (date: string, time: string): Promise<Court[]> => {

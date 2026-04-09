@@ -1,3 +1,8 @@
+export interface TimeSlot {
+  time: string;
+  status: 'available' | 'full' | 'inactive';
+}
+
 export interface Court {
   id: number;
   court_number: string;

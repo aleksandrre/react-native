@@ -68,7 +68,12 @@ export const LoginScreen: React.FC = () => {
               secureTextEntry
               error={passwordError}
             />
-            {!!apiError && <Text style={styles.apiError}>⚠ {apiError}</Text>}
+            {!!apiError && (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorIcon}>⚠</Text>
+                <Text style={styles.apiErrorText}>{apiError}</Text>
+              </View>
+            )}
           </View>
 
           <View style={styles.buttonsContainer}>
@@ -115,12 +120,32 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   apiError: {
+    // deprecated (kept for safety) — use apiErrorText inside errorContainer
     color: colors.error,
     fontSize: 12,
     lineHeight: 15,
     fontFamily: typography.fontFamily,
     paddingLeft: 9,
     marginBottom: 8,
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: 9,
+    marginBottom: 8,
+    marginTop: 3,
+  },
+  errorIcon: {
+    color: '#FFD700',
+    fontSize: 14,
+    marginRight: 4,
+  },
+  apiErrorText: {
+    color: colors.error,
+    fontSize: 12,
+    lineHeight: 15,
+    fontFamily: typography.fontFamily,
+    flex: 1,
   },
   loginButton: {
     marginBottom: 10,

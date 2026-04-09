@@ -214,7 +214,12 @@ export const RegisterScreen: React.FC = () => {
             )}
           </View>
 
-          {!!apiError && <Text style={styles.apiError}>⚠ {apiError}</Text>}
+          {!!apiError && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorIcon}>⚠</Text>
+              <Text style={styles.apiError}>{apiError}</Text>
+            </View>
+          )}
         </ScrollView>
 
         <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 16) }]}>

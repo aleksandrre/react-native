@@ -32,7 +32,9 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
     onSlotsSelect?.([]);
   }, [selectedDate]);
 
-  const handleSlotPress = (time: string) => {
+  const handleSlotPress = (time: string, status: string) => {
+    if (status !== 'available') return;
+
     let newSelection: string[];
 
     if (selectedSlots.includes(time)) {
@@ -75,21 +77,27 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
           contentContainerStyle={styles.scrollContent}
         >
           <View style={styles.slotsGrid}>
-            {(availableTimes ?? []).map((time) => {
-              const isSelected = selectedSlots.includes(time);
+            {(availableTimes ?? []).map((slot) => {
+              const isUnavailable = slot.status !== 'available';
+              const isSelected = !isUnavailable && selectedSlots.includes(slot.time);
 
               return (
-                <View key={time} style={styles.slotButton}>
+                <View key={slot.time} style={styles.slotButton}>
                   <TouchableOpacity
                     style={[
                       styles.slotButtonInner,
                       isSelected && styles.slotButtonInnerSelected,
+                      isUnavailable && styles.slotButtonInnerUnavailable,
                     ]}
-                    onPress={() => handleSlotPress(time)}
-                    activeOpacity={0.7}
+                    onPress={() => handleSlotPress(slot.time, slot.status)}
+                    activeOpacity={isUnavailable ? 1 : 0.7}
                   >
-                    <Text style={[styles.slotText, isSelected && styles.slotTextSelected]}>
-                      {time}
+                    <Text style={[
+                      styles.slotText,
+                      isSelected && styles.slotTextSelected,
+                      isUnavailable && styles.slotTextUnavailable,
+                    ]}>
+                      {slot.time}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -176,5 +184,12 @@ const styles = StyleSheet.create({
   },
   slotTextSelected: {
     fontFamily: typography.fontFamilySemiBold,
+  },
+  slotButtonInnerUnavailable: {
+    opacity: 1,
+  },
+  slotTextUnavailable: {
+    color: colors.gray,
+    textDecorationLine: 'line-through',
   },
 });
