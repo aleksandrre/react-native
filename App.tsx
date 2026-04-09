@@ -1,7 +1,7 @@
 import './src/i18n';
 import React, { useEffect } from 'react';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
@@ -19,6 +19,8 @@ import { colors } from './src/theme';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
 const queryClient = new QueryClient();
 const Stack = createNativeStackNavigator();
 
@@ -27,47 +29,37 @@ function AppContent() {
   const { initLanguage } = useLanguageStore();
 
   useEffect(() => {
-    // პარალელურად ვიტვირთავთ token+user და language
     Promise.all([checkAuth(), initLanguage()]);
   }, []);
+
+  useEffect(() => {
+    if (!isLoading) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [isLoading]);
 
   if (isLoading) {
     return null;
   }
 
   return (
-    // <NavigationContainer>
-    //   <Stack.Navigator screenOptions={{ headerShown: false }}>
-    //     {/* ავტორიზაციის გვერდები */}
-    //     {!isAuthenticated && (
-    //       <Stack.Screen name="Auth" component={AuthNavigator} />
-    //     )}
-
-    //     {/* მთავარი აპლიკაცია */}
-    //     <Stack.Screen name="Main" component={MainNavigator} />
-    //   </Stack.Navigator>
-    // </NavigationContainer>
-    
-      <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {isAuthenticated ? (
-            // თუ შესულია - მხოლოდ მთავარი აპლიკაცია
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {isAuthenticated ? (
+          <Stack.Screen name="Main" component={MainNavigator} />
+        ) : (
+          <>
+            <Stack.Screen name="Auth" component={AuthNavigator} />
             <Stack.Screen name="Main" component={MainNavigator} />
-          ) : (
-            // თუ არ არის შესული - ჯერ ავტორიზაცია, მერე მთავარი (სტუმრისთვის)
-            <>
-              <Stack.Screen name="Auth" component={AuthNavigator} />
-              <Stack.Screen name="Main" component={MainNavigator} />
-            </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     SpaceGrotesk_300Light,
     SpaceGrotesk_400Regular,
     SpaceGrotesk_500Medium,
@@ -80,12 +72,8 @@ export default function App() {
     FiraGO_700Bold: require('./assets/fonts/FiraGO-Bold.ttf'),
   });
 
-  if (!fontsLoaded) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
+  if (!fontsLoaded && !fontError) {
+    return null;
   }
 
   return (
@@ -97,12 +85,3 @@ export default function App() {
     </QueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-  },
-});
