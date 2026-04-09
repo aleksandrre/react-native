@@ -21,7 +21,7 @@
       "versionCode": 10,
       "adaptiveIcon": {
         "foregroundImage": "./assets/playstore.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#60235A"
       },
       "edgeToEdgeEnabled": false,
       "package": "ge.kustbapadel.app"
