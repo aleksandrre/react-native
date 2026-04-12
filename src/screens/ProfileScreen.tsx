@@ -168,7 +168,7 @@ export const ProfileScreen: React.FC = () => {
           <View style={styles.footer}>
             <Text style={styles.footerText}>{t('profile.builtByPrefix')}</Text>
             <Text style={styles.footerLine}>
-              <Text style={styles.footerLink} onPress={() => Linking.openURL('https://conceptdigital.com')}>
+              <Text style={styles.footerLink} onPress={() => Linking.openURL('https://conceptdigital.com?utm_source=client&utm_medium=app&utm_campaign=kustbapadel')}>
                 {t('profile.builtByLinkText')}
               </Text>
               <Text style={styles.footerText}>{t('profile.builtBySuffix')}</Text>

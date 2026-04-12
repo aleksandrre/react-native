@@ -95,7 +95,7 @@ const en = {
     title: 'Summary',
     reservationTimer: '⏱️ Your Sessions Are Reserved For {{time}}',
     reservationExpired: '⏱️ Time Expired — Please Re-select Your Sessions.',
-    applyCode: 'Apply Code',
+    applyCode: 'Promo code',
     enterHere: 'Enter Here',
     apply: 'Apply',
     couponApplied: 'Coupon applied!',
