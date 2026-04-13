@@ -33,6 +33,13 @@ export const RegisterScreen: React.FC = () => {
       : 'https://kustbapadel.ge/en/terms-and-conditions/';
     Linking.openURL(url);
   };
+
+  const openPrivacyPolicy = () => {
+    const url = language === 'ka'
+      ? 'https://kustbapadel.ge/konfidencialobis-politika/'
+      : 'https://kustbapadel.ge/en/privacy-policy/';
+    Linking.openURL(url);
+  };
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -194,15 +201,15 @@ export const RegisterScreen: React.FC = () => {
               checked={agreedToTerms}
               onToggle={() => { setAgreedToTerms(!agreedToTerms); if (termsError) setTermsError(''); }}
               label={
-                <Text style={styles.termsText} >
+                <Text style={styles.termsText}>
                   {t('register.agreeTermsPrefix')}
-                  <Text onPress={openTerms}>
-                    
-                    <Text style={styles.linkText}>
-                      {t('register.privacyPolicy')}
-                    </Text>
+                  <Text style={styles.linkText} onPress={openTerms}>
+                    {t('register.terms')}
                   </Text>
-
+                  {t('register.agreeTermsAnd')}
+                  <Text style={styles.linkText} onPress={openPrivacyPolicy}>
+                    {t('register.privacyPolicy')}
+                  </Text>
                 </Text>
               }
             />
