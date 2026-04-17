@@ -18,6 +18,10 @@ export const authApi = {
     return response.data;
   },
 
+  deleteProfile: async (): Promise<void> => {
+    await privateApi.delete('/user/profile');
+  },
+
   getCredits: async (): Promise<number> => {
     const response = await privateApi.get<{ credits: number }>('/credits');
     return response.data.credits;

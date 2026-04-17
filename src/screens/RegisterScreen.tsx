@@ -117,8 +117,7 @@ export const RegisterScreen: React.FC = () => {
     else if (!isValidEmail(email)) { setEmailError(t('register.emailError')); hasError = true; }
     else { setEmailError(''); }
 
-    if (!phone) { setPhoneError(t('common.required')); hasError = true; }
-    else if (!isValidPhone(phone)) { setPhoneError(t('register.phoneError')); hasError = true; }
+    if (phone.length > 0 && !isValidPhone(phone)) { setPhoneError(t('register.phoneError')); hasError = true; }
     else { setPhoneError(''); }
 
     if (!password) { setPasswordError(t('common.required')); hasError = true; }

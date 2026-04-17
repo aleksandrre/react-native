@@ -14,4 +14,4 @@ export * from './useReservationTimer';
 export * from './useCancelBooking';
 export * from './useRescheduleBooking';
 export * from './useUpdateProfile';
-
+export * from './useDeleteProfile';

@@ -3,7 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { View, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { useTranslation } from 'react-i18next';
-import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal, Text } from '../components';
+import { ImageHeader, PageLayout, ScreenWrapper, CustomButton, EditModal, InfoModal, Text } from '../components';
 import { colors, typography } from '../theme';
 import profile from '../../assets/profile.png';
 
@@ -11,7 +11,7 @@ const pencilXml = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" x
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '../store/authStore';
 import { useLanguageStore } from '../store/languageStore';
-import { useUpdateProfile } from '../hooks';
+import { useUpdateProfile, useDeleteProfile } from '../hooks';
 
 export const ProfileScreen: React.FC = () => {
   const { t } = useTranslation();
@@ -19,8 +19,10 @@ export const ProfileScreen: React.FC = () => {
 
   const { isAuthenticated, user, logout, refreshCredits } = useAuthStore();
   const { mutate: updateProfile, isPending: isSaving } = useUpdateProfile();
+  const { mutate: deleteProfile, isPending: isDeleting } = useDeleteProfile();
 
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [editType, setEditType] = useState<'name' | 'email' | 'phone'>('name');
   const [tempValue, setTempValue] = useState('');
 
@@ -56,6 +58,13 @@ export const ProfileScreen: React.FC = () => {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const handleDeleteAccount = () => {
+    deleteProfile(undefined, {
+      onError: () => Alert.alert(t('common.error'), t('profile.deleteAccountError')),
+    });
+    setDeleteModalVisible(false);
   };
 
   const getEditTitle = () => {
@@ -105,6 +114,9 @@ export const ProfileScreen: React.FC = () => {
 
             <TouchableOpacity onPress={handleLogout}>
               <Text style={styles.logoutLinkText}>{t('profile.logOut')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setDeleteModalVisible(true)}>
+              <Text style={[styles.logoutLinkText, styles.deleteAccountText]}>{t('profile.deleteAccount')}</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -185,6 +197,15 @@ export const ProfileScreen: React.FC = () => {
         onClose={() => setEditModalVisible(false)}
         onSave={handleSaveEdit}
         isSaving={isSaving}
+      />
+
+      <InfoModal
+        visible={deleteModalVisible}
+        title={t('profile.deleteAccountConfirm')}
+        primaryButtonText={t('profile.delete')}
+        secondaryButtonText={t('profile.cancel')}
+        onPrimaryPress={handleDeleteAccount}
+        onSecondaryPress={() => setDeleteModalVisible(false)}
       />
     </PageLayout>
   );
@@ -288,6 +309,9 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     fontFamily: typography.fontFamily,
     textDecorationLine: 'underline',
+  },
+  deleteAccountText: {
+    color: colors.error,
   },
   footer: { marginTop: 7, alignItems: 'center' },
   footerLine: { fontSize: 14, lineHeight: 18, fontFamily: typography.fontFamily },
