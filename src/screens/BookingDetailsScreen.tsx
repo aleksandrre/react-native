@@ -28,7 +28,7 @@ export const BookingDetailsScreen: React.FC = () => {
 
     const { courtNumber, rawDate, time, status, bookingId, isPast, price } = route.params;
     const dateLocale = useDateLocale();
-    const date = format(parseISO(rawDate), 'EEE, d MMM yyyy', { locale: dateLocale });
+    const date = format(parseISO(rawDate), 'EEE, d MMMM yyyy', { locale: dateLocale });
 
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);

@@ -107,7 +107,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
   const stickyMonthLabel = useMemo(() => {
     const firstIdx = Math.max(0, Math.floor(scrollX / DAY_WIDTH));
     if (firstIdx < dates.length && !monthStartFlags[firstIdx]) {
-      return format(dates[firstIdx], 'MMM', { locale: dateLocale });
+      return format(dates[firstIdx], 'MMMM', { locale: dateLocale });
     }
     return null;
   }, [scrollX, dates, monthStartFlags, dateLocale]);
@@ -164,7 +164,7 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
                 <View style={styles.monthLabelCell}>
                   {isNewMonth && (
                     <Text style={styles.monthText}>
-                      {format(date, 'MMM', { locale: dateLocale })}
+                      {format(date, 'MMMM', { locale: dateLocale })}
                     </Text>
                   )}
                 </View>

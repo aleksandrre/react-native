@@ -99,7 +99,7 @@ export const RescheduleCourtScreen: React.FC = () => {
                     <Text style={styles.selectedDate}>
                         {t('rescheduleCourt.selectedTime')}{' '}
                         <Text style={styles.selectedDateValue}>
-                            {format(selectedDate, 'd MMM yyyy', { locale: dateLocale })}
+                            {format(selectedDate, 'd MMMM yyyy', { locale: dateLocale })}
                         </Text>
                     </Text>
                 </View>

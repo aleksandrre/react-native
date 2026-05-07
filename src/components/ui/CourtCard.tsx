@@ -18,7 +18,7 @@ interface CourtCardProps {
 export const CourtCard: React.FC<CourtCardProps> = ({ courtNumber, rawDate, time, onPress, cancelled }) => {
   const { t } = useTranslation();
   const dateLocale = useDateLocale();
-  const formattedDate = format(parseISO(rawDate), 'EEE, d MMM yyyy', { locale: dateLocale });
+  const formattedDate = format(parseISO(rawDate), 'EEE, d MMMM yyyy', { locale: dateLocale });
   const CardContent = (
     <View style={[styles.container]}>
       <ImageBackground
