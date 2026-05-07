@@ -115,9 +115,7 @@ export const ProfileScreen: React.FC = () => {
             <TouchableOpacity onPress={handleLogout}>
               <Text style={styles.logoutLinkText}>{t('profile.logOut')}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setDeleteModalVisible(true)}>
-              <Text style={[styles.logoutLinkText, styles.deleteAccountText]}>{t('profile.deleteAccount')}</Text>
-            </TouchableOpacity>
+
           </View>
         ) : (
           <View>
@@ -187,6 +185,13 @@ export const ProfileScreen: React.FC = () => {
             </Text>
           </View>
         </View>
+
+        {isAuthenticated ?
+         <TouchableOpacity style={styles.deleteAccountButton} onPress={() => setDeleteModalVisible(true)}>
+          <Text style={[styles.logoutLinkText, styles.deleteAccountText]}>{t('profile.deleteAccount')}</Text>
+        </TouchableOpacity> :""}
+
+
       </ScreenWrapper>
 
       <EditModal
@@ -309,6 +314,13 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     fontFamily: typography.fontFamily,
     textDecorationLine: 'underline',
+  },
+  deleteAccountButton: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    right: 10,
+    alignItems: 'flex-start',
   },
   deleteAccountText: {
     color: colors.error,

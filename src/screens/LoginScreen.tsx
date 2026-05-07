@@ -50,6 +50,8 @@ export const LoginScreen: React.FC = () => {
         >
           <View style={styles.formContainer}>
             <Text style={styles.title}>{t('login.title')}</Text>
+            <Text style={styles.subtitle}>{t('login.subtitle')}</Text>
+
 
             <LabeledInputField
               label={t('login.email')}
@@ -115,6 +117,13 @@ const styles = StyleSheet.create({
     marginBottom: 18,
     lineHeight: 23,
     fontFamily: typography.fontFamilyBold,
+  },
+  subtitle: {
+    fontSize: 16,
+    lineHeight: 20,
+    color: colors.white,
+    fontFamily: typography.fontFamily,
+    marginBottom: 18,
   },
   buttonsContainer: {
     paddingBottom: 40,
