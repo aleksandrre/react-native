@@ -35,6 +35,20 @@ export const ProfileScreen: React.FC = () => {
     }, [isAuthenticated, refreshCredits])
   );
 
+  const openTerms = () => {
+    const url = language === 'ka'
+      ? 'https://kustbapadel.ge/terms-and-rules/'
+      : 'https://kustbapadel.ge/en/terms-and-conditions/';
+    Linking.openURL(url);
+  };
+
+  const openPrivacyPolicy = () => {
+    const url = language === 'ka'
+      ? 'https://kustbapadel.ge/konfidencialobis-politika/'
+      : 'https://kustbapadel.ge/en/privacy-policy/';
+    Linking.openURL(url);
+  };
+
   const handleEdit = (type: 'name' | 'email' | 'phone') => {
     setEditType(type);
     if (type === 'name') setTempValue(user?.display_name ?? '');
@@ -175,6 +189,17 @@ export const ProfileScreen: React.FC = () => {
             </Text>
           </View>
 
+          <Text style={styles.termsText}><Text style={styles.linkTextTerms} onPress={openTerms}>
+            {t('profile.terms')}
+          </Text>
+            {t('profile.agreeTermsAnd')}
+
+            <Text style={styles.linkTextTerms} onPress={openPrivacyPolicy}>
+              {t('profile.privacyPolicy')}
+            </Text>
+          </Text>
+
+
           <View style={styles.footer}>
             <Text style={styles.footerText}>{t('profile.builtByPrefix')}</Text>
             <Text style={styles.footerLine}>
@@ -187,9 +212,9 @@ export const ProfileScreen: React.FC = () => {
         </View>
 
         {isAuthenticated ?
-         <TouchableOpacity style={styles.deleteAccountButton} onPress={() => setDeleteModalVisible(true)}>
-          <Text style={[styles.logoutLinkText, styles.deleteAccountText]}>{t('profile.deleteAccount')}</Text>
-        </TouchableOpacity> :""}
+          <TouchableOpacity style={styles.deleteAccountButton} onPress={() => setDeleteModalVisible(true)}>
+            <Text style={[styles.logoutLinkText, styles.deleteAccountText]}>{t('profile.deleteAccount')}</Text>
+          </TouchableOpacity> : ""}
 
 
       </ScreenWrapper>
@@ -296,6 +321,16 @@ const styles = StyleSheet.create({
     gap: 20,
     marginTop: 12
   },
+  termsText: {
+    color: colors.white,
+    fontSize: 12,
+    lineHeight: 15,
+    flex: 1,
+    flexWrap: 'wrap',
+    fontFamily: typography.fontFamily,
+    textAlign: 'center',
+    marginTop:15
+  },
   contactTitle: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamilyBold, textAlign: "center" },
   contactText: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamily },
   contactRow: { flexDirection: 'row', alignItems: 'center' },
@@ -306,6 +341,10 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontFamily: typography.fontFamily,
     textDecorationLine: 'underline',
+  },
+  linkTextTerms: {
+    color: colors.lightPurple,
+    fontFamily: typography.fontFamily,
   },
 
   logoutLinkText: {
@@ -325,7 +364,7 @@ const styles = StyleSheet.create({
   deleteAccountText: {
     color: colors.error,
   },
-  footer: { marginTop: 7, alignItems: 'center' },
+  footer: { marginTop: -15, alignItems: 'center' },
   footerLine: { fontSize: 14, lineHeight: 18, fontFamily: typography.fontFamily },
   footerText: { color: colors.white, fontSize: 14, lineHeight: 18, fontFamily: typography.fontFamily },
   footerLink: { color: colors.lightPurple, textDecorationLine: 'underline', fontSize: 14, lineHeight: 18, fontFamily: typography.fontFamily },
