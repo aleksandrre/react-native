@@ -18,8 +18,7 @@ const en = {
     description: 'Book Courts and Manage Your Bookings With Just a Few Taps',
   },
   login: {
-    title: 'Welcome back!',
-    subtitle: 'Please fill in:',
+    title: 'Please fill in your details:',
     email: 'Email',
     emailPlaceholder: 'Email',
     password: 'Password',
