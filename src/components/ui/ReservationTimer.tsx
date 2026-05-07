@@ -36,6 +36,8 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
+        gap:4,
+        width: '100%',
     },
     reservationText: {
         fontSize: 14,
