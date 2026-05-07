@@ -20,11 +20,11 @@ const ka = {
   },
   login: {
     title: 'კეთილი იყოს დაბრუნება! ',
+    subtitle: 'გთხოვთ შეავსოთ:',
     email: 'ელ-ფოსტა',
     emailPlaceholder: 'ელ-ფოსტა',
     password: 'პაროლი',
     passwordPlaceholder: 'პაროლი',
-    fillIn: 'გთხოვთ შეავსოთ:',
     loginButton: 'შესვლა',
     signUp: 'რეგისტრაცია',
     fillAll: 'გთხოვთ შეავსოთ ყველა ველი',
