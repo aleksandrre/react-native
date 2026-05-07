@@ -76,6 +76,7 @@ const en = {
     addToCalendar: 'Add to Calendar',
     makeNewBooking: 'Make a New Booking',
     rescheduleBooking: 'Reschedule Booking',
+    rescheduleNotice: 'Rescheduling is only available up to 6 hours before the booking.',
     cancelBooking: 'Cancel Booking',
     cancelConfirm: 'Are you sure you want to cancel your booking?',
     rescheduleConfirm: 'Are you happy to cancel this booking to schedule a new booking?',

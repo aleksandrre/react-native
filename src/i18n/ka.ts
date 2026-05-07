@@ -77,6 +77,7 @@ const ka = {
     addToCalendar: 'კალენდარში დამატება',
     makeNewBooking: 'ახალი ჯავშნის გაკეთება',
     rescheduleBooking: 'ჯავშნის გადატანა',
+    rescheduleNotice: 'ჯავშნის გადატანა შესაძლებელია მხოლოდ 6 საათით ადრე.',
     cancelBooking: 'ჯავშნის გაუქმება',
     cancelConfirm: 'დარწმუნებული ხართ, რომ გსურთ ჯავშნის გაუქმება?',
     rescheduleConfirm: 'გსურთ ამ ჯავშნის გაუქმება ახალი ჯავშნის გასაკეთებლად?',
