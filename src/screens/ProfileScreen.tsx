@@ -189,7 +189,8 @@ export const ProfileScreen: React.FC = () => {
             </Text>
           </View>
 
-          <Text style={styles.termsText}><Text style={styles.linkTextTerms} onPress={openTerms}>
+          <Text style={styles.termsText}>
+            <Text style={styles.linkTextTerms} onPress={openTerms}>
             {t('profile.terms')}
           </Text>
             {t('profile.agreeTermsAnd')}
@@ -345,6 +346,7 @@ const styles = StyleSheet.create({
   linkTextTerms: {
     color: colors.white,
     fontFamily: typography.fontFamily,
+    textDecorationLine: 'underline',
   },
 
   logoutLinkText: {

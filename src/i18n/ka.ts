@@ -117,7 +117,7 @@ const ka = {
     price: 'ფასი:',
     credit: 'კრედიტი',
     yourCredits: 'თქვენი კრედიტები:',
-    loginToBook: 'შედით ჯავშნისთვის',
+    loginToBook: 'შედით დასაჯავშნად',
     bookWithCredits: 'კრედიტებით დაჯავშნა',
     payAndBook: 'გადახდა და დაჯავშნა',
     confirmFreeBooking: 'ჯავშნის დადასტურება',
