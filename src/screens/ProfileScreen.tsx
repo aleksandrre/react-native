@@ -326,11 +326,12 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 12,
     lineHeight: 15,
-    flex: 1,
     flexWrap: 'wrap',
+    width: '100%',
     fontFamily: typography.fontFamily,
     textAlign: 'center',
-    marginTop:15
+    marginTop:15,
+    marginBottom:5
   },
   contactTitle: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamilyBold, textAlign: "center" },
   contactText: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamily },
