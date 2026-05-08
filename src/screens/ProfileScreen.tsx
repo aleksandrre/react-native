@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   linkTextTerms: {
-    color: colors.lightPurple,
+    color: colors.white,
     fontFamily: typography.fontFamily,
   },
 
