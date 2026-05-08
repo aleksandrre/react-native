@@ -277,7 +277,7 @@ export const SummaryScreen: React.FC = () => {
                 <View style={styles.buttonContainer}>
                     {!isAuthenticated ? (
                         <>
-                            <Text style={styles.priceText}>{t('summary.price')} {`₾${totalPrice}`}</Text>
+                            <Text style={styles.priceText}>{t('summary.price')} {`${totalPrice}₾`}</Text>
                             <CustomButton
                                 title={t('summary.loginToBook')}
                                 onPress={handleLoginToBook}
@@ -291,7 +291,7 @@ export const SummaryScreen: React.FC = () => {
                                 </Text>
                             )}
                             <Text style={styles.priceText}>
-                                {t('summary.price')} {`₾${effectivePrice}`}
+                                {t('summary.price')} {`${effectivePrice}₾`}
                             </Text>
                             {userCredits > 0 && (
                                 <Text style={styles.creditsText}>

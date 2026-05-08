@@ -24,7 +24,7 @@ export const SuccessScreen: React.FC = () => {
     const isSingleBooking = route.params?.isSingleBooking || false;
     const dateLocale = useDateLocale();
     const singleDate = bookings[0]?.rawDate
-        ? format(parseISO(bookings[0].rawDate), 'EEE, d MMM yyyy', { locale: dateLocale })
+        ? format(parseISO(bookings[0].rawDate), 'EEE, d MMMM yyyy', { locale: dateLocale })
         : '';
     console.log(route, 'route.params');
     

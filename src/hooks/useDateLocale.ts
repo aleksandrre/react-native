@@ -11,7 +11,7 @@ const localeMap: Record<'en' | 'ka', Locale> = {
 
 /**
  * Returns the date-fns locale for the current app language (en or ka).
- * Use with format(): format(date, 'MMM yyyy', { locale: dateLocale })
+ * Use with format(): format(date, 'MMMM yyyy', { locale: dateLocale })
  */
 export function useDateLocale(): Locale {
   const { language } = useLanguageStore();

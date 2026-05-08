@@ -28,7 +28,7 @@ export const BookingDetailsScreen: React.FC = () => {
 
     const { courtNumber, rawDate, time, status, bookingId, isPast, price } = route.params;
     const dateLocale = useDateLocale();
-    const date = format(parseISO(rawDate), 'EEE, d MMM yyyy', { locale: dateLocale });
+    const date = format(parseISO(rawDate), 'EEE, d MMMM yyyy', { locale: dateLocale });
 
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -138,6 +138,7 @@ export const BookingDetailsScreen: React.FC = () => {
                                 title={t('bookingDetails.makeNewBooking')}
                                 onPress={handleMakeNewBooking}
                             />
+                            <Text style={styles.rescheduleNotice}>{t('bookingDetails.rescheduleNotice')}</Text>
                             <CustomButton
                                 style={{ marginBottom: 10 }}
                                 title={t('bookingDetails.rescheduleBooking')}
@@ -249,5 +250,13 @@ const styles = StyleSheet.create({
     strikethrough: {
         textDecorationLine: 'line-through',
         color: '#A4A4A4',
+    },
+    rescheduleNotice: {
+        fontSize: 12,
+        lineHeight: 16,
+        fontFamily: typography.fontFamily,
+        color: '#FF4444',
+        textAlign: 'center',
+        marginBottom: 8,
     },
 });

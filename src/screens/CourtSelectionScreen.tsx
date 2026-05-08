@@ -42,7 +42,7 @@ const getOrdinalSuffix = (day: number): string => {
 
 const formatSelectedDate = (date: Date, locale: Locale, language: 'en' | 'ka'): string => {
   const day = date.getDate();
-  const monthYear = format(date, 'MMM yyyy', { locale });
+  const monthYear = format(date, 'MMMM yyyy', { locale });
   // Georgian dates typically do not use ordinal suffixes (st/nd/th).
   if (language === 'ka') return `${day} ${monthYear}`;
   return `${day}${getOrdinalSuffix(day)} ${monthYear}`;

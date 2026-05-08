@@ -12,7 +12,12 @@ export const ReservationTimer: React.FC<ReservationTimerProps> = ({ formattedTim
     const { t } = useTranslation();
     return (
         <View style={styles.reservationBanner}>
+            <Text >
+            ⏱️
+            </Text>
+            
             <Text style={styles.reservationText}>
+                
                 {t('summary.reservationTimer', { time: formattedTime })}
             </Text>
         </View>
@@ -26,8 +31,13 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         paddingVertical: 5,
         paddingHorizontal: 16,
-        alignItems: 'center',
+        alignItems: 'flex-start',
         marginBottom: 20,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap:4,
+        width: '100%',
     },
     reservationText: {
         fontSize: 14,
