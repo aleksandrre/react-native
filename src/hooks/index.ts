@@ -2,6 +2,7 @@ export * from './useTypography';
 export * from './useApiError';
 export * from './useValidateCoupon';
 export * from './useLogin';
+export * from './useForgotPassword';
 export * from './useRegister';
 export * from './useDateLocale';
 export * from './useAvailableSlots';

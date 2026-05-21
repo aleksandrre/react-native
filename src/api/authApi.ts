@@ -1,5 +1,12 @@
 import { publicApi, privateApi } from './config';
-import { LoginRequest, RegisterRequest, AuthResponse, UpdateProfileRequest } from '../types';
+import {
+  LoginRequest,
+  RegisterRequest,
+  AuthResponse,
+  UpdateProfileRequest,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
+} from '../types';
 import { User } from '../types';
 
 export const authApi = {
@@ -25,5 +32,10 @@ export const authApi = {
   getCredits: async (): Promise<number> => {
     const response = await privateApi.get<{ credits: number }>('/credits');
     return response.data.credits;
+  },
+
+  forgotPassword: async (data: ForgotPasswordRequest): Promise<ForgotPasswordResponse> => {
+    const response = await publicApi.post<ForgotPasswordResponse>('/forgot-password', data);
+    return response.data;
   },
 };

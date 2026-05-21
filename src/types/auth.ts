@@ -23,3 +23,17 @@ export interface UpdateProfileRequest {
   phone: string;
 }
 
+export interface ForgotPasswordRequest {
+  user_login: string;
+}
+
+export interface LocalizedApiMessage {
+  ka: string;
+  en: string;
+}
+
+export interface ForgotPasswordResponse {
+  success: boolean;
+  message: LocalizedApiMessage;
+}
+

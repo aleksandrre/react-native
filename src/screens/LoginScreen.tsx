@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
-import { useLogin } from '../hooks';
-import { useApiError } from '../hooks/useApiError';
-import { CustomButton, LabeledInputField, Header, ScreenWrapper, PageLayout, Text } from '../components';
+import { useForgotPassword, useLogin, useApiError } from '../hooks';
+import { useLanguageStore } from '../store/languageStore';
+import {
+  CustomButton,
+  LabeledInputField,
+  Header,
+  ScreenWrapper,
+  PageLayout,
+  Text,
+  ForgotPasswordModal,
+  InfoModal,
+} from '../components';
 import { colors, typography } from '../theme';
 import { AuthStackParamList } from '../navigation/AuthNavigator';
+import { getLocalizedMessage } from '../utils/apiError';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 type LoginScreenRouteProp = RouteProp<AuthStackParamList, 'Login'>;
@@ -16,13 +26,19 @@ export const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
   const route = useRoute<LoginScreenRouteProp>();
   const { t } = useTranslation();
+  const language = useLanguageStore((s) => s.language);
   const fromApp = route.params?.fromApp ?? false;
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [apiError, setApiError] = useState('');
+  const [forgotModalVisible, setForgotModalVisible] = useState(false);
+  const [forgotError, setForgotError] = useState('');
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
   const loginMutation = useLogin();
+  const forgotPasswordMutation = useForgotPassword();
   const { getApiError } = useApiError();
 
   const handleLogin = () => {
@@ -35,6 +51,33 @@ export const LoginScreen: React.FC = () => {
     loginMutation.mutate({ username, password }, {
       onError: (error: any) => setApiError(getApiError(error)),
     });
+  };
+
+  const handleForgotPasswordOpen = () => {
+    setForgotError('');
+    setForgotModalVisible(true);
+  };
+
+  const handleForgotPasswordClose = () => {
+    if (forgotPasswordMutation.isPending) return;
+    setForgotModalVisible(false);
+    setForgotError('');
+  };
+
+  const handleForgotPasswordSubmit = (email: string) => {
+    setForgotError('');
+    forgotPasswordMutation.mutate(
+      { user_login: email },
+      {
+        onSuccess: (data) => {
+          if (!data.success) return;
+          setForgotModalVisible(false);
+          setSuccessMessage(getLocalizedMessage(data.message, language));
+          setSuccessModalVisible(true);
+        },
+        onError: (error: any) => setForgotError(getApiError(error)),
+      },
+    );
   };
 
   return (
@@ -51,7 +94,6 @@ export const LoginScreen: React.FC = () => {
           <View style={styles.formContainer}>
             <Text style={styles.title}>{t('login.title')}</Text>
             <Text style={styles.subtitle}>{t('login.subtitle')}</Text>
-
 
             <LabeledInputField
               label={t('login.email')}
@@ -70,6 +112,15 @@ export const LoginScreen: React.FC = () => {
               secureTextEntry
               error={passwordError}
             />
+
+            <TouchableOpacity
+              style={styles.forgotPasswordRow}
+              onPress={handleForgotPasswordOpen}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.forgotPasswordLink}>{t('login.forgotPassword')}</Text>
+            </TouchableOpacity>
+
             {!!apiError && (
               <View style={styles.errorContainer}>
                 <Text style={styles.errorIcon}>⚠</Text>
@@ -91,10 +142,26 @@ export const LoginScreen: React.FC = () => {
               variant="secondary"
               style={styles.signUpButton}
             />
-
           </View>
         </ScrollView>
       </ScreenWrapper>
+
+      <ForgotPasswordModal
+        visible={forgotModalVisible}
+        isLoading={forgotPasswordMutation.isPending}
+        error={forgotError}
+        onClose={handleForgotPasswordClose}
+        onSubmit={handleForgotPasswordSubmit}
+      />
+
+      <InfoModal
+        visible={successModalVisible}
+        title={t('login.forgotPasswordSuccessTitle')}
+        message={successMessage}
+        primaryButtonText={t('common.ok')}
+        onPrimaryPress={() => setSuccessModalVisible(false)}
+        singleButton
+      />
     </PageLayout>
   );
 };
@@ -125,17 +192,21 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily,
     marginBottom: 18,
   },
+  forgotPasswordRow: {
+    alignItems: 'flex-end',
+    paddingRight: 9,
+    marginTop: -4,
+    marginBottom: 8,
+  },
+  forgotPasswordLink: {
+    color: colors.lightPurple,
+    fontSize: 14,
+    lineHeight: 18,
+    fontFamily: typography.fontFamily,
+    textDecorationLine: 'underline',
+  },
   buttonsContainer: {
     paddingBottom: 40,
-  },
-  apiError: {
-    // deprecated (kept for safety) — use apiErrorText inside errorContainer
-    color: colors.error,
-    fontSize: 12,
-    lineHeight: 15,
-    fontFamily: typography.fontFamily,
-    paddingLeft: 9,
-    marginBottom: 8,
   },
   errorContainer: {
     flexDirection: 'row',
