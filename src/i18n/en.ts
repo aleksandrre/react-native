@@ -19,7 +19,7 @@ const en = {
   },
   login: {
     title: 'Welcome back!',
-    subtitle: 'Please fill in:',
+    subtitle: 'Sign in below:',
     email: 'Email',
     emailPlaceholder: 'Email',
     password: 'Password',
