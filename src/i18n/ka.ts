@@ -19,7 +19,7 @@ const ka = {
     
   },
   login: {
-    title: 'კეთილი იყოს დაბრუნება! ',
+    title: 'კეთილი იყოს თქვენი დაბრუნება! ',
     subtitle: 'გთხოვთ შეავსოთ:',
     email: 'ელ-ფოსტა',
     emailPlaceholder: 'ელ-ფოსტა',
@@ -27,9 +27,9 @@ const ka = {
     passwordPlaceholder: 'პაროლი',
     forgotPassword: 'დაგავიწყდა პაროლი?',
     forgotPasswordTitle: 'პაროლის აღდგენა',
-    forgotPasswordSubtitle: 'შეიყვანეთ ელ-ფოსტა და გამოგიგზავნით აღდგენის ინსტრუქციას.',
+    forgotPasswordSubtitle: 'შეიყვანეთ ელ-ფოსტა და გამოგიგზავნით პაროლის აღდგენის ინსტრუქციას.',
     forgotPasswordSubmit: 'გაგზავნა',
-    forgotPasswordSuccessTitle: 'ელ-ფოსტა გაგზავნილია',
+    forgotPasswordSuccessTitle: 'ელ-ფოსტა გამოგზავნილია',
     loginButton: 'შესვლა',
     signUp: 'რეგისტრაცია',
     fillAll: 'გთხოვთ შეავსოთ ყველა ველი',
