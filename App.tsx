@@ -5,13 +5,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
-import {
-  SpaceGrotesk_300Light,
-  SpaceGrotesk_400Regular,
-  SpaceGrotesk_500Medium,
-  SpaceGrotesk_600SemiBold,
-  SpaceGrotesk_700Bold,
-} from '@expo-google-fonts/space-grotesk';
 import { useAuthStore } from './src/store/authStore';
 import { useLanguageStore } from './src/store/languageStore';
 import { MainNavigator, AuthNavigator } from './src/navigation';
@@ -60,11 +53,6 @@ function AppContent() {
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
-    SpaceGrotesk_300Light,
-    SpaceGrotesk_400Regular,
-    SpaceGrotesk_500Medium,
-    SpaceGrotesk_600SemiBold,
-    SpaceGrotesk_700Bold,
     FiraGO_300Light: require('./assets/fonts/FiraGO-Light.ttf'),
     FiraGO_400Regular: require('./assets/fonts/FiraGO-Book.ttf'),
     FiraGO_500Medium: require('./assets/fonts/FiraGO-Medium.ttf'),
