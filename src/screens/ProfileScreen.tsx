@@ -110,18 +110,20 @@ export const ProfileScreen: React.FC = () => {
             <View style={styles.infoRow}>
               <Text style={styles.infoText}>{t('profile.language')}</Text>
               <View style={styles.langPickerRow}>
-                <TouchableOpacity
-                  style={[styles.langOption, language === 'en' && styles.langOptionActive]}
-                  onPress={() => setLanguage('en')}
-                >
-                  <Text style={[styles.langOptionText, language === 'en' && styles.langOptionTextActive]}>EN</Text>
-                </TouchableOpacity>
+
                 <TouchableOpacity
                   style={[styles.langOption, language === 'ka' && styles.langOptionActive]}
                   onPress={() => setLanguage('ka')}
                 >
                   <Text style={[styles.langOptionText, language === 'ka' && styles.langOptionTextActive]}>ქა</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.langOption, language === 'en' && styles.langOptionActive]}
+                  onPress={() => setLanguage('en')}
+                >
+                  <Text style={[styles.langOptionText, language === 'en' && styles.langOptionTextActive]}>EN</Text>
+                </TouchableOpacity>
+
               </View>
             </View>
             <Text style={styles.infoText}>{t('profile.credits')} <Text style={styles.infoValue}>{user?.credits ?? 0}</Text></Text>
@@ -137,38 +139,39 @@ export const ProfileScreen: React.FC = () => {
             <Text style={styles.subtitle}>{t('profile.pleaseLogIn')}</Text>
 
             <CustomButton
-              title={t('profile.signUp')}
+              title={t('profile.logIn')}
               variant="primary"
+              style={styles.signInBtn}
+              onPress={() => {
+                navigation.getParent()?.navigate('Auth', { screen: 'Login', params: { fromApp: true } });
+              }}
+            />
+            <CustomButton
+              title={t('profile.signUp')}
+              variant="secondary"
               style={styles.signUpBtn}
               onPress={() => {
                 navigation.getParent()?.navigate('Auth', { screen: 'Register', params: { fromApp: true } });
               }}
             />
 
-            <CustomButton
-              title={t('profile.logIn')}
-              variant="secondary"
-              style={styles.signInBtn}
-              onPress={() => {
-                navigation.getParent()?.navigate('Auth', { screen: 'Login', params: { fromApp: true } });
-              }}
-            />
 
             <View style={[styles.infoRow]}>
               <Text style={styles.infoText}>{t('profile.language')}</Text>
               <View style={styles.langPickerRow}>
-                <TouchableOpacity
-                  style={[styles.langOption, language === 'en' && styles.langOptionActive]}
-                  onPress={() => setLanguage('en')}
-                >
-                  <Text style={[styles.langOptionText, language === 'en' && styles.langOptionTextActive]}>EN</Text>
-                </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.langOption, language === 'ka' && styles.langOptionActive]}
                   onPress={() => setLanguage('ka')}
                 >
                   <Text style={[styles.langOptionText, language === 'ka' && styles.langOptionTextActive]}>ქა</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.langOption, language === 'en' && styles.langOptionActive]}
+                  onPress={() => setLanguage('en')}
+                >
+                  <Text style={[styles.langOptionText, language === 'en' && styles.langOptionTextActive]}>EN</Text>
+                </TouchableOpacity>
+
               </View>
             </View>
           </View>
@@ -191,8 +194,8 @@ export const ProfileScreen: React.FC = () => {
 
           <Text style={styles.termsText}>
             <Text style={styles.linkTextTerms} onPress={openTerms}>
-            {t('profile.terms')}
-          </Text>
+              {t('profile.terms')}
+            </Text>
             {t('profile.agreeTermsAnd')}
 
             <Text style={styles.linkTextTerms} onPress={openPrivacyPolicy}>
@@ -248,7 +251,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    lineHeight: 18,
     color: colors.white,
     fontFamily: typography.fontFamilyBold,
     marginBottom: 4,
@@ -312,11 +314,11 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   signUpBtn: {
-    marginTop: 12,
-    marginBottom: 8,
+    marginBottom: 12
   },
   signInBtn: {
-    marginBottom: 12
+    marginTop: 12,
+    marginBottom: 8,
   },
   contactSection: {
     gap: 20,
@@ -330,8 +332,8 @@ const styles = StyleSheet.create({
     width: '100%',
     fontFamily: typography.fontFamily,
     textAlign: 'center',
-    marginTop:15,
-    marginBottom:5
+    marginTop: 15,
+    marginBottom: 5
   },
   contactTitle: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamilyBold, textAlign: "center" },
   contactText: { color: colors.white, fontSize: 16, lineHeight: 20, fontFamily: typography.fontFamily },

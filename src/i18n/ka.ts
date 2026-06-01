@@ -86,11 +86,11 @@ const ka = {
     rescheduleNotice: 'ჯავშნის გადატანა შესაძლებელია მხოლოდ ჯავშნის დაწყებამდე მინიმუმ 6 საათით ადრე.',
     cancelBooking: 'ჯავშნის გაუქმება',
     cancelConfirm: 'დარწმუნებული ხართ, რომ გსურთ ჯავშნის გაუქმება?',
-    rescheduleConfirm: 'გსურთ ამ ჯავშნის გაუქმება ახალი ჯავშნის გასაკეთებლად?',
+    rescheduleConfirm: 'გსურთ ამ ჯავშნის გაუქმება ახალი ჯავშნის შესაქმნელად?',
     yesCancelBooking: 'დიახ',
     noKeepBooking: 'არა',
     cancelSuccess: 'თქვენი ჯავშანი {{date}}-ს {{time}}-ზე, კორტ {{courtNumber}}-ზე გაუქმებულია. თქვენ დაგერიცხათ {{credits}} კრედიტი.',
-    rescheduleSuccess: 'თქვენი ჯავშანი {{date}}-ს {{time}}-ზე, კორტ {{courtNumber}}-ზე გაუქმებულია. დაგერიცხათ {{credits}} კრედიტი. გთხოვთ გააკეთოთ ახალი ჯავშანი.',
+    rescheduleSuccess: 'თქვენი ჯავშანი {{date}}-ს {{time}}-ზე, კორტ {{courtNumber}}-ზე გაუქმებულია. დაგერიცხათ {{credits}} კრედიტი. გთხოვთ შექმნათ ახალი ჯავშანი.',
     cancelError: 'ჯავშნის გაუქმება ვერ მოხერხდა. სცადეთ ხელახლა.',
   },
   courtSelection: {
