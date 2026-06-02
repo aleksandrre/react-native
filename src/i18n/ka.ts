@@ -52,7 +52,7 @@ const ka = {
     agreeTermsAnd: ' და ',
     privacyPolicy: 'კონფიდენციალურობის პოლიტიკას',
     signUpButton: 'რეგისტრაცია',
-    alreadyHaveAccount: 'უკვე გაქვს ანგარიში? ',
+    alreadyHaveAccount: 'უკვე გაქვთ ანგარიში? ',
     logInHere: 'დააჭირეთ აქ',
     emailError: 'შეიყვანეთ სწორი ელ-ფოსტა',
     phoneError: 'შეიყვანეთ მხოლოდ ციფრები (7-15)',
