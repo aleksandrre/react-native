@@ -139,7 +139,7 @@ const ka = {
     },
   },
   success: {
-    title: 'წარმატება!',
+    title: 'ჯავშანი წარმატებულია!',
     bookingConfirmed: 'თქვენი ჯავშანი დადასტურებულია:',
     bookingsConfirmed: 'თქვენი ჯავშნები დადასტურებულია:',
     court: 'კორტი',
