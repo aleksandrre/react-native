@@ -19,8 +19,9 @@ import {
   getMonth,
 } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { useDateLocale } from '../../hooks';
+import { useDateLocale, useDatesAvailability } from '../../hooks';
 import { colors, typography } from '../../theme';
+import { formatDateForApi } from '../../utils/date';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DAY_WIDTH = Math.floor((SCREEN_WIDTH - 60) / 7);
@@ -55,6 +56,8 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
     }
     return result;
   }, [today]);
+
+  const { fullyBookedDateKeys } = useDatesAvailability(dates, today);
 
   // Pre-compute month start flags — static, zero scroll dependency
   const monthStartFlags = useMemo(() => {
@@ -96,8 +99,8 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
   }, []);
 
   const handleDatePress = (date: Date) => {
-    // Block selection of past dates
     if (isBefore(date, today)) return;
+    if (fullyBookedDateKeys.has(formatDateForApi(date))) return;
     setSelectedDate(date);
     onDateSelect?.(date);
   };
@@ -150,6 +153,8 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
             const isSelected = isSameDay(date, selectedDate);
             const isToday = isSameDay(date, today);
             const isPast = isBefore(date, today);
+            const isFullyBooked = fullyBookedDateKeys.has(formatDateForApi(date));
+            const isUnavailable = isPast || isFullyBooked;
             const dayOfWeek = format(date, 'EEE', { locale: dateLocale });
             const dayNumber = format(date, 'd');
             const isNewMonth = monthStartFlags[index];
@@ -173,24 +178,24 @@ export const DateSelector: React.FC<DateSelectorProps> = ({
                 <TouchableOpacity
                   style={styles.dateItem}
                   onPress={() => handleDatePress(date)}
-                  activeOpacity={isPast ? 1 : 0.7}
-                  disabled={isPast}
+                  activeOpacity={isUnavailable ? 1 : 0.7}
+                  disabled={isUnavailable}
                 >
-                  <Text style={[styles.dayOfWeek, isPast && styles.pastText]}>
+                  <Text style={[styles.dayOfWeek, isUnavailable && styles.pastText]}>
                     {dayOfWeek}
                   </Text>
                   <View
                     style={[
                       styles.dateCircle,
-                      isToday && !isSelected && styles.dateCircleToday,
+                      isToday && !isSelected && !isFullyBooked && styles.dateCircleToday,
                       isSelected && styles.dateCircleSelected,
                     ]}
                   >
                     <Text
                       style={[
                         styles.dateNumber,
-                        isPast && styles.pastText,
-                        isPast && styles.pastDateStrikethrough,
+                        isUnavailable && styles.pastText,
+                        isUnavailable && styles.pastDateStrikethrough,
                         isSelected && styles.dateNumberSelected,
                       ]}
                     >

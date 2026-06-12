@@ -6,6 +6,7 @@ export * from './useForgotPassword';
 export * from './useRegister';
 export * from './useDateLocale';
 export * from './useAvailableSlots';
+export * from './useDatesAvailability';
 export * from './useAvailableCourts';
 export * from './useCreateBooking';
 export * from './useInitiatePayment';
