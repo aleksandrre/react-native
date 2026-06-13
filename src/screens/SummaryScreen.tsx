@@ -389,7 +389,6 @@ const styles = StyleSheet.create({
     },
     promoInput: {
         flex: 1,
-        marginBottom: 0,
     },
     applyButton: {
         height: 34,

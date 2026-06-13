@@ -103,7 +103,8 @@ const ka = {
   },
   summary: {
     title: 'შეჯამება',
-    reservationTimer: ' ჯავშნის დასადასტურებლად დარჩენილია {{time}} წუთი',
+    reservationTimerBefore: 'ჯავშნის დასადასტურებლად დარჩენილია ',
+    reservationTimerAfter: ' წუთი',
     reservationExpired: '⏱️ დრო ამოიწურა — გთხოვთ ხელახლა აირჩიოთ სესიები.',
     applyCode: 'კოდის გამოყენება',
     enterHere: 'შეიყვანეთ აქ',

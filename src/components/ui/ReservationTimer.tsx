@@ -17,8 +17,9 @@ export const ReservationTimer: React.FC<ReservationTimerProps> = ({ formattedTim
             </Text>
             
             <Text style={styles.reservationText}>
-                
-                {t('summary.reservationTimer', { time: formattedTime })}
+                {t('summary.reservationTimerBefore')}
+                <Text weight="bold">{formattedTime}</Text>
+                {t('summary.reservationTimerAfter')}
             </Text>
         </View>
     );
