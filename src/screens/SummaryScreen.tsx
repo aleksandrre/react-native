@@ -10,6 +10,7 @@ import { Booking } from '../types';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { useAuthStore } from '../store/authStore';
 import { bookingApi } from '../api/bookingApi';
+import { getDateForApiSlot } from '../utils/date';
 
 type RouteParams = {
     Summary: {
@@ -22,13 +23,6 @@ type RouteParams = {
 };
 
 type SummaryRouteProp = RouteProp<RouteParams, 'Summary'>;
-
-const formatDateForApi = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-};
 
 export const SummaryScreen: React.FC = () => {
     const navigation = useNavigation<NavigationProp<BookStackParamList>>();
@@ -48,7 +42,7 @@ export const SummaryScreen: React.FC = () => {
         const courts = selectedCourts[slot] ?? [];
         return courts.map((courtNumber) => ({
             courtNumber,
-            rawDate: formatDateForApi(selectedDate),
+            rawDate: getDateForApiSlot(selectedDate, slot),
             time: slot,
         }));
     });
@@ -82,7 +76,7 @@ export const SummaryScreen: React.FC = () => {
             const courtIds = selectedCourtIds[slot] ?? [];
             return courtIds.map((courtId) => ({
                 court_id: courtId,
-                date: formatDateForApi(selectedDate),
+                date: getDateForApiSlot(selectedDate, slot),
                 time: slot,
             }));
         });
@@ -95,10 +89,9 @@ export const SummaryScreen: React.FC = () => {
 
         hasLockedSlotsRef.current = true;
 
-        const dateForApi = formatDateForApi(selectedDate);
-
         selectedSlots.forEach((slot) => {
             const courtIds = selectedCourtIds[slot] ?? [];
+            const dateForApi = getDateForApiSlot(selectedDate, slot);
             courtIds.forEach((courtId) => {
                 bookingApi
                     .lockSlot({
