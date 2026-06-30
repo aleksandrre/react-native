@@ -8,7 +8,7 @@ import { format } from 'date-fns';
 import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useDateLocale, useAvailableCourts } from '../hooks';
-import { getDisplayDate } from '../utils/date';
+import { getDisplayDate, sortTimeSlots } from '../utils/date';
 import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector, Text } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
@@ -59,7 +59,7 @@ export const CourtSelectionScreen: React.FC = () => {
   const { language } = useLanguageStore();
 
   const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
-  const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
+  const selectedSlots = sortTimeSlots(Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : []);
 
   const [selectedCourts, setSelectedCourts] = useState<CourtSelection>({});
   const [selectedCourtIds, setSelectedCourtIds] = useState<CourtIdSelection>({});

@@ -10,7 +10,7 @@ import { Booking } from '../types';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { useAuthStore } from '../store/authStore';
 import { bookingApi } from '../api/bookingApi';
-import { formatDateForApi, getDisplayDate } from '../utils/date';
+import { formatDateForApi, getDisplayDate, sortTimeSlots } from '../utils/date';
 
 type RouteParams = {
     Summary: {
@@ -33,7 +33,7 @@ export const SummaryScreen: React.FC = () => {
     const [discountedPrice, setDiscountedPrice] = useState<number | null>(null);
 
     const selectedDate = route.params?.selectedDate ? new Date(route.params.selectedDate) : new Date();
-    const selectedSlots = Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : [];
+    const selectedSlots = sortTimeSlots(Array.isArray(route.params?.selectedSlots) ? route.params.selectedSlots : []);
     const selectedCourts = route.params?.selectedCourts || {};
     const selectedCourtIds = route.params?.selectedCourtIds || {};
     const courtPriceMap = route.params?.courtPriceMap || {};
