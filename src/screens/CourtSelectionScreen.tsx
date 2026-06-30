@@ -73,6 +73,7 @@ export const CourtSelectionScreen: React.FC = () => {
   });
   const uniqueDisplayDates = [...new Set(Object.values(slotDates))];
   const displayDateLabel = uniqueDisplayDates.join(' / ');
+  const hasMultipleDates = uniqueDisplayDates.length > 1;
 
   const MAX_COURTS = 3;
 
@@ -168,7 +169,7 @@ export const CourtSelectionScreen: React.FC = () => {
           courtsBySlot={courtsBySlot}
           isLoading={courtsLoading}
           maxReached={totalSelectedCourts >= MAX_COURTS}
-          slotDates={slotDates}
+          slotDates={hasMultipleDates ? slotDates : undefined}
         />
 
         <View style={styles.buttonContainer}>
