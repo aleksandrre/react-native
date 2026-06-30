@@ -8,6 +8,7 @@ import { format } from 'date-fns';
 import type { Locale } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { useDateLocale, useAvailableCourts } from '../hooks';
+import { getDisplayDate } from '../utils/date';
 import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector, Text } from '../components';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { colors, typography } from '../theme';
@@ -65,6 +66,13 @@ export const CourtSelectionScreen: React.FC = () => {
   const [isImageModalVisible, setIsImageModalVisible] = useState(false);
 
   const { courtsBySlot, isLoading: courtsLoading } = useAvailableCourts(selectedDate, selectedSlots);
+
+  const slotDates: Record<string, string> = {};
+  selectedSlots.forEach((slot) => {
+    slotDates[slot] = formatSelectedDate(getDisplayDate(selectedDate, slot), dateLocale, language);
+  });
+  const uniqueDisplayDates = [...new Set(Object.values(slotDates))];
+  const displayDateLabel = uniqueDisplayDates.join(' / ');
 
   const MAX_COURTS = 3;
 
@@ -150,9 +158,7 @@ export const CourtSelectionScreen: React.FC = () => {
 
         <Text style={styles.selectedDate}>
           {t('courtSelection.selectedDate')}{" "}
-          <Text style={styles.selectedDateValue}>
-            {formatSelectedDate(selectedDate, dateLocale, language)}
-          </Text>
+          <Text style={styles.selectedDateValue}>{displayDateLabel}</Text>
         </Text>
 
         <CourtSelector
@@ -162,6 +168,7 @@ export const CourtSelectionScreen: React.FC = () => {
           courtsBySlot={courtsBySlot}
           isLoading={courtsLoading}
           maxReached={totalSelectedCourts >= MAX_COURTS}
+          slotDates={slotDates}
         />
 
         <View style={styles.buttonContainer}>

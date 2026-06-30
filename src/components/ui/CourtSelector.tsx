@@ -12,6 +12,7 @@ interface CourtSelectorProps {
     courtsBySlot: Record<string, Court[]>;
     isLoading?: boolean;
     maxReached?: boolean;
+    slotDates?: Record<string, string>;
 }
 
 export const CourtSelector: React.FC<CourtSelectorProps> = ({
@@ -21,6 +22,7 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
     courtsBySlot,
     isLoading = false,
     maxReached = false,
+    slotDates,
 }) => {
     const { t } = useTranslation();
 
@@ -41,6 +43,9 @@ export const CourtSelector: React.FC<CourtSelectorProps> = ({
                 return (
                     <View key={timeSlot} style={styles.timeColumn}>
                         <View style={styles.timeHeader}>
+                            {slotDates?.[timeSlot] && (
+                                <Text style={styles.dateLabelText}>{slotDates[timeSlot]}</Text>
+                            )}
                             <Text style={styles.timeText}>{timeSlot}</Text>
                             <View style={styles.timeDivider} />
                         </View>
@@ -97,6 +102,14 @@ const styles = StyleSheet.create({
     },
     timeHeader: {
         marginBottom: 12,
+    },
+    dateLabelText: {
+        fontSize: 11,
+        lineHeight: 14,
+        fontFamily: typography.fontFamily,
+        color: colors.lightGray,
+        textAlign: 'center',
+        marginBottom: 2,
     },
     timeText: {
         fontSize: 14,

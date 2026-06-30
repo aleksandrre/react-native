@@ -10,7 +10,7 @@ import { Booking } from '../types';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { useAuthStore } from '../store/authStore';
 import { bookingApi } from '../api/bookingApi';
-import { formatDateForApi } from '../utils/date';
+import { formatDateForApi, getDisplayDate } from '../utils/date';
 
 type RouteParams = {
     Summary: {
@@ -44,7 +44,7 @@ export const SummaryScreen: React.FC = () => {
         const courts = selectedCourts[slot] ?? [];
         return courts.map((courtNumber) => ({
             courtNumber,
-            rawDate: selectedDateString,
+            rawDate: formatDateForApi(getDisplayDate(selectedDate, slot)),
             time: slot,
         }));
     });
