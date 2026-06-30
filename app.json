@@ -2,7 +2,7 @@
   "expo": {
     "name": "KUS TBA PADEL",
     "slug": "new",
-    "version": "1.2.6",
+    "version": "1.2.8",
     "orientation": "portrait",
     "icon": "./assets/appstore.png",
     "userInterfaceStyle": "light",
@@ -15,14 +15,14 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "ge.kustbapadel.app",
-      "buildNumber": "45",
+      "buildNumber": "47",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleDisplayName": "KUS\u2007TBA\u2007PADEL"
       }
     },
     "android": {
-      "versionCode": 45,
+      "versionCode": 47,
       "adaptiveIcon": {
         "foregroundImage": "./assets/playstore.png",
         "backgroundColor": "#FFFFFF"
