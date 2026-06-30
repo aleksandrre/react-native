@@ -10,7 +10,7 @@ import { Booking } from '../types';
 import { BookStackParamList } from '../navigation/MainNavigator';
 import { useAuthStore } from '../store/authStore';
 import { bookingApi } from '../api/bookingApi';
-import { getDateForApiSlot } from '../utils/date';
+import { formatDateForApi } from '../utils/date';
 
 type RouteParams = {
     Summary: {
@@ -38,11 +38,13 @@ export const SummaryScreen: React.FC = () => {
     const selectedCourtIds = route.params?.selectedCourtIds || {};
     const courtPriceMap = route.params?.courtPriceMap || {};
 
+    const selectedDateString = formatDateForApi(selectedDate);
+
     const bookings: Booking[] = selectedSlots.flatMap((slot) => {
         const courts = selectedCourts[slot] ?? [];
         return courts.map((courtNumber) => ({
             courtNumber,
-            rawDate: getDateForApiSlot(selectedDate, slot),
+            rawDate: selectedDateString,
             time: slot,
         }));
     });
@@ -76,7 +78,7 @@ export const SummaryScreen: React.FC = () => {
             const courtIds = selectedCourtIds[slot] ?? [];
             return courtIds.map((courtId) => ({
                 court_id: courtId,
-                date: getDateForApiSlot(selectedDate, slot),
+                date: selectedDateString,
                 time: slot,
             }));
         });
@@ -91,12 +93,11 @@ export const SummaryScreen: React.FC = () => {
 
         selectedSlots.forEach((slot) => {
             const courtIds = selectedCourtIds[slot] ?? [];
-            const dateForApi = getDateForApiSlot(selectedDate, slot);
             courtIds.forEach((courtId) => {
                 bookingApi
                     .lockSlot({
                         court_id: courtId,
-                        date: dateForApi,
+                        date: selectedDateString,
                         time: slot,
                     })
                     .catch((error) => {

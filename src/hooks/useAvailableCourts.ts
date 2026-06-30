@@ -1,12 +1,12 @@
 import { useQueries } from '@tanstack/react-query';
 import { bookingApi } from '../api/bookingApi';
 import { Court } from '../types';
-import { getDateForApiSlot } from '../utils/date';
+import { formatDateForApi } from '../utils/date';
 
 export const useAvailableCourts = (date: Date, selectedSlots: string[]) => {
+  const dateString = formatDateForApi(date);
   const results = useQueries({
     queries: selectedSlots.map((time) => {
-      const dateString = getDateForApiSlot(date, time);
       return {
         queryKey: ['availableCourts', dateString, time],
         queryFn: () => bookingApi.getAvailableCourts(dateString, time),

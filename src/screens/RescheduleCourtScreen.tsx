@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAvailableCourts, useDateLocale } from '../hooks';
 import { PageLayout, ScreenWrapper, CustomButton, Header, CourtSelector, Text } from '../components';
 import { colors, typography } from '../theme';
-import { getDateForApiSlot } from '../utils/date';
+import { formatDateForApi } from '../utils/date';
 
 type RouteParams = {
     RescheduleCourt: {
@@ -61,7 +61,7 @@ export const RescheduleCourtScreen: React.FC = () => {
         const slot = selectedSlots[0];
         if (!slot || !selectedCourtIds[slot]) return;
 
-        const newDateForApi = getDateForApiSlot(selectedDate, slot);
+        const newDateForApi = formatDateForApi(selectedDate);
         const courtTitle = (selectedCourts[slot] ?? [])[0] ?? '';
 
         navigation.navigate('RescheduleSummary', {
