@@ -68,7 +68,7 @@ export const SummaryScreen: React.FC = () => {
     const { mutate: validateCoupon, isPending: isValidatingCoupon } = useValidateCoupon();
 
     const isPaymentPending = isCreatingBooking || isInitiatingPayment;
-    const { formatted: reservationTime, isExpired } = useReservationTimer(5 * 60);
+    const { formatted: reservationTime, isExpired } = useReservationTimer(15 * 60);
     const hasLockedSlotsRef = useRef(false);
     const hasUnlockedSlotsRef = useRef(false);
     const navigatingForwardRef = useRef(false);

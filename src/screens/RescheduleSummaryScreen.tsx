@@ -25,7 +25,7 @@ export const RescheduleSummaryScreen: React.FC = () => {
 
     const { bookingId, oldBooking, newBooking, newCourtId, newDateForApi } = route.params;
 
-    const { formatted: reservationTime, isExpired } = useReservationTimer(5 * 60);
+    const { formatted: reservationTime, isExpired } = useReservationTimer(15 * 60);
     const { mutate: reschedule, isPending } = useRescheduleBooking();
 
     const handleReschedule = () => {
