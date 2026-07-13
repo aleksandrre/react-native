@@ -40,7 +40,7 @@ const en = {
     usernameLatinError: 'Please enter Latin letters only',
     emailLabel: 'Email*',
     emailPlaceholder: 'Email',
-    phoneLabel: 'Phone (optional)',
+    phoneLabel: 'Phone',
     phonePlaceholder: 'Phone Number',
     passwordLabel: 'Password*',
     passwordPlaceholder: 'Password',
